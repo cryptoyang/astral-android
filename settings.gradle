@@ -1,0 +1,12 @@
+rootProject.name = "astral-android"
+include ':api:stub'
+include ':api:stub:ext'
+include ':api:stream'
+include ':api:aidl'
+include ':poc'
+include ':node'
+include ':client:tcp'
+include ':client:coder'
+include ':client:coder:gson'
+include ':test:legact'
+include ':test:connect'
