@@ -16,25 +16,21 @@ import java.net.ServerSocket
 import java.net.Socket
 
 fun astralTcpNetwork(
-    identity: String,
     encode: Encoder,
     decode: Decoder,
 ): Network =
-    TcpNetwork(identity, encode, decode)
+    TcpNetwork(encode, decode)
 
 private class TcpNetwork(
-    private val identity: String,
     private val encode: Encoder,
     private val decode: Decoder,
 ) : Network {
-    override fun identity(): String = identity
 
     override fun register(port: String): PortHandler =
         TcpPortHandler(ServerSocket(0), decode, encode).apply {
             TcpStream(astralSocket()).let { stream ->
                 val request = Request(
                     type = Request.Type.register,
-                    identity = identity,
                     port = port,
                     path = ":" + server.localPort
                 )

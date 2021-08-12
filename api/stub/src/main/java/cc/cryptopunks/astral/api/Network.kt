@@ -6,7 +6,6 @@ package cc.cryptopunks.astral.api
  */
 interface Network {
     fun connect(identity: String, port: String): Stream
-    fun identity(): String
     fun register(port: String): PortHandler
 }
 

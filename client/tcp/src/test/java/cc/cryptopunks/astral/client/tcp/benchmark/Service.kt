@@ -12,7 +12,6 @@ import java.lang.System.currentTimeMillis
 fun main() {
     runBlocking {
         astralTcpNetwork(
-            identity = "033c352b239deb28292d48f36e742e8b84ba60ad1abdcc29c669883836203f6b3a",
             decode = GsonDecoder(),
             encode = GsonEncoder(),
         ).register(

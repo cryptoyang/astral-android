@@ -2,8 +2,8 @@ package cc.cryptopunks.astral.stream
 
 data class Request(
     val type: Type,
-    val identity: String,
     val port: String,
+    val identity: String = "",
     val path: String? = null,
 ) {
     enum class Type { connect, register }

@@ -15,15 +15,16 @@ import cc.cryptopunks.astral.coder.GsonEncoder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
 
     private val scope = MainScope()
 
-    private val localIdEditText: EditText by lazy { findViewById(R.id.localIdEditText) }
     private val remoteIdEditText: EditText by lazy { findViewById(R.id.remoteIdEditText) }
     private val portEditText: EditText by lazy { findViewById(R.id.portEditText) }
     private val connectButton: Button by lazy { findViewById(R.id.connectButton) }
+    private val disconnectButton: Button by lazy { findViewById(R.id.disconnectButton) }
     private val statusTextView: TextView by lazy { findViewById(R.id.statusTextView) }
     private val messageEditText: EditText by lazy { findViewById(R.id.messageEditText) }
     private val sendButton: Button by lazy { findViewById(R.id.sendButton) }
@@ -35,43 +36,45 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         sharedPrefs.run {
-            localIdEditText.setText(getString("id", null))
             remoteIdEditText.setText(getString("connect-id", null))
             portEditText.setText(getString("connect-port", null))
         }
         connectButton.setOnClickListener {
-            stream?.close()
-            stream = null
+            disconnect()
 
             scope.launch(Dispatchers.IO) {
                 try {
                     statusTextView.text = null
                     sharedPrefs.edit().apply {
-                        putString("id", localIdEditText.text.toString())
                         putString("connect-id", remoteIdEditText.text.toString())
                         putString("connect-port", portEditText.text.toString())
                     }.apply()
                     stream = astralTcpNetwork(
-                        identity = localIdEditText.text.toString(),
                         encode = GsonEncoder(),
                         decode = GsonDecoder(),
                     ).connect(
                         identity = remoteIdEditText.text.toString(),
                         port = portEditText.text.toString()
                     )
+                    withContext(Dispatchers.Main) {
+                        sendButton.isEnabled = true
+                        disconnectButton.isEnabled = true
+                    }
                     Log.d("MainActivity", "connected")
-                    val s = stream
-                    println(s)
                 } catch (e: Throwable) {
                     statusTextView.text = e.message
                     e.printStackTrace()
                 }
             }
         }
+        disconnectButton.setOnClickListener {
+            disconnect()
+        }
         sendButton.setOnClickListener {
             stream?.let { stream ->
                 scope.launch(Dispatchers.IO) {
                     Log.d("MainActivity", "sending")
+                    stream.write(listOf<Byte>(2).toByteArray())
                     stream.write(messageEditText.text.toString().toByteArray())
                     Log.d("MainActivity", "sent")
                 }
@@ -81,9 +84,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onDestroy() {
+    private fun disconnect() {
         stream?.close()
         stream = null
+        sendButton.isEnabled = false
+        disconnectButton.isEnabled = false
+    }
+
+    override fun onDestroy() {
+        disconnect()
         super.onDestroy()
     }
 }
