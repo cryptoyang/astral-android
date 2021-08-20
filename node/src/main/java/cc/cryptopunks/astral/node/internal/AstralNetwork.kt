@@ -1,8 +1,8 @@
 package cc.cryptopunks.astral.node.internal
 
 import android.content.Context
+import astralApi.Network
 import astralandroid.Astralandroid
-import astraljava.Network
 import cc.cryptopunks.astral.node.ASTRAL
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.runBlocking

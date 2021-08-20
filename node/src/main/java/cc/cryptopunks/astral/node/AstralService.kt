@@ -6,8 +6,8 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
+import astralApi.Network
 import astralandroid.Astralandroid
-import astraljava.Network
 import cc.cryptopunks.astral.node.internal.startAstral
 import cc.cryptopunks.astral.node.internal.startForegroundNotification
 

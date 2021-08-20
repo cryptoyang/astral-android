@@ -16,6 +16,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -75,8 +78,19 @@ class MainActivity : AppCompatActivity() {
                 scope.launch(Dispatchers.IO) {
                     Log.d("MainActivity", "sending")
                     stream.write(listOf<Byte>(2).toByteArray())
-                    stream.write(messageEditText.text.toString().toByteArray())
+                    val message = messageEditText.text.toString().toByteArray()
+                    val size = message.size.toLong()
+                    stream.write(longToUInt64(size))
+                    stream.write(message)
+                    stream.write(ByteArray(1) { 0 })
                     Log.d("MainActivity", "sent")
+                    val idBuff = ByteArray(40)
+                    stream.read(idBuff)
+                    val id = Base64.getEncoder().encodeToString(idBuff.copyOfRange(8, 40))
+                    Log.d("MainActivity", "file id $id")
+                    withContext(Dispatchers.Main) {
+                        disconnect()
+                    }
                 }
             } ?: Toast
                 .makeText(this@MainActivity, "Stream not connected", Toast.LENGTH_SHORT)
@@ -95,4 +109,10 @@ class MainActivity : AppCompatActivity() {
         disconnect()
         super.onDestroy()
     }
+}
+
+private fun longToUInt64(value: Long): ByteArray {
+    val bytes = ByteArray(Long.SIZE_BYTES)
+    ByteBuffer.wrap(bytes).order(ByteOrder.BIG_ENDIAN).putLong(value and 0xff)
+    return bytes
 }
