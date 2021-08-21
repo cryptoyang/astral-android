@@ -8,6 +8,7 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import binary.Binary
 import cc.cryptopunks.astral.api.Stream
 import cc.cryptopunks.astral.client.astralTcpNetwork
 import cc.cryptopunks.astral.coder.GsonDecoder
@@ -16,9 +17,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import msg.Message
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.*
+import kotlin.experimental.and
 
 class MainActivity : AppCompatActivity() {
 
@@ -77,18 +80,20 @@ class MainActivity : AppCompatActivity() {
             stream?.let { stream ->
                 scope.launch(Dispatchers.IO) {
                     Log.d("MainActivity", "sending")
-                    stream.write(listOf<Byte>(2).toByteArray())
-                    val message = messageEditText.text.toString().toByteArray()
-                    val size = message.size.toLong()
-                    stream.write(longToUInt64(size))
-                    stream.write(message)
-                    stream.write(ByteArray(1) { 0 })
+//                    val recipient = remoteIdEditText.text.toString()
+                    val recipient =
+                        "033c352b239deb28292d48f36e742e8b84ba60ad1abdcc29c669883836203f6b3a"
+                    val message = messageEditText.text.toString()
+                    stream.write(Binary.int16UBytes(1))
+
+                    val msg = Message("", recipient, message).pack()
+//                    stream.write(intToUInt32(msg.size))
+                    stream.write(msg)
                     Log.d("MainActivity", "sent")
-                    val idBuff = ByteArray(40)
-                    stream.read(idBuff)
-                    val id = Base64.getEncoder().encodeToString(idBuff.copyOfRange(8, 40))
-                    Log.d("MainActivity", "file id $id")
+                    val wait = ByteArray(1)
+                    stream.read(wait)
                     withContext(Dispatchers.Main) {
+                        Log.d("MainActivity", "disconnecting")
                         disconnect()
                     }
                 }
@@ -111,8 +116,28 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-private fun longToUInt64(value: Long): ByteArray {
+private fun Long.toUInt64Bytes(): ByteArray {
     val bytes = ByteArray(Long.SIZE_BYTES)
-    ByteBuffer.wrap(bytes).order(ByteOrder.BIG_ENDIAN).putLong(value and 0xff)
+    ByteBuffer.wrap(bytes).order(ByteOrder.BIG_ENDIAN).putLong(this and 0xff)
     return bytes
 }
+
+private fun Int.toUInt32Bytes(): ByteArray {
+    val bytes = ByteArray(Long.SIZE_BYTES)
+    ByteBuffer.wrap(bytes).order(ByteOrder.BIG_ENDIAN).putInt(this and 0xffff)
+    return bytes
+}
+
+private fun intToUInt32(value: Int): ByteArray {
+    val bytes = ByteArray(Int.SIZE_BYTES)
+    ByteBuffer.wrap(bytes).order(ByteOrder.BIG_ENDIAN).putInt(value and 0xff)
+    return bytes
+}
+
+private fun intToUInt16(value: Short): ByteArray = ByteBuffer
+    .allocate(Short.SIZE_BYTES)
+    .order(ByteOrder.BIG_ENDIAN)
+    .putShort(value)
+    .array()
+
+

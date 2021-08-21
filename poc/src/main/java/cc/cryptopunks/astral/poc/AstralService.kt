@@ -6,7 +6,7 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
-import astraljava.Network
+import astralApi.Network
 
 class AstralService : Service() {
 

@@ -1,6 +1,6 @@
 package cc.cryptopunks.astral.poc
 
-import astraljava.Network
+import astralApi.Network
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect

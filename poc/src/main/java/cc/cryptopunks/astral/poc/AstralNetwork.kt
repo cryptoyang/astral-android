@@ -2,7 +2,7 @@ package cc.cryptopunks.astral.poc
 
 import android.content.Context
 import astralandroid.Astralandroid
-import astraljava.Network
+import astralApi.Network
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.runBlocking
 import java.io.File

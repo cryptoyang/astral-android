@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 internal fun logcatFlow(): Flow<String> = flow {
-//    Runtime.getRuntime().exec("logcat -c") // clear
+    Runtime.getRuntime().exec("logcat -c") // clear
     Runtime.getRuntime().exec("logcat")
         .inputStream
         .bufferedReader()

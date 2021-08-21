@@ -17,6 +17,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -41,6 +42,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         launch(Dispatchers.IO) {
+            delay(10)
             logcatFlow().formatAstralLogs().collect { log ->
                 withContext(Dispatchers.Main) {
                     logTextView.append(log)

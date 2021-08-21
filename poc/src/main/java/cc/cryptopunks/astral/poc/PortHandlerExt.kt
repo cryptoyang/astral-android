@@ -1,7 +1,7 @@
 package cc.cryptopunks.astral.poc
 
-import astraljava.ConnectionRequest
-import astraljava.PortHandler
+import astralApi.ConnectionRequest
+import astralApi.PortHandler
 import kotlinx.coroutines.flow.flow
 
 fun PortHandler.requests() = flow<ConnectionRequest> {
