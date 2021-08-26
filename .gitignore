@@ -6,6 +6,7 @@
 /build
 /captures
 /libs
+/keys
 .externalNativeBuild
 .cxx
 local.properties
