@@ -20,12 +20,12 @@
         app:layout_constraintVertical_bias="0.022" />
 
     <ScrollView
-        android:id="@+id/scrollView2"
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
         android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/restartServiceButton"
+        app:layout_constraintBottom_toTopOf="@+id/bottomLayout"
         app:layout_constraintTop_toBottomOf="@+id/nodeIdTestView"
         tools:layout_editor_absoluteX="0dp">
 
@@ -40,12 +40,23 @@
             app:layout_constraintTop_toTopOf="parent" />
     </ScrollView>
 
-    <Button
-        android:id="@+id/restartServiceButton"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/bottomLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Kill Node"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent" >
+        <Button
+            android:id="@+id/startServiceButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Start Node" />
+        <Button
+            android:id="@+id/killServiceButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Kill Node" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

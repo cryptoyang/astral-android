@@ -4,6 +4,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.InputStream
+import java.io.OutputStream
 
 suspend fun Network.register(
     port: String,
@@ -59,3 +61,6 @@ fun Stream.readMessage(): String? {
 
 fun Stream.readMessage(handle: (String) -> Unit): Boolean =
     readMessage()?.let(handle) != null
+
+fun Stream.inputStream(): InputStream = InputStreamWrapper(read = this::read)
+fun Stream.outputStream(): OutputStream = OutputStreamWrapper(write = this::write)

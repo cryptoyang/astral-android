@@ -14,3 +14,6 @@ include ':node:service'
 include ':node:app'
 
 include ':app:test:connect'
+
+include ':app:warpdrive:core'
+include ':app:warpdrive:app'

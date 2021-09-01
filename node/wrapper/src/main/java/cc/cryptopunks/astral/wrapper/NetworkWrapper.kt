@@ -1,4 +1,4 @@
-package cc.cryptopunks.astral.node.core
+package cc.cryptopunks.astral.wrapper
 
 import cc.cryptopunks.astral.api.ConnectionRequest
 import cc.cryptopunks.astral.api.PortHandler

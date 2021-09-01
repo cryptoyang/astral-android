@@ -7,11 +7,18 @@ import android.os.Binder
 import android.os.IBinder
 import android.util.Log
 import cc.cryptopunks.astral.api.Network
+import cc.cryptopunks.astral.service.ui.cacheLogcat
+import cc.cryptopunks.astral.service.ui.clearLogcatCache
 import cc.cryptopunks.astral.wrapper.ASTRAL
 import cc.cryptopunks.astral.wrapper.startAstral
 import cc.cryptopunks.astral.wrapper.stopAstral
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
-class AstralService : Service() {
+class AstralService : Service(), CoroutineScope by MainScope() {
 
     private val tag = ASTRAL + "Service"
     private var binder: NetworkBinder? = null
@@ -19,13 +26,17 @@ class AstralService : Service() {
     override fun onCreate() {
         Log.d(tag, "Starting astral service")
         startForegroundNotification(R.mipmap.ic_launcher)
+        launch(Dispatchers.IO) { cacheLogcat() }
         binder = NetworkBinder(startAstral())
     }
 
     override fun onDestroy() {
-        binder = null
+        stopForeground(true)
         stopAstral()
         Log.d(tag, "Destroying astral service")
+        cancel()
+        clearLogcatCache()
+        binder = null
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int = START_STICKY

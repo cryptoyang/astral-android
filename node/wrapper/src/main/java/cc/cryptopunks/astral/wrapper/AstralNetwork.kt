@@ -1,17 +1,26 @@
 package cc.cryptopunks.astral.wrapper
 
 import android.content.Context
+import android.util.Log
 import astralandroid.Astralandroid
 import cc.cryptopunks.astral.api.Network
-import cc.cryptopunks.astral.node.core.NetworkAdapter
-import cc.cryptopunks.astral.node.core.acquireMulticastWakeLock
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.io.File
+import java.util.concurrent.Executors
 
 const val ASTRAL = "Astral"
-private const val TAG = ASTRAL + "Thread"
 private const val ASTRAL_DIR = "astrald"
+
+private val astralScope = CoroutineScope(
+    SupervisorJob() + Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+)
+private var astralJob: Job? = null
 
 fun Context.startAstral(): Network = runBlocking {
     val network = CompletableDeferred<astralApi.Network>()
@@ -21,22 +30,22 @@ fun Context.startAstral(): Network = runBlocking {
         .apply { mkdir() }
         .absolutePath
 
-    val runnable = Runnable {
+    astralJob = astralScope.launch {
         val multicastLock = acquireMulticastWakeLock()
-        Thread.sleep(1000)
         try {
             Astralandroid.register("Android hijack astral network", network::complete)
             Astralandroid.start(dir)
         } catch (e: Throwable) {
             e.printStackTrace()
         } finally {
+            Log.d("AstralNetwork", "releasing multicast")
             multicastLock.release()
         }
     }
-    Thread(runnable, TAG).start()
     NetworkAdapter(network.await())
 }
 
-fun stopAstral() {
+fun stopAstral() = runBlocking {
     Astralandroid.stop()
+    astralJob?.join()
 }
