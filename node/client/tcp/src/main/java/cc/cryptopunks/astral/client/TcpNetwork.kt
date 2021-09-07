@@ -5,12 +5,15 @@ import cc.cryptopunks.astral.api.Network
 import cc.cryptopunks.astral.api.PortHandler
 import cc.cryptopunks.astral.api.Stream
 import cc.cryptopunks.astral.api.readMessage
+import cc.cryptopunks.astral.api.readString
+import cc.cryptopunks.astral.api.short
 import cc.cryptopunks.astral.coder.Decoder
 import cc.cryptopunks.astral.coder.Encoder
 import cc.cryptopunks.astral.coder.invoke
 import cc.cryptopunks.astral.stream.AstralError
 import cc.cryptopunks.astral.stream.Request
 import cc.cryptopunks.astral.stream.Response
+import cc.cryptopunks.binary.bytes
 import java.io.Closeable
 import java.net.ServerSocket
 import java.net.Socket
@@ -55,9 +58,12 @@ private class TcpNetwork(
                 port = port,
                 path = ":" + stream.socket.localPort,
             )
-            stream.write(encode(request).toByteArray())
-            val message = stream.readMessage()
-                ?: throw AstralError("rejected by service")
+            encode(request).toByteArray().apply {
+                stream.write(size.toShort().bytes)
+                stream.write(this)
+            }
+
+            val message = stream.readString { short.toInt() }
             val response = decode<Response>(message)
             println("connect response: $response")
             if (response.status != "ok")

@@ -3,20 +3,13 @@ package cc.cryptopunks.astral.wrapdrive
 import android.content.ClipData
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import cc.cryptopunks.astral.wrapdrive.client.sendFile
 import cc.cryptopunks.astral.wrapdrive.peer.PeerItem
 import cc.cryptopunks.astral.wrapdrive.peer.SelectPeerFragment
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
 
-class ShareFileActivity : AppCompatActivity(), CoroutineScope by MainScope() {
+class ShareFileActivity : AppCompatActivity() {
 
-    private var clips: List<ClipData.Item> = emptyList()
+    private var clips: ClipData? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,24 +26,11 @@ class ShareFileActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     }
 
     private fun handleIntent(intent: Intent) {
-        clips = intent.clipData?.items() ?: emptyList()
-        clips.forEach { Log.d(this.javaClass.simpleName, it.toString()) }
+        clips = intent.clipData
     }
 
     private fun sendFiles(selected: PeerItem) {
-        launch(Dispatchers.IO) {
-            clips.mapNotNull { item -> item.uri }.forEach { uri ->
-                val filePath = uri.path!!.toString().split("/").last()
-                val inputStream = contentResolver.openInputStream(uri)!!
-                network.sendFile(selected.nodeId, filePath, inputStream)
-            }
-        }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        cancel()
+        val clips = clips ?: return
+        startService(sendFileIntent(clips, selected.nodeId))
     }
 }
-
-private fun ClipData.items() = List(itemCount, this::getItemAt)

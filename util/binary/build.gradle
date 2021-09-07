@@ -4,9 +4,7 @@ plugins {
 }
 
 dependencies {
-    api project(':node:api:stub')
-    api project(':util:binary')
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     testImplementation 'junit:junit:4.13.2'
 }
 

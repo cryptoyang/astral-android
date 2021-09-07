@@ -15,6 +15,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 
 class SelectPeerFragment :
     Fragment(),
@@ -35,7 +36,7 @@ class SelectPeerFragment :
                 onItemClick = { onPeerSelected(it) }
                 launch {
                     try {
-                        val peers = network.listPeers().map { PeerItem(it) }
+                        val peers = withTimeout(3000) { network.listPeers().map { PeerItem(it) } }
                         withContext(Dispatchers.Main) { values = peers }
                     } catch (e: Throwable) {
                         e.printStackTrace()

@@ -7,6 +7,7 @@ dependencies {
     api project(':node:api:stub')
     api project(':node:api:stub:ext')
     api project(':node:client:coder')
+    implementation project(":util:binary")
     implementation project(':node:api:stream')
 
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1'

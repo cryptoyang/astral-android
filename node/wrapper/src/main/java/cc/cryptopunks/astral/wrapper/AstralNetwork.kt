@@ -3,12 +3,17 @@ package cc.cryptopunks.astral.wrapper
 import android.content.Context
 import android.util.Log
 import astralandroid.Astralandroid
-import cc.cryptopunks.astral.api.Network
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.io.File
@@ -20,32 +25,51 @@ private const val ASTRAL_DIR = "astrald"
 private val astralScope = CoroutineScope(
     SupervisorJob() + Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 )
-private var astralJob: Job? = null
+var astralJob: Job = Job().apply { complete() }
+    private set
 
-fun Context.startAstral(): Network = runBlocking {
-    val network = CompletableDeferred<astralApi.Network>()
+private val identity = CompletableDeferred<String>()
 
-    val dir = File(applicationInfo.dataDir)
-        .resolve(ASTRAL_DIR)
-        .apply { mkdir() }
-        .absolutePath
+private val status = MutableStateFlow(AstralStatus.Stopped)
 
-    astralJob = astralScope.launch {
-        val multicastLock = acquireMulticastWakeLock()
-        try {
-            Astralandroid.register("Android hijack astral network", network::complete)
-            Astralandroid.start(dir)
-        } catch (e: Throwable) {
-            e.printStackTrace()
-        } finally {
-            Log.d("AstralNetwork", "releasing multicast")
-            multicastLock.release()
+val astralStatus: StateFlow<AstralStatus> get() = status
+
+enum class AstralStatus { Starting, Started, Stopped }
+
+fun Context.startAstral(): Unit =
+    if (status.value == AstralStatus.Started) Unit
+    else {
+        val dir = File(applicationInfo.dataDir)
+            .resolve(ASTRAL_DIR)
+            .apply { mkdir() }
+            .absolutePath
+
+        astralJob = astralScope.launch {
+            val multicastLock = acquireMulticastWakeLock()
+            try {
+                status.value = AstralStatus.Starting
+                Astralandroid.start(dir)
+            } catch (e: Throwable) {
+                e.printStackTrace()
+            } finally {
+                status.value = AstralStatus.Stopped
+                Log.d("AstralNetwork", "releasing multicast")
+                multicastLock.release()
+            }
         }
+        val id = runBlocking {
+            flow { while (true) emit(delay(10)) }
+                .map { Astralandroid.identity() }
+                .first { !it.isNullOrBlank() }
+        }
+        Log.d("AstralNetwork", id)
+        identity.complete(id)
+        status.value = AstralStatus.Started
     }
-    NetworkAdapter(network.await())
-}
 
 fun stopAstral() = runBlocking {
     Astralandroid.stop()
-    astralJob?.join()
+    astralJob.join()
 }
+
+suspend fun astralIdentity() = identity.await()

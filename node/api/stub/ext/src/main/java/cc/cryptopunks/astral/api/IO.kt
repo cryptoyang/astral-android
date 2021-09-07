@@ -5,24 +5,34 @@ import java.io.OutputStream
 
 
 class InputStreamWrapper(
-    bufferSize: Int = 4096,
     private val read: (ByteArray) -> Int,
+    private val close: () -> Unit = {},
 ) : InputStream() {
-    private val buffer = ByteArray(bufferSize)
-    private var offset = 0
-    private var len = 0
-    override fun read(): Int {
-        if (len == -1) return -1
-        if (offset == len) {
-            len = read.invoke(buffer)
-            offset = 0
+    private val buff = ByteArray(1)
+
+    override fun read(): Int =
+        if (read.invoke(buff) == -1) -1
+        else buff[0].toInt()
+
+    override fun read(b: ByteArray): Int = read.invoke(b)
+
+    override fun read(b: ByteArray, off: Int, len: Int): Int =
+        if (off == 0 && len == b.size) read.invoke(b)
+        else {
+            val buff = ByteArray(len)
+            val r = read.invoke(buff)
+            System.arraycopy(buff, 0, b, off, r)
+            r
         }
-        return buffer[offset++].toInt()
+
+    override fun close() {
+        close.invoke()
     }
 }
 
 class OutputStreamWrapper(
     private val write: (ByteArray) -> Int,
+    private val close: () -> Unit = {},
 ) : OutputStream() {
 
     override fun write(b: Int) {
@@ -30,11 +40,16 @@ class OutputStreamWrapper(
         buff[0] = b.toByte()
         write(buff)
     }
+
     override fun write(b: ByteArray) {
         write.invoke(b)
     }
 
     override fun write(b: ByteArray, off: Int, len: Int) {
         write.invoke(b.copyOfRange(off, off + len))
+    }
+
+    override fun close() {
+        close.invoke()
     }
 }

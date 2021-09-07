@@ -9,8 +9,6 @@ android {
     defaultConfig {
         minSdk 21
         targetSdk 28
-        versionCode 1
-        versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -41,9 +39,10 @@ repositories {
 }
 
 dependencies {
-    implementation(name: 'astral-binary', ext: 'aar')
+//    implementation(name: 'astral-binary', ext: 'aar')
     implementation project(':node:client:tcp')
     implementation project(':node:client:coder:gson')
+    implementation project(":util:binary")
 
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.1'
     implementation 'androidx.core:core-ktx:1.6.0'

@@ -18,11 +18,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import msg.Message
-import java.io.InputStream
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
 import java.util.*
-import kotlin.experimental.and
 
 class MainActivity : AppCompatActivity() {
 

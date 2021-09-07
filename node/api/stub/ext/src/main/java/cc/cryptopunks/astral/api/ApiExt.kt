@@ -1,5 +1,10 @@
 package cc.cryptopunks.astral.api
 
+import cc.cryptopunks.binary.byte
+import cc.cryptopunks.binary.bytes
+import cc.cryptopunks.binary.int
+import cc.cryptopunks.binary.long
+import cc.cryptopunks.binary.short
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -62,5 +67,33 @@ fun Stream.readMessage(): String? {
 fun Stream.readMessage(handle: (String) -> Unit): Boolean =
     readMessage()?.let(handle) != null
 
-fun Stream.inputStream(): InputStream = InputStreamWrapper(read = this::read)
-fun Stream.outputStream(): OutputStream = OutputStreamWrapper(write = this::write)
+fun Stream.inputStream(): InputStream = InputStreamWrapper(this::read)
+fun Stream.outputStream(): OutputStream = OutputStreamWrapper(this::write)
+
+fun InputStream.readN(n: Int) = ByteArray(n)
+    .also { buff -> check(read(buff) == n) }
+
+fun Stream.readN(n: Int) = ByteArray(n)
+    .also { buff -> check(read(buff) == n) }
+
+var Stream.byte: Byte
+    get() = readN(1).byte
+    set(value) { write(value.bytes) }
+
+var Stream.short: Short
+    get() = readN(2).short
+    set(value) { write(value.bytes) }
+
+var Stream.int: Int
+    get() = readN(4).int
+    set(value) { write(value.bytes) }
+
+var Stream.long: Long
+    get() = readN(8).long
+    set(value) { write(value.bytes) }
+
+fun Stream.readString(readSize: Stream.() -> Int) = String(readN(readSize()))
+fun Stream.writeString(string: String, getSize: String.() -> ByteArray) {
+    write(string.getSize())
+    write(string.toByteArray())
+}
