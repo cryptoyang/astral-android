@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Command" >
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    <style name="Command.Layout" >
+        <item name="android:layout_margin">6dp</item>
+    </style>
+    <style name="Command.Name" >
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Subhead</item>
+    </style>
+    <style name="Command.Param" >
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Body1</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+    <style name="Command.Result" >
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Body2</item>
+    </style>
+
+</resources>

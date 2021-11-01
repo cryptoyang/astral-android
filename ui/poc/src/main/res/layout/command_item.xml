@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:selectableItemBackground">
+
+    <LinearLayout
+        style="@style/Command.Layout"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/commandTitle"
+            style="@style/Command.Name"
+            tools:text="SomeCommand" />
+
+        <TextView
+            android:id="@+id/commandParams"
+            style="@style/Command.Param"
+            tools:text="param2: SomeType" />
+
+        <TextView
+            android:id="@+id/commandResult"
+            style="@style/Command.Result"
+            tools:text="CommandResult" />
+    </LinearLayout>
+</RelativeLayout>

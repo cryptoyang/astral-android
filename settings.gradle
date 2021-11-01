@@ -8,7 +8,6 @@ include ':node:client:tcp'
 include ':node:client:coder'
 include ':node:client:coder:gson'
 
-include ':node:poc'
 include ':node:wrapper'
 include ':node:service'
 include ':node:app'
@@ -20,3 +19,5 @@ include ':app:warpdrive:slim'
 include ':app:warpdrive:fat'
 
 include ':util:binary'
+
+include ':ui:poc'
