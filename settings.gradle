@@ -1,16 +1,20 @@
 rootProject.name = "astral-android"
 
-include ':node:api:stub'
-include ':node:api:stub:ext'
-include ':node:api:stream'
+include ':client:api:stub'
+include ':client:api:stub:ext'
+include ':client:api:stream'
 
-include ':node:client:tcp'
-include ':node:client:coder'
-include ':node:client:coder:gson'
+include ':client:tcp'
+include ':client:coder'
+include ':client:coder:gson'
 
-include ':node:wrapper'
-include ':node:service'
-include ':node:app'
+include ':wrapper'
+include ':service'
+include ':app:node'
+
+project(':wrapper').projectDir = new File(settingsDir, '/astrald/mobile/android/wrapper')
+project(':service').projectDir = new File(settingsDir, '/astrald/mobile/android/service')
+project(':app:node').projectDir = new File(settingsDir, '/astrald/mobile/android/app')
 
 include ':app:test:connect'
 

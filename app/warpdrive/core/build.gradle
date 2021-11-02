@@ -40,8 +40,8 @@ repositories {
 
 dependencies {
 //    implementation(name: 'astral-binary', ext: 'aar')
-    implementation project(':node:client:tcp')
-    implementation project(':node:client:coder:gson')
+    implementation project(':client:tcp')
+    implementation project(':client:coder:gson')
     implementation project(":util:binary")
 
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.1'

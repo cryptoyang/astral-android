@@ -40,8 +40,8 @@ repositories {
 
 dependencies {
     implementation(name: 'astral-msg', ext: 'aar')
-    implementation project(':node:client:tcp')
-    implementation project(':node:client:coder:gson')
+    implementation project(':client:tcp')
+    implementation project(':client:coder:gson')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2'
