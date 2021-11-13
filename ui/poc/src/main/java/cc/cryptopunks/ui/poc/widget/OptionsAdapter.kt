@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import cc.cryptopunks.ui.poc.databinding.CommandItemBinding
 import cc.cryptopunks.ui.poc.databinding.TextItemBinding
+import cc.cryptopunks.ui.poc.model.Api
 import cc.cryptopunks.ui.poc.model.Score
 import kotlin.properties.Delegates
 
@@ -17,7 +18,7 @@ class ViewBindingHolder(val binding: ViewBinding) : RecyclerView.ViewHolder(bind
 
 @SuppressLint("NotifyDataSetChanged")
 class OptionsAdapter(
-    private val onClickListener: View.OnClickListener,
+    var onClickListener: View.OnClickListener = View.OnClickListener { },
 ) : RecyclerView.Adapter<ViewBindingHolder>() {
 
     var items: List<Any> by Delegates.observable(emptyList()) { property, oldValue, newValue ->
@@ -39,7 +40,9 @@ class OptionsAdapter(
         val item = items[position]
         when (item) {
             is String -> holder.itemView.let { it as TextView }.text = item
-            is Score -> holder.binding.let { it as CommandItemBinding}.set(item)
+            is Boolean -> holder.itemView.let { it as TextView }.text = item.toString()
+            is Score -> holder.binding.let { it as CommandItemBinding }.set(item)
+            is Api.Method -> holder.binding.let { it as CommandItemBinding }.set(item)
         }
         holder.itemView.tag = item
     }
@@ -48,7 +51,9 @@ class OptionsAdapter(
 
     override fun getItemViewType(position: Int): Int = when (items[position]) {
         is String -> 0
+        is Boolean -> 0
         is Score -> 1
+        is Api.Method -> 1
         else -> -1
     }
 }

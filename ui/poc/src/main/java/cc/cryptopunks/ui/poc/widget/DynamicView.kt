@@ -5,7 +5,8 @@ import android.util.AttributeSet
 import android.widget.FrameLayout
 import cc.cryptopunks.ui.poc.app
 import cc.cryptopunks.ui.poc.mapper.Jackson
-import cc.cryptopunks.ui.poc.model.UI
+import cc.cryptopunks.ui.poc.model2.UI
+import cc.cryptopunks.ui.poc.model2.UIView
 import com.flipkart.android.proteus.*
 import com.flipkart.android.proteus.value.DrawableValue
 import com.flipkart.android.proteus.value.Layout
@@ -13,18 +14,54 @@ import com.flipkart.android.proteus.value.ObjectValue
 import com.flipkart.android.proteus.value.Value
 import com.google.gson.reflect.TypeToken
 
-fun UI.Context.viewUpdate(): DynamicView.Update {
-    val data = data.last()
-    val dataId = model.id + "$" + data.source.result.id
+fun UI.State.viewUpdate(
+    view: UIView
+): DynamicView.Update {
 
-    val result: Any =
-        if (data.result !is List<*>) data.result
-        else IterableWrapper(data.result as List<Any>)
+    val dataId = context.model.id + "$" + view.source.result.id
 
-    val main = layouts[dataId]!!
+    val data: Any =
+        if (view.data !is List<*>) view.data
+        else IterableWrapper(view.data as List<Any>)
+
+    val main = context.layouts[dataId]!!
 //        .minus("data")
 
-    val includes = (layouts - dataId)
+    val includes = (context.layouts - dataId)
+//        .filterKeys { it.startsWith("cc.cryptopunks.ui.poc.data.MessengerApi\$Contact") }
+
+    val mapper = Jackson.prettyWriter
+
+    val stringLayout = mapper.writeValueAsString(main)
+    val stringLayouts = mapper.writeValueAsString(includes)
+    val stringData = mapper.writeValueAsString(data)
+
+    println()
+    println(stringLayout)
+    println(stringData)
+    println()
+
+
+    return DynamicView.Update(
+        layout = app.gson.fromJson(stringLayout, Layout::class.java),
+        layouts = app.gson.fromJson(stringLayouts, layoutMapType),
+        data = app.gson.fromJson(stringData, ObjectValue::class.java),
+        listOf(stringLayout, stringData, stringLayouts)
+    )
+}
+
+fun UI.State.viewUpdate(): DynamicView.Update {
+    val view = stack.last()
+    val dataId = view.source.result.id
+
+    val result: Any =
+        if (view.data !is List<*>) view.data
+        else IterableWrapper(view.data as List<Any>)
+
+    val main = context.layouts[dataId]!!
+//        .minus("data")
+
+    val includes = (context.layouts - dataId)
 //        .filterKeys { it.startsWith("cc.cryptopunks.ui.poc.data.MessengerApi\$Contact") }
 
     val mapper = Jackson.prettyWriter
@@ -57,6 +94,8 @@ class DynamicView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : FrameLayout(context, attrs) {
+
+    var onEvent: (UI.Event) -> Unit = {}
 
     data class Update(
         val layout: Layout? = null,
@@ -131,6 +170,10 @@ class DynamicView @JvmOverloads constructor(
 
         override fun onEvent(event: String, value: Value, view: ProteusView) {
             println("$event: $value")
+            val id = view.viewManager.layout.extras!!.getAsString("layout")!!
+            val json = app.proteusTypeAdapterFactory.COMPILED_VALUE_TYPE_ADAPTER.toJson(value)
+            val data = Jackson.slimMapper.readTree(json)
+            onEvent(UI.Event.Clicked(id, data))
         }
     }
 

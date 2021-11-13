@@ -5,6 +5,7 @@ import cc.cryptopunks.ui.poc.api.MessengerApi
 import cc.cryptopunks.ui.poc.schema.rpc.OpenRpc
 import cc.cryptopunks.ui.poc.schema.rpc.generateOpenRpcDocument
 import cc.cryptopunks.ui.poc.schema.JsonSchema
+import cc.cryptopunks.ui.poc.schema.Schema
 import com.fasterxml.jackson.databind.JsonNode
 
 fun main() {
@@ -23,7 +24,7 @@ fun OpenRpc.Document.generateProteusLayouts(): Map<String, Map<String, Any>> {
 
     val subSchemas = components.schemas - resultIds
 
-    val rootSchemas = methods
+    val rootSchemas: Map<String, Schema /* = com.fasterxml.jackson.databind.JsonNode */> = methods
         .filter { it.result.ref.isBlank() }
         .associate { it.name to it.result.resolveSchema() }
         .plus(components.schemas - subSchemas.keys)
@@ -48,6 +49,8 @@ fun JsonNode.toProteusLayout(
         "object" -> mutableMapOf(
             "type" to "LinearLayout",
             "orientation" to "vertical",
+            "layout_width" to "match_parent",
+            "layout_height" to "wrap_content",
             "padding" to "8dp",
             "children" to get("properties").fields().asSequence().map { (key, prop) ->
                 prop.toProteusLayout(path + key)
@@ -57,7 +60,8 @@ fun JsonNode.toProteusLayout(
                 "data" to mapOf(
                     "item" to path.formatRef()
                 ),
-                "onClick" to "item".formatRef()
+                "onClick" to "item".formatRef(),
+                "background" to "?android:selectableItemBackground",
             )
         }
 

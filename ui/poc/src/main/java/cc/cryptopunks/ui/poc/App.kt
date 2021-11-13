@@ -39,10 +39,14 @@ class App : Application() {
             .build()
     }
 
-    val gson: Gson by lazy {
+    val proteusTypeAdapterFactory by lazy {
         ProteusTypeAdapterFactory.PROTEUS_INSTANCE_HOLDER.proteus = proteus
+        ProteusTypeAdapterFactory(this)
+    }
+
+    val gson: Gson by lazy {
         GsonBuilder()
-            .registerTypeAdapterFactory(ProteusTypeAdapterFactory(this))
+            .registerTypeAdapterFactory(proteusTypeAdapterFactory)
             .create()
     }
 }

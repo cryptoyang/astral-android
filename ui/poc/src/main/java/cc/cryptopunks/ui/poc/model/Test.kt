@@ -7,6 +7,10 @@ import cc.cryptopunks.ui.poc.schema.rpc.generateOpenRpcDocument
 
 
 fun main() {
+    println(false)
+}
+
+private fun legacy() {
     "hgfh.sad[1].asd".isPath()
         .let(::println)
 
@@ -23,14 +27,14 @@ fun main() {
     println()
     println()
 
-    val context = UI.Context(doc)
+//    val context = UI.Context(doc)
 
-    Jackson.prettyWriter.writeValueAsString(context.model).let(::println)
+//    Jackson.prettyWriter.writeValueAsString(context.model).let(::println)
 
     println()
     println()
 
-    val resolvers = context.model.resolvers()
+//    val resolvers = context.model.resolvers()
 
-    resolvers.let(::println)
+//    resolvers.let(::println)
 }

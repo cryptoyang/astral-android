@@ -29,7 +29,7 @@ fun CommandItemBinding.set(
 }
 
 private fun Api.Type.formatType(): String = when {
-    type == "array" -> "Array<${properties["item"]!!.formatType()}>"
+    type == "array" -> "Array<${properties["items"]!!.formatType()}>"
     id.isNotBlank() -> id
     else -> type
 }
