@@ -3,9 +3,9 @@ package cc.cryptopunks.ui.poc
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import cc.cryptopunks.ui.poc.api.MessengerApi
-import cc.cryptopunks.ui.poc.model2.UI
-import cc.cryptopunks.ui.poc.model2.eventHandler
-import cc.cryptopunks.ui.poc.model2.invoke
+import cc.cryptopunks.ui.poc.model.UI
+import cc.cryptopunks.ui.poc.model.eventHandler
+import cc.cryptopunks.ui.poc.model.invoke
 import cc.cryptopunks.ui.poc.schema.rpc.generateOpenRpcDocument
 import cc.cryptopunks.ui.poc.widget.*
 import kotlinx.coroutines.CoroutineScope
@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         val commandView = CommandView(this)
         val handle = eventHandler(initial)
         launch {
-            commandView.uiEvents3().collect { event ->
+            commandView.uiEvents().collect { event ->
                 handle(event).update(commandView).state
             }
         }

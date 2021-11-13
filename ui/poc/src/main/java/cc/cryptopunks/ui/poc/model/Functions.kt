@@ -1,4 +1,4 @@
-package cc.cryptopunks.ui.poc.model2
+package cc.cryptopunks.ui.poc.model
 
 operator fun UI.State.plus(update: UIUpdate<*, *>) = UI.State(
     elements = when (update.value) {

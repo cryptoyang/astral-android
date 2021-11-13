@@ -3,9 +3,9 @@ package cc.cryptopunks.ui.poc.widget
 import androidx.core.view.isVisible
 import cc.cryptopunks.ui.poc.databinding.CommandItemBinding
 import cc.cryptopunks.ui.poc.model.Api
-import cc.cryptopunks.ui.poc.model.Score
+import cc.cryptopunks.ui.poc.model.UIMethodScore
 
-fun CommandItemBinding.set(item: Score) {
+fun CommandItemBinding.set(item: UIMethodScore) {
     root.tag = item
     set(item.method)
     commandTitle.append(" " + item.score)

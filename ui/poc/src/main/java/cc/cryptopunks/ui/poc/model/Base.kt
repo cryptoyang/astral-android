@@ -1,4 +1,4 @@
-package cc.cryptopunks.ui.poc.model2
+package cc.cryptopunks.ui.poc.model
 
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty

@@ -1,6 +1,4 @@
-package cc.cryptopunks.ui.poc.model2
-
-import cc.cryptopunks.ui.poc.model.Api
+package cc.cryptopunks.ui.poc.model
 
 sealed class UIResolver(
     val ordinal: Int,

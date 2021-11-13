@@ -5,90 +5,13 @@ import android.util.AttributeSet
 import android.widget.FrameLayout
 import cc.cryptopunks.ui.poc.app
 import cc.cryptopunks.ui.poc.mapper.Jackson
-import cc.cryptopunks.ui.poc.model2.UI
-import cc.cryptopunks.ui.poc.model2.UIView
+import cc.cryptopunks.ui.poc.model.UI
 import com.flipkart.android.proteus.*
 import com.flipkart.android.proteus.value.DrawableValue
 import com.flipkart.android.proteus.value.Layout
 import com.flipkart.android.proteus.value.ObjectValue
 import com.flipkart.android.proteus.value.Value
 import com.google.gson.reflect.TypeToken
-
-fun UI.State.viewUpdate(
-    view: UIView
-): DynamicView.Update {
-
-    val dataId = context.model.id + "$" + view.source.result.id
-
-    val data: Any =
-        if (view.data !is List<*>) view.data
-        else IterableWrapper(view.data as List<Any>)
-
-    val main = context.layouts[dataId]!!
-//        .minus("data")
-
-    val includes = (context.layouts - dataId)
-//        .filterKeys { it.startsWith("cc.cryptopunks.ui.poc.data.MessengerApi\$Contact") }
-
-    val mapper = Jackson.prettyWriter
-
-    val stringLayout = mapper.writeValueAsString(main)
-    val stringLayouts = mapper.writeValueAsString(includes)
-    val stringData = mapper.writeValueAsString(data)
-
-    println()
-    println(stringLayout)
-    println(stringData)
-    println()
-
-
-    return DynamicView.Update(
-        layout = app.gson.fromJson(stringLayout, Layout::class.java),
-        layouts = app.gson.fromJson(stringLayouts, layoutMapType),
-        data = app.gson.fromJson(stringData, ObjectValue::class.java),
-        listOf(stringLayout, stringData, stringLayouts)
-    )
-}
-
-fun UI.State.viewUpdate(): DynamicView.Update {
-    val view = stack.last()
-    val dataId = view.source.result.id
-
-    val result: Any =
-        if (view.data !is List<*>) view.data
-        else IterableWrapper(view.data as List<Any>)
-
-    val main = context.layouts[dataId]!!
-//        .minus("data")
-
-    val includes = (context.layouts - dataId)
-//        .filterKeys { it.startsWith("cc.cryptopunks.ui.poc.data.MessengerApi\$Contact") }
-
-    val mapper = Jackson.prettyWriter
-
-    val stringLayout = mapper.writeValueAsString(main)
-    val stringLayouts = mapper.writeValueAsString(includes)
-    val stringData = mapper.writeValueAsString(result)
-
-    println()
-    println(stringLayout)
-    println(stringData)
-    println()
-
-
-    return DynamicView.Update(
-        layout = app.gson.fromJson(stringLayout, Layout::class.java),
-        layouts = app.gson.fromJson(stringLayouts, layoutMapType),
-        data = app.gson.fromJson(stringData, ObjectValue::class.java),
-        listOf(stringLayout, stringData, stringLayouts)
-    )
-}
-
-private class IterableWrapper(
-    val items: List<Any>
-)
-
-private val layoutMapType = object : TypeToken<Map<String, Layout>>() {}.type
 
 class DynamicView @JvmOverloads constructor(
     context: Context,
@@ -183,3 +106,43 @@ class DynamicView @JvmOverloads constructor(
 
         }
 }
+
+fun UI.State.viewUpdate(): DynamicView.Update {
+    val view = stack.last()
+    val dataId = view.source.result.id
+
+    val result: Any =
+        if (view.data !is List<*>) view.data
+        else IterableWrapper(view.data as List<Any>)
+
+    val main = context.layouts[dataId]!!
+//        .minus("data")
+
+    val includes = (context.layouts - dataId)
+//        .filterKeys { it.startsWith("cc.cryptopunks.ui.poc.data.MessengerApi\$Contact") }
+
+    val mapper = Jackson.prettyWriter
+
+    val stringLayout = mapper.writeValueAsString(main)
+    val stringLayouts = mapper.writeValueAsString(includes)
+    val stringData = mapper.writeValueAsString(result)
+
+    println()
+    println(stringLayout)
+    println(stringData)
+    println()
+
+
+    return DynamicView.Update(
+        layout = app.gson.fromJson(stringLayout, Layout::class.java),
+        layouts = app.gson.fromJson(stringLayouts, layoutMapType),
+        data = app.gson.fromJson(stringData, ObjectValue::class.java),
+        listOf(stringLayout, stringData, stringLayouts)
+    )
+}
+
+private class IterableWrapper(
+    val items: List<Any>
+)
+
+private val layoutMapType = object : TypeToken<Map<String, Layout>>() {}.type
