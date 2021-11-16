@@ -1,4 +1,4 @@
-package cc.cryptopunks.ui.poc.model
+package cc.cryptopunks.ui.poc.model.helper
 
 fun String.isPath(): Boolean =
     PathRegex.path.matches(this)

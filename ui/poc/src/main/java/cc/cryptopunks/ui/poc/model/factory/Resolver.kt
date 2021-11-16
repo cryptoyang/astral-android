@@ -1,17 +1,6 @@
-package cc.cryptopunks.ui.poc.model
+package cc.cryptopunks.ui.poc.model.factory
 
-sealed class UIResolver(
-    val ordinal: Int,
-) : Comparable<UIResolver> {
-
-    override fun compareTo(other: UIResolver): Int = ordinal.compareTo(other.ordinal)
-
-    data class Data(val view: UIView) : UIResolver(1)
-    data class Option(val list: List<String>) : UIResolver(2)
-    data class Method(val method: Api.Method, val path: Path) : UIResolver(3)
-    data class Path(val chunks: List<String>, val single: Boolean = true)
-    data class Input(val type: String) : UIResolver(4)
-}
+import cc.cryptopunks.ui.poc.model.*
 
 fun Api.Model.resolvers(): Map<String, Iterable<UIResolver>> = methods.values
     .flatMapTo(mutableSetOf()) { method -> method.params.values }

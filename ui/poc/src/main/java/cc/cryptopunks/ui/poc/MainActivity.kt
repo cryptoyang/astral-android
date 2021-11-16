@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import cc.cryptopunks.ui.poc.api.MessengerApi
 import cc.cryptopunks.ui.poc.model.UI
 import cc.cryptopunks.ui.poc.model.eventHandler
-import cc.cryptopunks.ui.poc.model.invoke
+import cc.cryptopunks.ui.poc.model.factory.invoke
 import cc.cryptopunks.ui.poc.schema.rpc.generateOpenRpcDocument
 import cc.cryptopunks.ui.poc.widget.*
 import kotlinx.coroutines.CoroutineScope

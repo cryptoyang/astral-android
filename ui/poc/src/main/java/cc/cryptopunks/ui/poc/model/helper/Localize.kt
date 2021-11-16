@@ -1,4 +1,6 @@
-package cc.cryptopunks.ui.poc.model
+package cc.cryptopunks.ui.poc.model.helper
+
+import cc.cryptopunks.ui.poc.model.Api
 
 fun Api.Type.localize(
     target: Api.Type,

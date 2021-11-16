@@ -116,10 +116,7 @@ fun UI.State.viewUpdate(): DynamicView.Update {
         else IterableWrapper(view.data as List<Any>)
 
     val main = context.layouts[dataId]!!
-//        .minus("data")
-
     val includes = (context.layouts - dataId)
-//        .filterKeys { it.startsWith("cc.cryptopunks.ui.poc.data.MessengerApi\$Contact") }
 
     val mapper = Jackson.prettyWriter
 

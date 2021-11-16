@@ -1,14 +1,17 @@
-package cc.cryptopunks.ui.poc.model
+package cc.cryptopunks.ui.poc.model.helper
 
+import cc.cryptopunks.ui.poc.model.UI
+import cc.cryptopunks.ui.poc.model.UIMatching
+import cc.cryptopunks.ui.poc.model.UIMethodScore
 import kotlin.math.absoluteValue
 
-data class UIMethodScore(
-    val score: Int,
-    val method: Api.Method,
-    val matching: List<UIMatching>,
-)
+fun UI.State.calculateScore(): List<UIMethodScore> {
+    val latestIndex = matching.lastOrNull()?.index ?: -1
+    val latestMatching = matching.filter { it.index == latestIndex }
+    return latestMatching.calculateScore(text)
+}
 
-fun List<UIMatching>.calculateScore(
+private fun List<UIMatching>.calculateScore(
     chunks: CharSequence? = null
 ): List<UIMethodScore> =
     groupBy { it.method }.map { (method, matching) ->

@@ -1,31 +1,38 @@
-package cc.cryptopunks.ui.poc.model
+package cc.cryptopunks.ui.poc.model.helper
 
-data class UIMatching(
-    val method: Api.Method,
-    val chunk: String = "",
-    val index: Int = -1,
-    val element: Element = MethodName,
-) {
-    sealed interface Element {
-        val name: String
+import cc.cryptopunks.ui.poc.model.Api
+import cc.cryptopunks.ui.poc.model.UI
+import cc.cryptopunks.ui.poc.model.UIMatching
+
+fun UI.State.calculateMatching(old: UI.State): List<UIMatching> {
+    val prev = old
+        .text
+        .splitChunks()
+        .filter(String::isNotBlank)
+    val next = text.splitChunks().filter(String::isNotBlank)
+
+    val common = prev.withIndex().takeWhile { (index, value) ->
+        value == next.getOrNull(index)
     }
 
-    object MethodName : Element {
-        override val name = "method"
-    }
+    val additional = next.drop(common.size)
 
-    sealed interface Param : Element {
+    return when {
 
-        data class Name(override val name: String) : Param
-        data class Type(override val name: String) : Param
-        data class Arg(override val name: String) : Param
+        text.isBlank() -> context.model
+            .defaultMatching()
+
+        else -> matching
+            .filter { it.index == common.lastIndex }
+            .accumulateMatchingElements(additional)
     }
 }
 
-fun Api.Model.defaultMatching(): List<UIMatching> =
+
+private fun Api.Model.defaultMatching(): List<UIMatching> =
     methods.values.map(::UIMatching)
 
-fun List<UIMatching>.accumulateMatchingElements(
+private fun List<UIMatching>.accumulateMatchingElements(
     chunks: List<String>,
     index: Int = nextIndex(),
 ): List<UIMatching> =
