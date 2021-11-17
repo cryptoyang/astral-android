@@ -5,16 +5,21 @@ import cc.cryptopunks.ui.poc.model.factory.invoke
 import cc.cryptopunks.ui.poc.schema.rpc.generateOpenRpcDocument
 
 fun main() {
-    val doc = MessengerApi.generateOpenRpcDocument()
-    val context = UI.Context(doc)
-    val state = UI.State(context)
-    val handleEvent = eventHandler(state)
-    val changes = mutableListOf<UI.Change>()
+    (0..10).forEach { params ->
 
-    changes += handleEvent(UI.Event.Init)
-    changes += handleEvent(UI.Event.Method(changes.first().state.methods.last().method))
-    changes += handleEvent(UI.Event.Action)
+        println(1 + params * (2 shl 8) + params * (1 shl 16))
+    }
 
-    println(changes)
+//    val doc = MessengerApi.generateOpenRpcDocument()
+//    val context = UI.Context(doc)
+//    val state = UI.State(context)
+//    val handleEvent = eventHandler(state)
+//    val changes = mutableListOf<UI.Change>()
+//
+//    changes += handleEvent(UI.Event.Init)
+//    changes += handleEvent(UI.Event.Method(changes.first().state.methods.last().method))
+//    changes += handleEvent(UI.Event.Action)
+//
+//    println(changes)
 }
 

@@ -6,7 +6,7 @@ private var lastMessageId = 0
 private var lastContactId = 0
 
 private fun nextMessageId() = MessengerApi.Message.Id(lastMessageId++.toString())
-private fun nextContactId() = MessengerApi.Contact.Id(lastMessageId++.toString())
+private fun nextContactId() = MessengerApi.Contact.Id(lastContactId++.toString())
 
 val contacts = listOf(
     MessengerApi.Contact(nextContactId(), "User"),
@@ -61,3 +61,9 @@ fun handle(exec: MessengerApi.Method): Any = when (exec) {
 }
 
 private operator fun <M: Rpc.Result<R>, R> M.invoke(block: M.() -> R) = block()
+
+fun main() {
+    overview.forEach {
+        println(it)
+    }
+}

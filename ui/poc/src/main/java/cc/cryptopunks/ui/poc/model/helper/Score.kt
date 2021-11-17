@@ -1,46 +1,58 @@
 package cc.cryptopunks.ui.poc.model.helper
 
-import cc.cryptopunks.ui.poc.model.UI
-import cc.cryptopunks.ui.poc.model.UIMatching
-import cc.cryptopunks.ui.poc.model.UIMethodScore
+import cc.cryptopunks.ui.poc.model.*
 import kotlin.math.absoluteValue
 
 fun UI.State.calculateScore(): List<UIMethodScore> {
     val latestIndex = matching.lastOrNull()?.index ?: -1
     val latestMatching = matching.filter { it.index == latestIndex }
-    return latestMatching.calculateScore(text)
+    val chunks = text.splitChunks()
+    return calculateScore(latestMatching, chunks)
 }
 
-private fun List<UIMatching>.calculateScore(
-    chunks: CharSequence? = null
-): List<UIMethodScore> =
-    groupBy { it.method }.map { (method, matching) ->
+private fun UI.State.calculateScore(
+    matching: List<UIMatching>,
+    chunks: List<String>,
+): List<UIMethodScore> = matching
+    .groupBy(UIMatching::method)
+    .map { (method: Api.Method, matching: List<UIMatching>) ->
         UIMethodScore(
             method = method,
             matching = matching,
-            score = matching.score(chunks?.splitChunks() ?: emptyList())
+            score = methodScore(matching, chunks)
         )
-    }.sortedBy { it.score.absoluteValue }
-
-fun CharSequence.splitChunks() = split(" ").filter { it.isNotBlank() }
-
-private fun List<UIMatching>.score(
-    chunks: List<String>
-): Int {
-
-    val matchedParams = map { matching ->
-        val element = matching.element
-        val method = matching.method
-        when (element) {
-            is UIMatching.MethodName -> method
-            is UIMatching.Param.Name -> method.params[element.name]!!
-            is UIMatching.Param.Type -> TODO()
-            is UIMatching.Param.Arg -> TODO()
-        }
+    }
+    .sortedBy { uiMethodScore ->
+        uiMethodScore.score.absoluteValue
     }
 
-    val matchedChunks = map { it.chunk }.toSet()
-    val notMatchedChunks = chunks.filter { chunk -> chunk in matchedChunks }
+private fun UI.State.methodScore(
+    matching: List<UIMatching>,
+    chunks: List<String>
+): Int {
+    val dataContext = selection.map(UIData::value)
+    val additionalElements = chunks
+        .minus(matching.map(UIMatching::chunk))
+        .map { 1 shl 8 }.sum() + matching
+        .mapNotNull { it.element as? UIMatching.Param.Arg }
+        .filter { it.data !in dataContext }
+        .map { 1 shl 16 }.sum()
 
-    return matchedParams.size - (first().method.params.size + 1) - notMatchedChunks.size
+
+    val method = matching.first().method
+    val paramsCount = method.params.size
+    val requiredElements = 1 + paramsCount * (2 shl 8) + paramsCount * (1 shl 16)
+
+    val matchedElements = matching.map { matching ->
+        when (matching.element) {
+            is UIMatching.MethodName -> 1
+            is UIMatching.Param.Name -> 1 shl 8
+            is UIMatching.Param.Type -> 1 shl 8
+            is UIMatching.Param.Arg -> 1 shl 16
+        }
+    }.sum()
+
+    return matchedElements - requiredElements + additionalElements
 }
+
+fun CharSequence.splitChunks() = split(" ").filter { it.isNotBlank() }

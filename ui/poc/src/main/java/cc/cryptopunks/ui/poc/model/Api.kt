@@ -26,9 +26,14 @@ object Api {
         val properties: Map<String, Type> = emptyMap(),
         val options: List<String> = emptyList(),
     ) : Element {
-
         companion object {
             val Empty = Type()
+            const val Object = "object"
+            const val Array = "array"
+            const val Boolean = "boolean"
+            const val String = "string"
+            const val Integer = "integer"
+            const val Number = "number"
         }
     }
 }

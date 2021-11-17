@@ -1,51 +1,63 @@
 package cc.cryptopunks.ui.poc.model.helper
 
-import cc.cryptopunks.ui.poc.model.Api
-import cc.cryptopunks.ui.poc.model.UI
-import cc.cryptopunks.ui.poc.model.UIMatching
+import cc.cryptopunks.ui.poc.model.*
 
-fun UI.State.calculateMatching(old: UI.State): List<UIMatching> {
-    val prev = old
-        .text
-        .splitChunks()
-        .filter(String::isNotBlank)
-    val next = text.splitChunks().filter(String::isNotBlank)
+fun UI.State.calculateMatching(old: UI.State): List<UIMatching> =
+    defaultMatching() + dataMatching() + textMatching(old)
 
-    val common = prev.withIndex().takeWhile { (index, value) ->
-        value == next.getOrNull(index)
+
+private fun UI.State.defaultMatching(): List<UIMatching> =
+    context.model.methods.values.map(::UIMatching)
+
+private fun UI.State.dataMatching(
+    data: List<UIData> = selection,
+    methods: Iterable<Api.Method> = context.model.methods.values,
+): List<UIMatching> =
+    methods.flatMap { method ->
+        val remaining = data.toMutableList()
+        method.params.mapNotNull { (name, type) ->
+            remaining.removeFirst { uiData -> uiData.type.id == type.id }?.let { value ->
+                UIMatching(
+                    method = method,
+                    element = UIMatching.Param.Arg(name, value)
+                )
+            }
+        }
     }
 
-    val additional = next.drop(common.size)
+fun <T> MutableList<T>.removeFirst(predicate: (T) -> Boolean): T? =
+    indexOfFirst(predicate).takeIf { it > -1 }?.let { removeAt(it) }
 
-    return when {
 
-        text.isBlank() -> context.model
-            .defaultMatching()
 
-        else -> matching
-            .filter { it.index == common.lastIndex }
-            .accumulateMatchingElements(additional)
+private fun UI.State.textMatching(old: UI.State): List<UIMatching> = when {
+
+    text.isBlank() -> emptyList()
+
+    else -> {
+
+        val prevChunks: List<String> = old.text.splitChunks().filter(String::isNotBlank)
+        val nextChunks: List<String> = text.splitChunks().filter(String::isNotBlank)
+        val commonChunks = prevChunks.withIndex().takeWhile { (index, value) ->
+            value == nextChunks.getOrNull(index)
+        }
+        val additionalChunks: List<String> = nextChunks.drop(commonChunks.size)
+        val latestMatching = matching.filter { it.index == commonChunks.lastIndex }
+        val index = latestMatching.nextIndex()
+
+        additionalChunks.foldIndexed(latestMatching) { i, acc, chunk ->
+            acc.accumulateMatchingElements(chunk, i + index)
+        }
     }
 }
 
-
-private fun Api.Model.defaultMatching(): List<UIMatching> =
-    methods.values.map(::UIMatching)
-
-private fun List<UIMatching>.accumulateMatchingElements(
-    chunks: List<String>,
-    index: Int = nextIndex(),
-): List<UIMatching> =
-    chunks.foldIndexed(this) { i, acc, chunk ->
-        acc.accumulateMatchingElements(chunk, i + index)
-    }
 
 private fun List<UIMatching>.accumulateMatchingElements(
     chunk: String,
     index: Int = nextIndex(),
 ): List<UIMatching> = this + this
-    .filter { it.index == index - 1 }
-    .map { it.method }
+    .filter { uiMatching -> uiMatching.index == index - 1 }
+    .map(UIMatching::method)
     .findMatchingElements(chunk)
     .flatMap { (method, elements) ->
         elements.map { element ->

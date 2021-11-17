@@ -23,10 +23,18 @@ fun UI.State.defaultArgs(): Map<String, Any> =
         null -> emptyMap()
         else -> selection.toMutableList().run {
             method.params.toList().mapNotNull { (key, type) ->
-                firstOrNull { clicked -> clicked.id == type.id }?.let { matching ->
+                firstOrNull { clicked -> clicked.type.id == type.id }?.let { matching ->
                     remove(matching)
                     key to matching.value
                 }
             }.toMap()
         }
+    }
+
+fun UI.State.matchedArgs() =
+    when (val method = method) {
+        null -> emptyMap()
+        else -> matching2.firstOrNull { it.method.id == method.id }
+            ?.args
+            ?: emptyMap()
     }

@@ -17,10 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cc.cryptopunks.ui.poc.R
 import cc.cryptopunks.ui.poc.databinding.CommandItemBinding
-import cc.cryptopunks.ui.poc.model.UIMethodScore
-import cc.cryptopunks.ui.poc.model.UI
-import cc.cryptopunks.ui.poc.model.UIDisplay
-import cc.cryptopunks.ui.poc.model.UIResolver
+import cc.cryptopunks.ui.poc.model.*
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -134,6 +131,7 @@ fun CommandView.uiEvents(): Flow<UI.Event> = channelFlow {
     optionsAdapter.onClickListener = View.OnClickListener { view ->
         when (val item = view.tag) {
             is UIMethodScore -> +UI.Event.Method(item.method)
+            is UIMatching2 -> +UI.Event.Method(item.method)
             is String -> +UI.Event.Clicked("string", item)
             is Boolean -> +UI.Event.Clicked("boolean", item)
         }
@@ -173,6 +171,11 @@ private fun CommandView.update(state: UI.State, output: UI.Output) {
         UI.Element.Methods -> {
             inputView.hint = "find command by name or param"
             optionsAdapter.items = state.methods
+        }
+
+        UI.Element.Matching2 -> {
+            inputView.hint = "find command by name or param"
+            optionsAdapter.items = state.matching2
         }
 
         UI.Element.Param -> state.param?.run {
@@ -243,5 +246,9 @@ private fun CommandView.update(state: UI.State, output: UI.Output) {
 
             activity.finish()
         }
+        UI.Element.Selection -> Unit
+        UI.Element.Config -> TODO()
+        UI.Element.Context -> TODO()
+        UI.Element.Matching -> TODO()
     }
 }
