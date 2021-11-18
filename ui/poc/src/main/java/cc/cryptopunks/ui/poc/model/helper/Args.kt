@@ -1,6 +1,7 @@
 package cc.cryptopunks.ui.poc.model.helper
 
 import cc.cryptopunks.ui.poc.model.UI
+import cc.cryptopunks.ui.poc.model.UIData
 
 fun UI.State.isRequiredArg(text: String): Boolean =
     null != when (param?.type?.type) {
@@ -11,10 +12,15 @@ fun UI.State.isRequiredArg(text: String): Boolean =
         else -> null
     }
 
-fun UI.State.isRequiredArg(clicked: UI.Event.Clicked): Boolean =
-    clicked.id == param?.type?.id || clicked.id == param?.type?.type
+fun UI.State.isRequiredArg(data: UIData): Boolean =
+    data.type.id == param?.type?.id || data.type.id == param?.type?.type
 
-fun UI.State.nextArg(value: Any) = args + (param!!.name to value)
+fun UI.State.argDataFromSelection() =
+    selection.firstOrNull { data -> isRequiredArg(data) }
+
+fun UI.State.argsWith(value: Any) = args + (param!!.name to value)
+
+fun UI.State.argsWith(data: UIData) = argsWith(data.value)
 
 fun UI.State.dropLastArg() = args - args.keys.last()
 

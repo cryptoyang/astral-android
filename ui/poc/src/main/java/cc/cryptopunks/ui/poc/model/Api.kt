@@ -3,10 +3,14 @@ package cc.cryptopunks.ui.poc.model
 object Api {
 
     data class Model(
-        val id: String,
-        val methods: Map<String, Method>,
-        val types: Map<String, Type>,
-    )
+        val id: String = "",
+        val methods: Map<String, Method> = emptyMap(),
+        val types: Map<String, Type> = emptyMap(),
+    ) {
+        companion object {
+            val Empty = Model()
+        }
+    }
 
     sealed interface Element
 
@@ -27,13 +31,15 @@ object Api {
         val options: List<String> = emptyList(),
     ) : Element {
         companion object {
+            const val obj = "object"
+            const val array = "array"
+            const val bool = "boolean"
+            const val string = "string"
+            const val int = "integer"
+            const val num = "number"
+
             val Empty = Type()
-            const val Object = "object"
-            const val Array = "array"
-            const val Boolean = "boolean"
-            const val String = "string"
-            const val Integer = "integer"
-            const val Number = "number"
+            val String = Type(string)
         }
     }
 }

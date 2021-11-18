@@ -107,7 +107,7 @@ class DynamicView @JvmOverloads constructor(
         }
 }
 
-fun UI.State.viewUpdate(): DynamicView.Update {
+fun UI.State.dynamicViewUpdate(): DynamicView.Update {
     val view = stack.last()
     val dataId = view.source.result.id
 

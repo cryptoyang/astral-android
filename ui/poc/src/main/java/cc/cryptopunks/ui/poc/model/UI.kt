@@ -3,8 +3,10 @@ package cc.cryptopunks.ui.poc.model
 import cc.cryptopunks.ui.poc.api.uiRequestData
 import cc.cryptopunks.ui.poc.mapper.model.generateProteusLayouts
 import cc.cryptopunks.ui.poc.mapper.openrpc.toModel
+import cc.cryptopunks.ui.poc.model.factory.generateLayouts
 import cc.cryptopunks.ui.poc.model.factory.resolvers
 import cc.cryptopunks.ui.poc.schema.rpc.OpenRpc
+import com.fasterxml.jackson.databind.JsonNode
 
 object UI {
 
@@ -61,6 +63,7 @@ object UI {
         val doc: OpenRpc.Document,
         val model: Api.Model = doc.toModel(),
         val layouts: Map<String, Map<String, Any>> = model.generateProteusLayouts(),
+        val layouts2: Map<String, UILayout> = model.generateLayouts(),
         val resolvers: Map<String, Iterable<UIResolver>> = model.resolvers(),
         val requestData: UIRequestData = uiRequestData,
     )
@@ -72,7 +75,7 @@ object UI {
 
 typealias UIHandler = (UI.Event) -> UI.Change
 
-typealias UIRequestData = UIRequest.() -> Any
+typealias UIRequestData = UIRequest.() -> JsonNode
 
 data class UIRequest(val context: UI.Context, val method: Api.Method, val args: UIArgs)
 

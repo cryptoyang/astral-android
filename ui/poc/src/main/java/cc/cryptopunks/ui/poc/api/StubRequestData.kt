@@ -7,7 +7,8 @@ import cc.cryptopunks.ui.poc.schema.rpc.Rpc
 
 val uiRequestData: UIRequestData = {
     val command = parseRpcMethod(context.model, method, args) as MessengerApi.Method
-    handle(command)
+    val result = handle(command)
+    Jackson.slimMapper.valueToTree(result)
 }
 
 fun parseRpcMethod(

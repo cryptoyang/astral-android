@@ -33,7 +33,7 @@ data class CommandView(
     val activity: AppCompatActivity,
     val container: ViewGroup = activity.findViewById(R.id.commandView),
     val toolbar: Toolbar = container(R.id.toolbar),
-    val dynamicView: DynamicView = container(R.id.dynamicView),
+    val dynamicView: DataView = DataView(container(R.id.dataView)),
     val commandLayout: ViewGroup = container(R.id.selectedCommandContainer),
     val commandView: ViewGroup = container(R.id.selectedCommandLayout),
     val recyclerView: RecyclerView = container(R.id.optionsRecyclerView),
@@ -237,7 +237,11 @@ private fun CommandView.update(state: UI.State, output: UI.Output) {
 
         is UI.Element.Stack -> {
             if (state.stack.isNotEmpty()) {
-                dynamicView(state.viewUpdate())
+                val view = state.stack.last()
+                dynamicView.update(
+                    layout = state.context.layouts2[view.source.id]!!,
+                    data = view.data
+                )
             }
             activity.supportActionBar!!.title = state.stack.lastOrNull()?.source?.id
         }

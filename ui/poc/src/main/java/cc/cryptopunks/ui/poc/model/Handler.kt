@@ -16,7 +16,10 @@ private fun eventHandler(
 
     while (remaining.isNotEmpty()) {
         val next = remaining.first()
-        val newState = state.update(next)
+        val newState = when (next) {
+            is UIUpdate<*, *> -> state + next
+            else -> state
+        }
         val results = when (next) {
             is UIUpdate<*, *> -> newState.processUpdate(event, next)
             UI.Action.Exit -> emptyList()
@@ -45,41 +48,26 @@ private fun UI.State.generateMessages(
     UI.Event.Init -> listOf(
         UI.Element.Stack + emptyList()
     )
-
     is UI.Event.Text -> listOf(
         UI.Element.Text + event.value.orEmpty(),
     )
-
     is UI.Event.Method -> listOf(
         UI.Element.Method + event.method,
     )
-
-    is UI.Event.Clicked -> when {
-        isRequiredArg(event) -> listOf(
-            UI.Element.Args + nextArg(event.value),
-        )
-        else -> listOf(
-            UI.Element.Selection + listOf(
-                UIData(
-                    type = context.model.types[event.id]!!,
-                    value = event.value
-                )
-            )
-        )
-    }
-
+    is UI.Event.Clicked -> listOf(
+        UI.Element.Selection + generateSelection(event)
+    )
     UI.Event.Action -> when {
         isReady -> listOf(
             UI.Element.Stack + resolveNextView()
         )
         isRequiredArg(text) -> listOf(
-            UI.Element.Args + nextArg(text),
+            UI.Element.Args + argsWith(text),
         )
         else -> listOf(
             UI.Element.Display + switchDisplay()
         )
     }
-
     UI.Event.Back -> when {
         display == UIDisplay.Data -> listOf(
             UI.Element.Stack + dropLastView(),
@@ -114,36 +102,68 @@ private fun UI.State.processUpdate(
         UI.Element.Display -> emptyList()
         UI.Element.Method -> listOf(
             UI.Element.Selection + emptyList(),
-            UI.Element.Args + when {
-                config.autoFill -> matchedArgs()
-                else -> defaultArgs()
+            UI.Element.Args + when (config.autoFill) {
+                true -> matchedArgs()
+                false -> defaultArgs()
             },
         )
         UI.Element.Args -> listOf(
             UI.Element.Param + nextParam(),
             UI.Element.Ready + isReady()
         )
-        UI.Element.Param -> emptyList()
+        UI.Element.Param -> when {
+            param == null -> emptyList()
+            config.autoFill -> when (val selectedArg = argDataFromSelection()) {
+                null -> listOf(
+                    UI.Element.Matching2 + calculateMatching2(),
+                )
+                else -> listOf(
+                    UI.Element.Args + argsWith(selectedArg),
+                    UI.Element.Selection + selection.minus(selectedArg)
+                )
+            }
+            else -> emptyList()
+        }
+        UI.Element.Selection -> when {
+            selection.isEmpty() -> emptyList()
+            else -> when {
+                method != null && config.autoFill
+                -> when (val selectedArg = argDataFromSelection()) {
+                    null -> listOf(
+                        UI.Element.Matching2 + calculateMatching2(),
+                    )
+                    else -> listOf(
+                        UI.Element.Args + argsWith(selectedArg),
+                        UI.Element.Selection + selection.minus(selectedArg),
+                    )
+                }
+                method == null -> listOf(
+                    UI.Element.Matching2 + calculateMatching2(),
+                )
+                else -> emptyList()
+            }
+        }
+        UI.Element.Text -> listOf(
+            UI.Element.Matching2 + calculateMatching2(),
+        )
+        UI.Element.Matching2 -> when {
+            method == null
+                && event is UI.Event.Clicked
+                && config.autoFill
+            -> when (val matching = firstMatchingMethod()) {
+                null -> emptyList()
+                else -> listOf(
+                    UI.Element.Method + matching.method,
+                )
+            }
+            else -> emptyList()
+
+        }
         UI.Element.Ready -> when {
             isReady && config.autoExecute -> listOf(
                 UI.Element.Stack + resolveNextView()
             )
             else -> emptyList()
-        }
-        UI.Element.Selection,
-        UI.Element.Text -> listOf(
-            UI.Element.Matching2 + calculateMatching2(),
-        )
-        UI.Element.Matching2 -> when {
-            event is UI.Event.Clicked && config.autoFill -> listOfNotNull(
-                matching2.filter(UIMatching2::isReady).singleOrNull {
-                    event.value in it.args.values
-                }?.run {
-                    UI.Element.Method + method
-                }
-            )
-            else -> emptyList()
-
         }
         UI.Element.Matching -> listOf(
             UI.Element.Methods + calculateScore()
@@ -151,4 +171,3 @@ private fun UI.State.processUpdate(
         UI.Element.Methods -> emptyList()
         else -> emptyList()
     }
-
