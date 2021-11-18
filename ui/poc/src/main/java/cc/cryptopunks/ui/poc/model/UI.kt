@@ -30,25 +30,21 @@ object UI {
         object Config : UIElement<UIConfig>(UIConfig())
         object Stack : UIElement<List<UIView>>(emptyList())
         object Display : UIElement<UIDisplay>(UIDisplay.Panel)
-        object Methods : UIElement<List<UIMethodScore>>(emptyList())
         object Method : UIElement<Api.Method?>(null)
+        object Matching : UIElement<List<UIMatching>>(emptyList())
         object Args : UIElement<UIArgs>(emptyMap())
         object Param : UIElement<UIParam?>(null)
         object Selection : UIElement<List<UIData>>(emptyList())
         object Ready : UIElement<Boolean>(false)
         object Text : UIElement<String>("")
-        object Matching : UIElement<List<UIMatching>>(emptyList())
-        object Matching2 : UIElement<List<UIMatching2>>(emptyList())
     }
 
     class State(elements: UIElements = emptyMap()) : UIState(elements) {
         val context by +Element.Context
         val config by +Element.Config
-        val matching by +Element.Matching
-        val matching2 by +Element.Matching2
         val stack by +Element.Stack
         val method by +Element.Method
-        val methods by +Element.Methods
+        val matching by +Element.Matching
         val args by +Element.Args
         val display by +Element.Display
         val param by +Element.Param

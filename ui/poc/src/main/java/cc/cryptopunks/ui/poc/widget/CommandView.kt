@@ -131,7 +131,7 @@ fun CommandView.uiEvents(): Flow<UI.Event> = channelFlow {
     optionsAdapter.onClickListener = View.OnClickListener { view ->
         when (val item = view.tag) {
             is UIMethodScore -> +UI.Event.Method(item.method)
-            is UIMatching2 -> +UI.Event.Method(item.method)
+            is UIMatching -> +UI.Event.Method(item.method)
             is String -> +UI.Event.Clicked("string", item)
             is Boolean -> +UI.Event.Clicked("boolean", item)
         }
@@ -168,14 +168,9 @@ private fun CommandView.update(state: UI.State, output: UI.Output) {
                 inputView.setText(state.text)
         }
 
-        UI.Element.Methods -> {
+        UI.Element.Matching -> {
             inputView.hint = "find command by name or param"
-            optionsAdapter.items = state.methods
-        }
-
-        UI.Element.Matching2 -> {
-            inputView.hint = "find command by name or param"
-            optionsAdapter.items = state.matching2
+            optionsAdapter.items = state.matching
         }
 
         UI.Element.Param -> state.param?.run {
@@ -247,12 +242,11 @@ private fun CommandView.update(state: UI.State, output: UI.Output) {
         }
 
         UI.Action.Exit -> {
-
             activity.finish()
         }
+
         UI.Element.Selection -> Unit
-        UI.Element.Config -> TODO()
-        UI.Element.Context -> TODO()
-        UI.Element.Matching -> TODO()
+        UI.Element.Config -> Unit
+        UI.Element.Context -> Unit
     }
 }

@@ -115,7 +115,7 @@ private fun UI.State.processUpdate(
             param == null -> emptyList()
             config.autoFill -> when (val selectedArg = argDataFromSelection()) {
                 null -> listOf(
-                    UI.Element.Matching2 + calculateMatching2(),
+                    UI.Element.Matching + calculateMatching(),
                 )
                 else -> listOf(
                     UI.Element.Args + argsWith(selectedArg),
@@ -130,7 +130,7 @@ private fun UI.State.processUpdate(
                 method != null && config.autoFill
                 -> when (val selectedArg = argDataFromSelection()) {
                     null -> listOf(
-                        UI.Element.Matching2 + calculateMatching2(),
+                        UI.Element.Matching + calculateMatching(),
                     )
                     else -> listOf(
                         UI.Element.Args + argsWith(selectedArg),
@@ -138,15 +138,15 @@ private fun UI.State.processUpdate(
                     )
                 }
                 method == null -> listOf(
-                    UI.Element.Matching2 + calculateMatching2(),
+                    UI.Element.Matching + calculateMatching(),
                 )
                 else -> emptyList()
             }
         }
         UI.Element.Text -> listOf(
-            UI.Element.Matching2 + calculateMatching2(),
+            UI.Element.Matching + calculateMatching(),
         )
-        UI.Element.Matching2 -> when {
+        UI.Element.Matching -> when {
             method == null
                 && event is UI.Event.Clicked
                 && config.autoFill
@@ -165,9 +165,5 @@ private fun UI.State.processUpdate(
             )
             else -> emptyList()
         }
-        UI.Element.Matching -> listOf(
-            UI.Element.Methods + calculateScore()
-        )
-        UI.Element.Methods -> emptyList()
         else -> emptyList()
     }

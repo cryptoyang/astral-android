@@ -26,27 +26,6 @@ data class UIData(
 
 data class UIMatching(
     val method: Api.Method,
-    val chunk: String = "",
-    val index: Int = -1,
-    val element: Element = MethodName,
-) {
-    sealed interface Element {
-        val name: String
-    }
-
-    object MethodName : Element {
-        override val name = "method"
-    }
-
-    sealed interface Param : Element {
-        data class Name(override val name: String) : Param
-        data class Type(override val name: String) : Param
-        data class Arg(override val name: String, val data: Any) : Param
-    }
-}
-
-data class UIMatching2(
-    val method: Api.Method,
     val elements: List<Element>,
 ) {
     val score by lazy { calculateScore() }

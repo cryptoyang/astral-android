@@ -40,7 +40,7 @@ fun UI.State.defaultArgs(): Map<String, Any> =
 fun UI.State.matchedArgs() =
     when (val method = method) {
         null -> emptyMap()
-        else -> matching2.firstOrNull { it.method.id == method.id }
+        else -> matching.firstOrNull { it.method.id == method.id }
             ?.args
             ?: emptyMap()
     }

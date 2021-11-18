@@ -2,7 +2,7 @@ package cc.cryptopunks.ui.poc.model.factory
 
 import cc.cryptopunks.ui.poc.model.Api
 import cc.cryptopunks.ui.poc.model.UILayout
-import cc.cryptopunks.ui.poc.model.helper.removeFirst
+import cc.cryptopunks.ui.poc.model.util.removeFirst
 
 fun Api.Model.generateLayouts(): Map<String, UILayout> =
     methods.mapValues { (_, method) ->
