@@ -95,7 +95,7 @@ class DynamicView @JvmOverloads constructor(
             println("$event: $value")
             val id = view.viewManager.layout.extras!!.getAsString("layout")!!
             val json = app.proteusTypeAdapterFactory.COMPILED_VALUE_TYPE_ADAPTER.toJson(value)
-            val data = Jackson.slimMapper.readTree(json)
+            val data = Jackson.jsonSlimMapper.readTree(json)
             onEvent(UI.Event.Clicked(id, data))
         }
     }
@@ -118,7 +118,7 @@ fun UI.State.dynamicViewUpdate(): DynamicView.Update {
     val main = context.layouts[dataId]!!
     val includes = (context.layouts - dataId)
 
-    val mapper = Jackson.prettyWriter
+    val mapper = Jackson.jsonPrettyWriter
 
     val stringLayout = mapper.writeValueAsString(main)
     val stringLayouts = mapper.writeValueAsString(includes)

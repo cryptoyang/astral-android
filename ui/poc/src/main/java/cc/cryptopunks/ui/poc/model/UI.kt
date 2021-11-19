@@ -14,6 +14,9 @@ object UI {
         object Init : Event
         object Action : Event
         object Back : Event
+        data class Configure(val config: Map<String, Any>) : Event {
+            constructor(vararg config: Pair<String, Any>) : this(config.toMap())
+        }
         data class Clicked(val id: String, val value: Any) : Event
         data class Text(val value: String? = null) : Event
         data class Method(val method: Api.Method) : Event

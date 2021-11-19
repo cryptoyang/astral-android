@@ -14,21 +14,21 @@ fun CommandItemBinding.set(item: UIMethodScore) {
 
 fun CommandItemBinding.set(item: UIMatching) {
     root.tag = item
-    set(item.method)
+    set(item.method, item.args)
     commandTitle.append(" " + item.score)
 }
 
 fun CommandItemBinding.set(
     method: Api.Method,
-    args: Map<String, String> = emptyMap()
+    args: Map<String, Any> = emptyMap()
 ) {
     commandTitle.text = method.id
     commandParams.isVisible = method.params.isNotEmpty()
     commandParams.text = method.params
-        .map { (name, type) ->
-            val suffix = args[name]?.let { " = $it" }
-                ?: type.formatType().let { ": $it" }
-            name + suffix
+        .map { (name, apiType) ->
+            val type = apiType.formatType().let { ": $it" }
+            val value = args[name]?.let { " = $it" } ?: ""
+            name + type + value
         }
         .joinToString("\n")
     commandResult.isVisible = method.result != Api.Type.Empty

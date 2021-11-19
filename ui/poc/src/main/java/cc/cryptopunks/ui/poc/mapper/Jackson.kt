@@ -6,12 +6,16 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.ObjectWriter
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 
 object Jackson {
 
+    private val kotlinModule by lazy {
+        KotlinModule.Builder().build()
+    }
+
     val jsonMapper: JsonMapper by lazy {
-        val kotlinModule = KotlinModule.Builder().build()
         val simpleModule = SimpleModule()
 
         JsonMapper.builder()
@@ -21,7 +25,7 @@ object Jackson {
             .build()
     }
 
-    val slimMapper: ObjectMapper by lazy {
+    val jsonSlimMapper: ObjectMapper by lazy {
         jsonMapper
             .setSerializationInclusion(JsonInclude.Include.NON_NULL)
             .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
@@ -29,7 +33,16 @@ object Jackson {
             .setSerializationInclusion(JsonInclude.Include.NON_DEFAULT)
     }
 
-    val prettyWriter: ObjectWriter by lazy {
-        slimMapper.writerWithDefaultPrettyPrinter()
+    val jsonPrettyWriter: ObjectWriter by lazy {
+        jsonSlimMapper.writerWithDefaultPrettyPrinter()
+    }
+
+    val yamlMapper: ObjectMapper by lazy {
+        ObjectMapper((YAMLFactory()))
+            .registerModule(kotlinModule)
+    }
+
+    val yamlPrettyWriter by lazy {
+        yamlMapper.writerWithDefaultPrettyPrinter()
     }
 }

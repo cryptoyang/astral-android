@@ -1,5 +1,6 @@
 package cc.cryptopunks.ui.poc.model.helper
 
+import cc.cryptopunks.ui.poc.model.Api
 import cc.cryptopunks.ui.poc.model.UI
 import cc.cryptopunks.ui.poc.model.UIData
 
@@ -12,8 +13,10 @@ fun UI.State.isRequiredArg(text: String): Boolean =
         else -> null
     }
 
-fun UI.State.isRequiredArg(data: UIData): Boolean =
-    data.type.id == param?.type?.id || data.type.id == param?.type?.type
+fun UI.State.isRequiredArg(data: UIData): Boolean = when {
+    data.type.type == Api.Type.obj -> data.type.id == param?.type?.id
+    else -> data.type.type == param?.type?.type
+}
 
 fun UI.State.argDataFromSelection() =
     selection.firstOrNull { data -> isRequiredArg(data) }

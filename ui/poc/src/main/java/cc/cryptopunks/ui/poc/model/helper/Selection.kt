@@ -11,10 +11,9 @@ fun UI.State.generateSelection(clicked: UI.Event.Clicked): List<UIData> =
             val type = context.model.types[clicked.id]!!
             UIData(type, clicked.value).unfoldComplexTypes()
         }
-        is String -> {
-            listOf(UIData(Api.Type.String, clicked.value))
-        }
-        else -> emptyList()
+        else -> listOf(
+            UIData(Api.Type(clicked.id), clicked.value)
+        )
     }
 
 private fun UIData.unfoldComplexTypes(): List<UIData> =

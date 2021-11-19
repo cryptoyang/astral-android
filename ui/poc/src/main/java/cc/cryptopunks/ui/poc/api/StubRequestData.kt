@@ -8,7 +8,7 @@ import cc.cryptopunks.ui.poc.schema.rpc.Rpc
 val uiRequestData: UIRequestData = {
     val command = parseRpcMethod(context.model, method, args) as MessengerApi.Method
     val result = handle(command)
-    Jackson.slimMapper.valueToTree(result)
+    Jackson.jsonSlimMapper.valueToTree(result)
 }
 
 fun parseRpcMethod(
@@ -22,7 +22,7 @@ fun parseRpcMethod(
         args.isEmpty() ->
             Jackson.jsonMapper.readValue(EmptyJson, clazz)
         else -> {
-            val json = Jackson.prettyWriter.writeValueAsString(args)
+            val json = Jackson.jsonPrettyWriter.writeValueAsString(args)
             println(json)
             Jackson.jsonMapper.readValue(json, clazz)
         }

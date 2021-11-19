@@ -14,10 +14,20 @@ data class UIView(val source: Api.Method, val args: UIArgs, val data: JsonNode)
 
 data class UIMethodScore(val score: Int, val method: Api.Method, val matching: List<UIMatching>)
 
-data class UIConfig(
-    val autoFill: Boolean = true,
-    val autoExecute: Boolean = true,
+data class UIConfig2(
+    val autoFill: Boolean = false,
+    val autoExecute: Boolean = false,
 )
+
+data class UIConfig(
+    val map: Map<String, Any> = mapOf(
+        "autoFill" to true,
+        "autoExecute" to true,
+    )
+) : Map<String, Any> by map {
+    val autoFill: Boolean by map
+    val autoExecute: Boolean by map
+}
 
 data class UIData(
     val type: Api.Type,

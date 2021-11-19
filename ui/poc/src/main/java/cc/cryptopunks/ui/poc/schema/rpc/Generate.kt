@@ -16,9 +16,9 @@ import kotlin.reflect.full.memberProperties
 
 fun main() {
     val doc = MessengerApi.generateOpenRpcDocument()
-    Jackson.prettyWriter.writeValueAsString(doc).let {
+    Jackson.jsonPrettyWriter.writeValueAsString(doc).let {
         println(it)
-        val parsed = Jackson.slimMapper.readValue(it, OpenRpc.Document::class.java)
+        val parsed = Jackson.jsonSlimMapper.readValue(it, OpenRpc.Document::class.java)
         println(parsed)
     }
 }
@@ -99,4 +99,4 @@ private val jsonPrimitives = setOf(Number::class, String::class, Boolean::class)
 private fun KClass<*>.primitiveTypeRef() =
     Ref<Schema>(value = mapOf("type" to java.simpleName.lowercase()).jacksonConvert())
 
-inline fun <reified T> Any.jacksonConvert() = Jackson.slimMapper.convertValue<T>(this)
+inline fun <reified T> Any.jacksonConvert() = Jackson.jsonSlimMapper.convertValue<T>(this)

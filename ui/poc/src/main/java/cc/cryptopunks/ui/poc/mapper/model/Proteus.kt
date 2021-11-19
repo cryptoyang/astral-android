@@ -11,7 +11,7 @@ fun main() {
     val model = doc.toModel()
 
     model.generateProteusLayouts()
-        .let { Jackson.prettyWriter.writeValueAsString(it) }
+        .let { Jackson.jsonPrettyWriter.writeValueAsString(it) }
         .let(::println)
 }
 

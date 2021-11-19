@@ -13,7 +13,7 @@ fun main() {
     val doc = MessengerApi.generateOpenRpcDocument()
 
     doc.generateProteusLayouts()
-        .let { Jackson.prettyWriter.writeValueAsString(it) }
+        .let { Jackson.jsonPrettyWriter.writeValueAsString(it) }
         .let(::println)
 }
 

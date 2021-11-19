@@ -22,12 +22,16 @@ fun UI.State.calculateMatching(): List<UIMatching> {
                         UIMatching.Type.MethodName -> method.id.startsWith(data.value)
                         is UIMatching.Type.ArgName -> type.name.startsWith(data.value)
                         is UIMatching.Type.ArgType -> method.params[type.name]!!.id.startsWith(data.value)
-                        is UIMatching.Type.ArgValue -> when (method.params[type.name]!!.type) {
-                            Api.Type.string -> true
-                            Api.Type.bool -> data.value.toBooleanStrictOrNull() != null
-                            Api.Type.int -> data.value.toIntOrNull() != null
-                            Api.Type.num -> data.value.toDoubleOrNull() != null
-                            else -> false
+                        is UIMatching.Type.ArgValue -> {
+                            val paramType = method.params[type.name]!!
+                            if (data.value.toString() in paramType.options) true
+                            else when (paramType.type) {
+                                Api.Type.string -> true
+                                Api.Type.bool -> data.value.toBooleanStrictOrNull() != null
+                                Api.Type.int -> data.value.toIntOrNull() != null
+                                Api.Type.num -> data.value.toDoubleOrNull() != null
+                                else -> false
+                            }
                         }
                         else -> false
                     }

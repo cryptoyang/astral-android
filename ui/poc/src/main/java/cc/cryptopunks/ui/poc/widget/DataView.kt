@@ -1,6 +1,5 @@
 package cc.cryptopunks.ui.poc.widget
 
-import android.annotation.SuppressLint
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -15,9 +14,7 @@ import cc.cryptopunks.ui.poc.model.UI
 import cc.cryptopunks.ui.poc.model.UILayout
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
-import splitties.views.inflate
 import splitties.views.inflateAndAttach
-import kotlin.properties.Delegates
 
 class DataView(
     val root: ViewGroup,
@@ -25,7 +22,7 @@ class DataView(
     val content: RecyclerView = root.findViewById(R.id.content),
     val footer: FrameLayout = root.findViewById(R.id.footer),
 ) {
-    var updateView: UpdateView = displayJson
+    var updateView: UpdateView = displayYaml
 
     var layout: UILayout = UILayout.Empty
 
@@ -55,7 +52,14 @@ val displayJson: UpdateView = { data ->
     removeAllViews()
     tag = data
     inflateAndAttach(R.layout.json_view)
-    (get(0) as TextView).text = Jackson.prettyWriter.writeValueAsString(data)
+    (get(0) as TextView).text = Jackson.jsonPrettyWriter.writeValueAsString(data)
+}
+
+val displayYaml: UpdateView = { data ->
+    removeAllViews()
+    tag = data
+    inflateAndAttach(R.layout.json_view)
+    (get(0) as TextView).text = Jackson.yamlMapper.writeValueAsString(data)
 }
 
 typealias UpdateView = ViewGroup.(JsonNode) -> Unit
@@ -95,25 +99,3 @@ fun DataView.update(layout: UILayout, data: JsonNode) {
 }
 
 
-@SuppressLint("NotifyDataSetChanged")
-class DataAdapter(
-    var updateView: UpdateView = {},
-    var onClickListener: View.OnClickListener = View.OnClickListener { },
-) : RecyclerView.Adapter<DataAdapter.ViewHolder>() {
-
-    var items: List<JsonNode> by Delegates.observable(emptyList()) { property, oldValue, newValue ->
-        notifyDataSetChanged()
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
-        ViewHolder(parent.inflate(R.layout.data_item_view, false))
-            .apply { itemView.setOnClickListener(onClickListener) }
-
-    class ViewHolder(val view: ViewGroup) : RecyclerView.ViewHolder(view)
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        updateView(holder.view, items[position])
-    }
-
-    override fun getItemCount(): Int = items.size
-}

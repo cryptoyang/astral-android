@@ -48,6 +48,9 @@ private fun UI.State.generateMessages(
     UI.Event.Init -> listOf(
         UI.Element.Stack + emptyList()
     )
+    is UI.Event.Configure -> listOf(
+        UI.Element.Config + UIConfig(config + event.config)
+    )
     is UI.Event.Text -> listOf(
         UI.Element.Text + event.value.orEmpty(),
     )
@@ -127,7 +130,8 @@ private fun UI.State.processUpdate(
         UI.Element.Selection -> when {
             selection.isEmpty() -> emptyList()
             else -> when {
-                method != null && config.autoFill
+                method != null
+//                -> listOf(UI.Element.Param + param)
                 -> when (val selectedArg = argDataFromSelection()) {
                     null -> listOf(
                         UI.Element.Matching + calculateMatching(),

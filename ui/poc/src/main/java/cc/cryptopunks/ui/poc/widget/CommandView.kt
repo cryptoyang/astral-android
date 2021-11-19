@@ -164,13 +164,15 @@ private fun CommandView.update(state: UI.State, output: UI.Output) {
     when (output) {
 
         UI.Element.Text -> {
-            if (state.text != inputView.text.toString())
-                inputView.setText(state.text)
+            if (inputView.text.isNotEmpty() && state.text.isBlank())
+                inputView.text = null
         }
 
         UI.Element.Matching -> {
-            inputView.hint = "find command by name or param"
-            optionsAdapter.items = state.matching
+            if (state.method == null) {
+                inputView.hint = "find command by name or param"
+                optionsAdapter.items = state.matching
+            }
         }
 
         UI.Element.Param -> state.param?.run {
@@ -180,21 +182,30 @@ private fun CommandView.update(state: UI.State, output: UI.Output) {
                 is UIResolver.Data -> {
                     dynamicView.isVisible = true
                     recyclerView.isVisible = false
+                    inputView.hint = "select data from list"
                 }
                 is UIResolver.Option -> {
                     optionsAdapter.items = resolver.list
                     dynamicView.isVisible = false
                     recyclerView.isVisible = true
+                    inputView.hint = "select option"
                 }
                 is UIResolver.Input -> when (resolver.type) {
-                    "boolean" -> {
+                    Api.Type.bool -> {
                         optionsAdapter.items = listOf(false, true)
                         dynamicView.isVisible = false
                         recyclerView.isVisible = true
+                        inputView.hint = "select option"
                     }
                     else -> {
                         dynamicView.isVisible = false
                         recyclerView.isVisible = false
+                        inputView.hint = when(resolver.type) {
+                            Api.Type.string -> "type text"
+                            Api.Type.int -> "type integer"
+                            Api.Type.num -> "type number"
+                            else -> inputView.hint
+                        }
                     }
                 }
                 is UIResolver.Method -> {
@@ -227,7 +238,8 @@ private fun CommandView.update(state: UI.State, output: UI.Output) {
         }
 
         UI.Element.Ready -> {
-            inputView.hint = "Tap FAB to execute."
+            if (state.isReady)
+                inputView.hint = "Tap FAB to execute."
         }
 
         is UI.Element.Stack -> {
