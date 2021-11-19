@@ -64,36 +64,38 @@ val displayYaml: UpdateView = { data ->
 
 typealias UpdateView = ViewGroup.(JsonNode) -> Unit
 
-fun DataView.update(layout: UILayout, data: JsonNode) {
+fun DataView.update(
+    layout: UILayout,
+    data: JsonNode,
+    updateView: UpdateView = displayYaml
+) {
     this.layout = layout
     header.apply {
         if (layout.header != UILayout.Single.Empty) {
             val node = layout.header.path.fold(data) { acc, s -> acc[s] }
-            updateView(root, node)
-            isVisible = true
+            updateView(node)
         } else {
-            isVisible = false
+            removeAllViews()
         }
     }
     content.run {
         if (layout.content != UILayout.Many.Empty) {
             val node = layout.content.path.fold(data) { acc, s -> acc[s] }
+            dataAdapter.updateView = updateView
             dataAdapter.items = when {
                 node.isArray -> (node as ArrayNode).toList()
                 else -> listOf(node)
             }
-            isVisible = true
         } else {
-            isVisible = false
+            dataAdapter.items = emptyList()
         }
     }
     footer.apply {
         if (layout.footer != UILayout.Single.Empty) {
             val node = layout.footer.path.fold(data) { acc, s -> acc[s] }
-            updateView(root, node)
-            isVisible = true
+            updateView(node)
         } else {
-            isVisible = false
+            removeAllViews()
         }
     }
 }

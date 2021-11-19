@@ -16,6 +16,10 @@ object MessengerApi : Rpc.Api() {
         val id: Contact.Id,
     ) : Method, Rpc.Return<List<Message>>()
 
+    data class StartConversation(
+        val id: Contact.Id,
+    ) : Method, Rpc.Return<Conversation>()
+
     data class SendMessage(
         val id: Contact.Id,
         val text: String,
@@ -38,6 +42,11 @@ object MessengerApi : Rpc.Api() {
     ) {
         data class Id(val value: String)
     }
+
+    data class Conversation(
+        val contact: Contact,
+        val messages: List<Message>
+    )
 
     data class Contact(
         val id: Id,
