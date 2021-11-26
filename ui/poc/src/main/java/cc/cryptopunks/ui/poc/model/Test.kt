@@ -7,7 +7,6 @@ import cc.cryptopunks.ui.poc.schema.rpc.generateOpenRpcDocument
 fun main() {
     (0..10).forEach { params ->
 
-        println(1 + params * (2 shl 8) + params * (1 shl 16))
     }
 
 //    val doc = MessengerApi.generateOpenRpcDocument()

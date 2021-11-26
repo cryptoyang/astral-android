@@ -80,10 +80,11 @@ fun DataView.update(
     }
     content.run {
         if (layout.content != UILayout.Many.Empty) {
-            val node = layout.content.path.fold(data) { acc, s -> acc[s] }
+            val node = data.resolve(layout.content.path)
             dataAdapter.updateView = updateView
             dataAdapter.items = when {
                 node.isArray -> (node as ArrayNode).toList()
+                node.isEmpty -> emptyList()
                 else -> listOf(node)
             }
         } else {
@@ -100,4 +101,5 @@ fun DataView.update(
     }
 }
 
-
+fun JsonNode.resolve(path: List<String>) =
+    path.fold(this) { acc, s -> acc[s] ?: Jackson.emptyNode }

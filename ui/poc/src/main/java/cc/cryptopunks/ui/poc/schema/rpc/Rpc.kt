@@ -17,9 +17,9 @@ interface Rpc {
         val result: T? = null
     }
 
-    abstract class Return<T> : Result<T>()
+    abstract class Single<T> : Result<T>()
 
-    abstract class Subscribe<T> : Result<T>()
+    abstract class Stream<T> : Result<T>()
 }
 
 fun Any.rpcMethods(): List<KClass<*>> =

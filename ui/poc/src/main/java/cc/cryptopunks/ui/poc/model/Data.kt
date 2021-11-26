@@ -14,11 +14,6 @@ data class UIView(val source: Api.Method, val args: UIArgs, val data: JsonNode)
 
 data class UIMethodScore(val score: Int, val method: Api.Method, val matching: List<UIMatching>)
 
-data class UIConfig2(
-    val autoFill: Boolean = false,
-    val autoExecute: Boolean = false,
-)
-
 data class UIConfig(
     val map: Map<String, Any> = mapOf(
         "autoFill" to true,
@@ -39,9 +34,7 @@ data class UIMatching(
     val elements: List<Element>,
 ) {
     val score by lazy { calculateScore() }
-
     val args by lazy { args() }
-
     val isReady by lazy { args.keys == method.params.keys }
 
     data class Element(
@@ -54,6 +47,6 @@ data class UIMatching(
         object MethodName : Type
         data class ArgName(val name: String) : Type
         data class ArgType(val name: String) : Type
-        data class ArgValue(val name: String) : Type
+        data class ArgValue(val name: String, val complex: Boolean) : Type
     }
 }

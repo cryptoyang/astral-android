@@ -58,12 +58,12 @@ fun handle(exec: MessengerApi.Method): Any = when (exec) {
     is MessengerApi.GetMessages -> exec { messages.filter { it.contact.id == exec.id } }
     is MessengerApi.ListenMessages -> exec { emptyList() }
     is MessengerApi.SendMessage -> Unit
-    is MessengerApi.StartConversation -> exec {
-        MessengerApi.Conversation(
-            contact = contactsMap[id]!!,
-            messages = messages.filter { it.contact.id == exec.id }
-        )
-    }
+//    is MessengerApi.StartConversation -> exec {
+//        MessengerApi.Conversation(
+//            contact = contactsMap[id]!!,
+//            messages = messages.filter { it.contact.id == exec.id }
+//        )
+//    }
 }
 
 private operator fun <M: Rpc.Result<R>, R> M.invoke(block: M.() -> R) = block()

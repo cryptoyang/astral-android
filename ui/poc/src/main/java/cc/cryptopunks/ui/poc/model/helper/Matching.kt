@@ -5,7 +5,7 @@ import cc.cryptopunks.ui.poc.model.util.removeFirst
 import com.fasterxml.jackson.databind.JsonNode
 
 fun UI.State.calculateMatching(): List<UIMatching> {
-    val availableData = (selection + textChunks)
+    val availableData = generateUIDataFromStack() + selection + textChunks
 
     return context.model.methods.values.map { method ->
 
@@ -64,11 +64,11 @@ fun UI.State.calculateMatching(): List<UIMatching> {
 
 private fun Api.Method.template(): List<UIMatching.Type> = listOf(
     UIMatching.Type.MethodName
-) + params.flatMap { param ->
+) + params.flatMap { (name, type) ->
     listOf(
-        UIMatching.Type.ArgName(param.key),
-        UIMatching.Type.ArgType(param.key),
-        UIMatching.Type.ArgValue(param.key),
+        UIMatching.Type.ArgName(name),
+        UIMatching.Type.ArgType(name),
+        UIMatching.Type.ArgValue(name, type.type == Api.Type.obj),
     )
 }
 
@@ -86,11 +86,14 @@ fun UIMatching.calculateScore(): Int =
     elements.mapNotNull { element ->
         when {
             element.type == UIMatching.Type.Unknown -> when (element.value) {
-                is JsonNode -> 1 shl 8
-                else -> 1
+                is JsonNode -> 2 shl 8
+                else -> 1 shl 4
             }
             element.value == UIMatching.Type.Unknown -> when (element.type) {
-                is UIMatching.Type.ArgValue -> 1 shl 8
+                is UIMatching.Type.ArgValue -> when {
+                    element.type.complex -> 2 shl 8
+                    else -> 1 shl 8
+                }
                 else -> 1
             }
             else -> null
@@ -104,3 +107,8 @@ fun UIMatching.args(): UIArgs = elements
 
 fun UI.State.firstMatchingMethod(): UIMatching? =
     matching.firstOrNull { it.args.isNotEmpty() }
+
+fun UI.State.selectionMatchingMethods(): List<UIMatching> {
+    val selectedValues = selection.map(UIData::value)
+    return matching.filter { (it.args.values intersect selectedValues).isNotEmpty() }
+}

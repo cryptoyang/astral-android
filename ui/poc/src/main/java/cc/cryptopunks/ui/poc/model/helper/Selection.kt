@@ -6,13 +6,23 @@ import cc.cryptopunks.ui.poc.model.UIData
 import com.fasterxml.jackson.databind.JsonNode
 
 fun UI.State.generateSelection(clicked: UI.Event.Clicked): List<UIData> =
-    when (clicked.value) {
+    generateUIData(clicked.id, clicked.value)
+
+fun UI.State.generateUIDataFromStack() = stack
+    .flatMap { view -> view.args.mapKeys { (key, _) -> view.source.params[key]!! }.toList() }
+    .flatMap { (type, value) -> generateUIData(type.id, value) }
+
+
+fun UI.State.generateUIData(id: String, value: Any): List<UIData> =
+    when (value) {
         is JsonNode -> {
-            val type = context.model.types[clicked.id]!!
-            UIData(type, clicked.value).unfoldComplexTypes()
+            val type = requireNotNull(context.model.types[id]) {
+                "Cannot resolve type for id: $id"
+            }
+            UIData(type, value).unfoldComplexTypes()
         }
         else -> listOf(
-            UIData(Api.Type(clicked.id), clicked.value)
+            UIData(Api.Type(id), value)
         )
     }
 
@@ -26,4 +36,4 @@ private fun UIData.unfoldComplexTypes(): List<UIData> =
                 data.unfoldComplexTypes().plus(data)
             }
         }
-    }
+    } + this

@@ -111,11 +111,12 @@ private fun UI.State.processUpdate(
             },
         )
         UI.Element.Args -> listOf(
-            UI.Element.Param + nextParam(),
-            UI.Element.Ready + isReady()
+            UI.Element.Param + nextParam()
         )
         UI.Element.Param -> when {
-            param == null -> emptyList()
+            param == null -> listOf(
+                UI.Element.Ready + isReady()
+            )
             config.autoFill -> when (val selectedArg = argDataFromSelection()) {
                 null -> listOf(
                     UI.Element.Matching + calculateMatching(),
@@ -130,17 +131,9 @@ private fun UI.State.processUpdate(
         UI.Element.Selection -> when {
             selection.isEmpty() -> emptyList()
             else -> when {
-                method != null
-//                -> listOf(UI.Element.Param + param)
-                -> when (val selectedArg = argDataFromSelection()) {
-                    null -> listOf(
-                        UI.Element.Matching + calculateMatching(),
-                    )
-                    else -> listOf(
-                        UI.Element.Args + argsWith(selectedArg),
-                        UI.Element.Selection + selection.minus(selectedArg),
-                    )
-                }
+                method != null -> listOf(
+                    UI.Element.Param + param
+                )
                 method == null -> listOf(
                     UI.Element.Matching + calculateMatching(),
                 )
@@ -154,11 +147,17 @@ private fun UI.State.processUpdate(
             method == null
                 && event is UI.Event.Clicked
                 && config.autoFill
-            -> when (val matching = firstMatchingMethod()) {
-                null -> emptyList()
-                else -> listOf(
-                    UI.Element.Method + matching.method,
-                )
+            -> {
+                val selectionMethods = selectionMatchingMethods().filter(UIMatching::isReady)
+                when {
+                    selectionMethods.isEmpty() -> emptyList()
+                    selectionMethods.size == 1 -> listOf(
+                        UI.Element.Method + selectionMethods.first().method,
+                    )
+                    else -> listOf(
+                        UI.Element.Display + UIDisplay.Panel
+                    )
+                }
             }
             else -> emptyList()
 

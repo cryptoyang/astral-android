@@ -12,13 +12,11 @@ object Api {
         }
     }
 
-    sealed interface Element
-
     data class Method(
         val id: String = "",
         val params: Map<String, Type> = emptyMap(),
         val result: Type = Type.Empty,
-    ) : Element {
+    ) {
         companion object {
             val Empty = Method()
         }
@@ -29,7 +27,7 @@ object Api {
         val id: String = "",
         val properties: Map<String, Type> = emptyMap(),
         val options: List<String> = emptyList(),
-    ) : Element {
+    ) {
         companion object {
             const val obj = "object"
             const val array = "array"

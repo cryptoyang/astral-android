@@ -42,7 +42,7 @@ object Jackson {
             .registerModule(kotlinModule)
     }
 
-    val yamlPrettyWriter by lazy {
-        yamlMapper.writerWithDefaultPrettyPrinter()
+    val emptyNode by lazy {
+        jsonMapper.createObjectNode()
     }
 }
