@@ -3,6 +3,7 @@ package cc.cryptopunks.ui.poc.model
 import cc.cryptopunks.ui.poc.model.helper.args
 import cc.cryptopunks.ui.poc.model.helper.calculateScore
 import com.fasterxml.jackson.databind.JsonNode
+import kotlinx.coroutines.flow.Flow
 
 typealias UIArgs = Map<String, Any>
 
@@ -10,7 +11,7 @@ enum class UIDisplay { Panel, Data }
 
 data class UIParam(val name: String, val type: Api.Type, val resolvers: Iterable<UIResolver>)
 
-data class UIView(val source: Api.Method, val args: UIArgs, val data: JsonNode)
+data class UIView(val source: Api.Method, val args: UIArgs, val data: Flow<JsonNode>)
 
 data class UIMethodScore(val score: Int, val method: Api.Method, val matching: List<UIMatching>)
 

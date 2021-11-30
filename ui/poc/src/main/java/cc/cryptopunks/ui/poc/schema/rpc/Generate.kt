@@ -39,7 +39,7 @@ fun generateOpenRpcDocument(
         .asSequence().associate { (key, value) -> key to value }
 
     val methods: List<OpenRpc.Method> = types
-        .filter { type -> type.isSubclassOf(Rpc.Method::class) }
+        .filter { type -> type.isSubclassOf(Rpc.Command::class) }
         .map { method ->
 
             val name = method.java.name

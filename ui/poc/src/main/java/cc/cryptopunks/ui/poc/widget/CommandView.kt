@@ -19,6 +19,9 @@ import cc.cryptopunks.ui.poc.R
 import cc.cryptopunks.ui.poc.databinding.CommandItemBinding
 import cc.cryptopunks.ui.poc.model.*
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -39,7 +42,7 @@ data class CommandView(
     val recyclerView: RecyclerView = container(R.id.optionsRecyclerView),
     val inputView: EditText = container(R.id.inputEditText),
     val actionButton: View = container(R.id.actionButton),
-) {
+) : CoroutineScope by MainScope() {
     val cmdDrawable: Drawable = ShapeTextDrawable("$")
 
     val returnDrawable: Drawable = ResourcesCompat.getDrawable(
@@ -200,7 +203,7 @@ private fun CommandView.update(state: UI.State, output: UI.Output) {
                     else -> {
                         dynamicView.isVisible = false
                         recyclerView.isVisible = false
-                        inputView.hint = when(resolver.type) {
+                        inputView.hint = when (resolver.type) {
                             Api.Type.string -> "type text"
                             Api.Type.int -> "type integer"
                             Api.Type.num -> "type number"
@@ -245,10 +248,13 @@ private fun CommandView.update(state: UI.State, output: UI.Output) {
         is UI.Element.Stack -> {
             if (state.stack.isNotEmpty()) {
                 val view = state.stack.last()
-                dynamicView.update(
-                    layout = state.context.layouts2[view.source.id]!!,
-                    data = view.data
-                )
+                coroutineContext.cancelChildren()
+                launch {
+                    dynamicView.update(
+                        layout = state.context.layouts2[view.source.id]!!,
+                        updates = view.data
+                    )
+                }
             }
             activity.supportActionBar!!.title = state.stack.lastOrNull()?.source?.id
         }

@@ -14,6 +14,8 @@ import cc.cryptopunks.ui.poc.model.UI
 import cc.cryptopunks.ui.poc.model.UILayout
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import splitties.views.inflateAndAttach
 
 class DataView(
@@ -64,11 +66,11 @@ val displayYaml: UpdateView = { data ->
 
 typealias UpdateView = ViewGroup.(JsonNode) -> Unit
 
-fun DataView.update(
+suspend fun DataView.update(
     layout: UILayout,
-    data: JsonNode,
+    updates: Flow<JsonNode>,
     updateView: UpdateView = displayYaml
-) {
+) = updates.collect { data ->
     this.layout = layout
     header.apply {
         if (layout.header != UILayout.Single.Empty) {

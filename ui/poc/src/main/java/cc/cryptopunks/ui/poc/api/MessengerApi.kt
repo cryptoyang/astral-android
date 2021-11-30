@@ -6,27 +6,18 @@ object MessengerApi : Rpc.Api() {
 
     // Methods
 
-    sealed interface Method
+    object GetOverview : Rpc.Listen<List<Overview.Item>>()
 
-    object GetOverview : Method, Rpc.Single<List<Overview.Item>>()
-
-    object GetContacts : Method, Rpc.Single<Contacts>()
+    object GetContacts : Rpc.Listen<Contacts>()
 
     data class GetMessages(
         val id: Contact.Id,
-    ) : Method, Rpc.Single<List<Message>>()
+    ) : Rpc.Listen<List<Message>>()
 
     data class SendMessage(
         val id: Contact.Id,
         val text: String,
-    ) : Method, Rpc.Method
-
-    data class ListenMessages(
-        val on: Boolean,
-        val event: Event,
-    ) : Method, Rpc.Stream<List<Message>>() {
-        enum class Event { MessageReceived }
-    }
+    ) : Rpc.Command
 
     // Data
 
@@ -38,11 +29,6 @@ object MessengerApi : Rpc.Api() {
     ) {
         data class Id(val value: String)
     }
-
-    data class Conversation(
-        val contact: Contact,
-        val messages: List<Message>
-    )
 
     data class Contact(
         val id: Id,
@@ -66,19 +52,16 @@ object MessengerApi : Rpc.Api() {
 object MessengerApi2 : Rpc.Api() {
 
     object GetContacts :
-        Rpc.Single<List<Contact>>()
+        Rpc.Listen<List<Contact>>()
 
     data class GetMessages(
         val id: Contact.Id
-    ) : Rpc.Single<List<Message>>()
+    ) : Rpc.Listen<List<Message>>()
 
     data class SendMessage(
         val to: Contact.Id,
         val text: String,
-    ) : Rpc.Method
-
-    object SubscribeMessages :
-        Rpc.Stream<Message>()
+    ) : Rpc.Command
 
     data class Contact(
         val id: Id,

@@ -7,20 +7,16 @@ import kotlin.reflect.full.isSubclassOf
 interface Rpc {
 
     abstract class Api {
-        val methods by lazy { rpcMethods() }
+        val methods by lazy { rpcCommands() }
     }
 
-    interface Method
+    interface Command
 
-    abstract class Result<T> : Method {
+    abstract class Listen<T> : Command {
         @JsonProperty(access = JsonProperty.Access.READ_ONLY)
         val result: T? = null
     }
-
-    abstract class Single<T> : Result<T>()
-
-    abstract class Stream<T> : Result<T>()
 }
 
-fun Any.rpcMethods(): List<KClass<*>> =
-    this::class.nestedClasses.filter { type -> type.isSubclassOf(Rpc.Method::class) }
+fun Any.rpcCommands(): List<KClass<*>> =
+    this::class.nestedClasses.filter { type -> type.isSubclassOf(Rpc.Command::class) }

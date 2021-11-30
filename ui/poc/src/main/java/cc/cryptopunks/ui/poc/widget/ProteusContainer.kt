@@ -11,7 +11,6 @@ import com.flipkart.android.proteus.value.DrawableValue
 import com.flipkart.android.proteus.value.Layout
 import com.flipkart.android.proteus.value.ObjectValue
 import com.flipkart.android.proteus.value.Value
-import com.google.gson.reflect.TypeToken
 
 class DynamicView @JvmOverloads constructor(
     context: Context,
@@ -106,40 +105,3 @@ class DynamicView @JvmOverloads constructor(
 
         }
 }
-
-fun UI.State.dynamicViewUpdate(): DynamicView.Update {
-    val view = stack.last()
-    val dataId = view.source.result.id
-
-    val result: Any =
-        if (view.data !is List<*>) view.data
-        else IterableWrapper(view.data as List<Any>)
-
-    val main = context.layouts[dataId]!!
-    val includes = (context.layouts - dataId)
-
-    val mapper = Jackson.jsonPrettyWriter
-
-    val stringLayout = mapper.writeValueAsString(main)
-    val stringLayouts = mapper.writeValueAsString(includes)
-    val stringData = mapper.writeValueAsString(result)
-
-    println()
-    println(stringLayout)
-    println(stringData)
-    println()
-
-
-    return DynamicView.Update(
-        layout = app.gson.fromJson(stringLayout, Layout::class.java),
-        layouts = app.gson.fromJson(stringLayouts, layoutMapType),
-        data = app.gson.fromJson(stringData, ObjectValue::class.java),
-        listOf(stringLayout, stringData, stringLayouts)
-    )
-}
-
-private class IterableWrapper(
-    val items: List<Any>
-)
-
-private val layoutMapType = object : TypeToken<Map<String, Layout>>() {}.type

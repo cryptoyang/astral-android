@@ -1,6 +1,8 @@
 package cc.cryptopunks.ui.poc.api
 
 import cc.cryptopunks.ui.poc.schema.rpc.Rpc
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 private var lastMessageId = 0
 private var lastContactId = 0
@@ -52,21 +54,23 @@ private val MessengerApi.Message.contact
         .minus(contacts[0].id).first()
         .let(contactsMap::getValue)
 
-fun handle(exec: MessengerApi.Method): Any = when (exec) {
-    is MessengerApi.GetOverview -> exec { overview }
-    is MessengerApi.GetContacts -> exec { MessengerApi.Contacts(contacts) }
-    is MessengerApi.GetMessages -> exec { messages.filter { it.contact.id == exec.id } }
-    is MessengerApi.ListenMessages -> exec { emptyList() }
-    is MessengerApi.SendMessage -> Unit
+fun handle(exec: Rpc.Command): Flow<Any> = flowOf(
+    when (exec) {
+        is MessengerApi.GetOverview -> exec { overview }
+        is MessengerApi.GetContacts -> exec { MessengerApi.Contacts(contacts) }
+        is MessengerApi.GetMessages -> exec { messages.filter { it.contact.id == exec.id } }
+        is MessengerApi.SendMessage -> Unit
 //    is MessengerApi.StartConversation -> exec {
 //        MessengerApi.Conversation(
 //            contact = contactsMap[id]!!,
 //            messages = messages.filter { it.contact.id == exec.id }
 //        )
 //    }
-}
+        else -> Unit
+    }
+)
 
-private operator fun <M: Rpc.Result<R>, R> M.invoke(block: M.() -> R) = block()
+private operator fun <M: Rpc.Listen<R>, R> M.invoke(block: M.() -> R) = block()
 
 fun main() {
     overview.forEach {

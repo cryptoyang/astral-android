@@ -7,6 +7,7 @@ import cc.cryptopunks.ui.poc.model.factory.generateLayouts
 import cc.cryptopunks.ui.poc.model.factory.resolvers
 import cc.cryptopunks.ui.poc.schema.rpc.OpenRpc
 import com.fasterxml.jackson.databind.JsonNode
+import kotlinx.coroutines.flow.Flow
 
 object UI {
 
@@ -74,7 +75,7 @@ object UI {
 
 typealias UIHandler = (UI.Event) -> UI.Change
 
-typealias UIRequestData = UIRequest.() -> JsonNode
+typealias UIRequestData = UIRequest.() -> Flow<JsonNode>
 
 data class UIRequest(val context: UI.Context, val method: Api.Method, val args: UIArgs)
 
