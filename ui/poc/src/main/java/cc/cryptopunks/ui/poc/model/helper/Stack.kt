@@ -8,4 +8,8 @@ fun UI.State.resolveNextView(): List<UIView> = context.run {
     }
 }
 
+fun UI.State.executeCommand() = context.run {
+    UIRequest(context, method!!, args).requestData()
+}
+
 fun UI.State.dropLastView() = stack.dropLast(1)

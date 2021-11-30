@@ -251,7 +251,7 @@ private fun CommandView.update(state: UI.State, output: UI.Output) {
                 coroutineContext.cancelChildren()
                 launch {
                     dynamicView.update(
-                        layout = state.context.layouts2[view.source.id]!!,
+                        layout = state.context.layouts[view.source.id]!!,
                         updates = view.data
                     )
                 }

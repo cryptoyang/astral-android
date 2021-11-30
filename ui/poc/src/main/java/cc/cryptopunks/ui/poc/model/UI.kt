@@ -1,7 +1,6 @@
 package cc.cryptopunks.ui.poc.model
 
 import cc.cryptopunks.ui.poc.api.uiRequestData
-import cc.cryptopunks.ui.poc.mapper.model.generateProteusLayouts
 import cc.cryptopunks.ui.poc.mapper.openrpc.toModel
 import cc.cryptopunks.ui.poc.model.factory.generateLayouts
 import cc.cryptopunks.ui.poc.model.factory.resolvers
@@ -41,6 +40,7 @@ object UI {
         object Selection : UIElement<List<UIData>>(emptyList())
         object Ready : UIElement<Boolean>(false)
         object Text : UIElement<String>("")
+        object Execute : UIElement<Unit>(Unit)
     }
 
     class State(elements: UIElements = emptyMap()) : UIState(elements) {
@@ -62,8 +62,7 @@ object UI {
     data class Context(
         val doc: OpenRpc.Document,
         val model: Api.Model = doc.toModel(),
-        val layouts: Map<String, Map<String, Any>> = model.generateProteusLayouts(),
-        val layouts2: Map<String, UILayout> = model.generateLayouts(),
+        val layouts: Map<String, UILayout> = model.generateLayouts(),
         val resolvers: Map<String, Iterable<UIResolver>> = model.resolvers(),
         val requestData: UIRequestData = uiRequestData,
     )

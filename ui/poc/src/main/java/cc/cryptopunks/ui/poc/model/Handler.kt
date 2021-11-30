@@ -62,7 +62,7 @@ private fun UI.State.generateMessages(
     )
     UI.Event.Action -> when {
         isReady -> listOf(
-            UI.Element.Stack + resolveNextView()
+            UI.Element.Execute + Unit
         )
         isRequiredArg(text) -> listOf(
             UI.Element.Args + argsWith(text),
@@ -147,12 +147,11 @@ private fun UI.State.processUpdate(
             method == null
                 && event is UI.Event.Clicked
                 && config.autoFill
-            -> {
-                val selectionMethods = selectionMatchingMethods().filter(UIMatching::isReady)
+            -> selectionMatchingMethods().filter(UIMatching::isReady).run {
                 when {
-                    selectionMethods.isEmpty() -> emptyList()
-                    selectionMethods.size == 1 -> listOf(
-                        UI.Element.Method + selectionMethods.first().method,
+                    isEmpty() -> emptyList()
+                    size == 1 -> listOf(
+                        UI.Element.Method + first().method,
                     )
                     else -> listOf(
                         UI.Element.Display + UIDisplay.Panel
@@ -164,9 +163,21 @@ private fun UI.State.processUpdate(
         }
         UI.Element.Ready -> when {
             isReady && config.autoExecute -> listOf(
-                UI.Element.Stack + resolveNextView()
+                UI.Element.Execute + Unit
             )
             else -> emptyList()
+        }
+        UI.Element.Execute -> when {
+            method!!.result != Api.Type.Empty -> listOf(
+                UI.Element.Stack + resolveNextView()
+            )
+            else -> executeCommand().run {
+                listOf(
+                    UI.Element.Display + displayDataOrPanel(),
+                    UI.Element.Text.default(),
+                    UI.Element.Method.default(),
+                )
+            }
         }
         else -> emptyList()
     }
