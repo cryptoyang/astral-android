@@ -6,6 +6,7 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import cc.cryptopunks.ui.poc.api.MessengerApi
 import cc.cryptopunks.ui.poc.model.UI
+import cc.cryptopunks.ui.poc.model.UIUpdate
 import cc.cryptopunks.ui.poc.model.eventHandler
 import cc.cryptopunks.ui.poc.model.factory.invoke
 import cc.cryptopunks.ui.poc.schema.rpc.generateOpenRpcDocument
@@ -15,6 +16,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
+import java.lang.StringBuilder
 
 class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
@@ -64,14 +66,21 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     }
 }
 
-fun UI.Change.printLog() = apply {
-    println("=========")
-    println(event.formatLogName() + ": " + event)
-    println("---------")
-    output.map { out ->
-        out.formatLogName() + ": " + state[out]
-    }.forEach(::println)
-    println("=========")
+fun UI.Change.printLog() = also {
+    StringBuilder().apply {
+        appendLine()
+        appendLine("=========")
+        appendLine(event.formatLogName() + ": " + event)
+        appendLine("---------")
+        output.map { message ->
+            val (out, value) = when (message) {
+                is UI.Action -> message to null
+                is UIUpdate<*, *> -> message.run { element to value }
+            }
+            out.formatLogName() + ": " + value
+        }.forEach(this::appendLine)
+        appendLine("=========")
+    }.toString().let(::println)
 }
 
 fun Any.formatLogName(): String = javaClass.name.split("$", limit = 2).last()

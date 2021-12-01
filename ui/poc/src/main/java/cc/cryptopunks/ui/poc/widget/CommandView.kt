@@ -161,7 +161,7 @@ fun CommandView.uiEvents(): Flow<UI.Event> = channelFlow {
 
 
 fun UI.Change.update(view: CommandView): UI.Change =
-    apply { output.toSet().forEach { output -> view.update(state, output) } }
+    apply { output.map(UIMessage::output).toSet().forEach { output -> view.update(state, output) } }
 
 private fun CommandView.update(state: UI.State, output: UI.Output) {
     when (output) {

@@ -29,16 +29,9 @@ private fun eventHandler(
         acc = acc + next
     }
 
-    val output = acc.map { message ->
-        when (message) {
-            is UI.Action -> message
-            is UIUpdate<*, *> -> message.element
-        }
-    }
-
     stateRef.set(state)
 
-    UI.Change(event, state, output)
+    UI.Change(event, state, acc)
 }
 
 private fun UI.State.generateMessages(

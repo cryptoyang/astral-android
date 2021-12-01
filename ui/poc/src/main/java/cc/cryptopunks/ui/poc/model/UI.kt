@@ -67,7 +67,7 @@ object UI {
         val requestData: UIRequestData = uiRequestData,
     )
 
-    data class Change(val event: Event, val state: State, val output: List<Output>)
+    data class Change(val event: Event, val state: State, val output: List<UIMessage>)
 
     sealed interface Output
 }
