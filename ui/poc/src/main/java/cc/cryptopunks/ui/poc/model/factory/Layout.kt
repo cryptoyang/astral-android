@@ -17,7 +17,7 @@ fun Api.Type.mainLayout(): UILayout =
 
             else -> {
                 properties
-                    .filterValues { it.type == Api.Type.array }
+                    .filterValues { it.type == Api.Type.arr }
                     .apply { require(size < 2) }
 
                 val remaining = properties.toList()
@@ -37,7 +37,7 @@ fun Api.Type.mainLayout(): UILayout =
                 )
             }
         }
-        Api.Type.array -> UILayout(
+        Api.Type.arr -> UILayout(
             content = many()
         )
         else -> UILayout(
@@ -49,7 +49,7 @@ fun Api.Type.mainLayout(): UILayout =
 
 
 fun Api.Type.element(path: List<String> = emptyList()) = when (type) {
-    Api.Type.array -> many(path)
+    Api.Type.arr -> many(path)
     else -> single(path)
 }
 

@@ -1,6 +1,8 @@
 package cc.cryptopunks.ui.poc.model.helper
 
-import cc.cryptopunks.ui.poc.model.*
+import cc.cryptopunks.ui.poc.model.UI
+import cc.cryptopunks.ui.poc.model.UIRequest
+import cc.cryptopunks.ui.poc.model.UIView
 
 fun UI.State.resolveNextView(): List<UIView> = context.run {
     stack + UIRequest(context, method!!, args).run {
@@ -8,7 +10,7 @@ fun UI.State.resolveNextView(): List<UIView> = context.run {
     }
 }
 
-fun UI.State.executeCommand() = context.run {
+fun UI.State.executeCommand(): Unit = context.run {
     UIRequest(context, method!!, args).requestData()
 }
 

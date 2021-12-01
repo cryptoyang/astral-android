@@ -161,7 +161,7 @@ fun CommandView.uiEvents(): Flow<UI.Event> = channelFlow {
 
 
 fun UI.Change.update(view: CommandView): UI.Change =
-    apply { output.forEach { output -> view.update(state, output) } }
+    apply { output.toSet().forEach { output -> view.update(state, output) } }
 
 private fun CommandView.update(state: UI.State, output: UI.Output) {
     when (output) {
@@ -204,7 +204,7 @@ private fun CommandView.update(state: UI.State, output: UI.Output) {
                         dynamicView.isVisible = false
                         recyclerView.isVisible = false
                         inputView.hint = when (resolver.type) {
-                            Api.Type.string -> "type text"
+                            Api.Type.str -> "type text"
                             Api.Type.int -> "type integer"
                             Api.Type.num -> "type number"
                             else -> inputView.hint
@@ -230,11 +230,12 @@ private fun CommandView.update(state: UI.State, output: UI.Output) {
             }
         }
 
-        UI.Element.Display -> state.display.let { element ->
-            val displayPanel = element == UIDisplay.Panel
+        UI.Element.Display -> state.display.let { display ->
+            val displayPanel = UIDisplay.Panel in display
+            val displayInput = displayPanel || UIDisplay.Input in display
             val displayCommand = displayPanel && UI.Element.Method in state
-            val displayData = element == UIDisplay.Data
-            inputView.isVisible = displayPanel
+            val displayData = UIDisplay.Data in display
+            inputView.isVisible = displayInput
             recyclerView.isVisible = displayPanel
             commandLayout.isVisible = displayCommand
             dynamicView.isVisible = displayData

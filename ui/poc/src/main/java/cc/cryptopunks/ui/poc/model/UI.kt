@@ -32,7 +32,7 @@ object UI {
         object Context : UIElement<UI.Context>()
         object Config : UIElement<UIConfig>(UIConfig())
         object Stack : UIElement<List<UIView>>(emptyList())
-        object Display : UIElement<UIDisplay>(UIDisplay.Panel)
+        object Display : UIElement<Set<UIDisplay>>(setOf(UIDisplay.Panel))
         object Method : UIElement<Api.Method?>(null)
         object Matching : UIElement<List<UIMatching>>(emptyList())
         object Args : UIElement<UIArgs>(emptyMap())

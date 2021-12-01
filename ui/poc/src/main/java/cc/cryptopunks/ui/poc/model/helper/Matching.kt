@@ -26,7 +26,7 @@ fun UI.State.calculateMatching(): List<UIMatching> {
                             val paramType = method.params[type.name]!!
                             if (data.value.toString() in paramType.options) true
                             else when (paramType.type) {
-                                Api.Type.string -> true
+                                Api.Type.str -> true
                                 Api.Type.bool -> data.value.toBooleanStrictOrNull() != null
                                 Api.Type.int -> data.value.toIntOrNull() != null
                                 Api.Type.num -> data.value.toDoubleOrNull() != null
@@ -105,10 +105,20 @@ fun UIMatching.args(): UIArgs = elements
     .filter { it.value !is UIMatching.Type.Unknown }
     .associate { (it.type as UIMatching.Type.ArgValue).name to it.value }
 
-fun UI.State.firstMatchingMethod(): UIMatching? =
-    matching.firstOrNull { it.args.isNotEmpty() }
-
 fun UI.State.selectionMatchingMethods(): List<UIMatching> {
     val selectedValues = selection.map(UIData::value)
     return matching.filter { (it.args.values intersect selectedValues).isNotEmpty() }
 }
+
+val UI.State.inputMatching
+    get() = matching.singleOrNull { uiMatching ->
+        uiMatching.method.params.toList()
+            .singleOrNull { it.second.type == Api.Type.str }
+            ?.let { (name, _) ->
+                uiMatching.method.params.keys
+                    .minus(name)
+                    .minus(uiMatching.args.keys)
+                    .isEmpty()
+            }
+            ?: false
+    }

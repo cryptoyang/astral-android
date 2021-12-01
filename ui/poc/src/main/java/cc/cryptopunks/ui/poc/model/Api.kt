@@ -30,14 +30,14 @@ object Api {
     ) {
         companion object {
             const val obj = "object"
-            const val array = "array"
+            const val arr = "array"
             const val bool = "boolean"
-            const val string = "string"
+            const val str = "string"
             const val int = "integer"
             const val num = "number"
 
             val Empty = Type()
-            val String = Type(string)
+            val String = Type(str)
         }
     }
 }

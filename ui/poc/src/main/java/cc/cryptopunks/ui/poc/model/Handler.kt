@@ -13,6 +13,7 @@ private fun eventHandler(
     var state: UI.State = stateRef.get()
     var remaining: List<UIMessage> = state.generateMessages(event)
     var acc: List<UIMessage> = remaining
+    var acc2: List<UIMessage> = emptyList()
 
     while (remaining.isNotEmpty()) {
         val next = remaining.first()
@@ -27,6 +28,7 @@ private fun eventHandler(
         state = newState
         remaining = results + remaining.drop(1)
         acc = acc + results
+        acc2 = acc2 + next
     }
 
     val output = acc.map { message ->
@@ -72,7 +74,7 @@ private fun UI.State.generateMessages(
         )
     }
     UI.Event.Back -> when {
-        display == UIDisplay.Data -> listOf(
+        UIDisplay.Data in display -> listOf(
             UI.Element.Stack + dropLastView(),
         )
         args.isNotEmpty() -> listOf(
@@ -80,7 +82,7 @@ private fun UI.State.generateMessages(
         )
         method != null -> listOf(
             UI.Element.Stack + stack,
-            UI.Element.Display + UIDisplay.Panel,
+            UI.Element.Display + displayPanel(),
         )
         stack.isEmpty() -> listOf(
             UI.Action.Exit
@@ -98,20 +100,19 @@ private fun UI.State.processUpdate(
     when (update.element) {
         UI.Element.Context -> emptyList()
         UI.Element.Stack -> listOf(
-            UI.Element.Display + displayDataOrPanel(),
+            UI.Element.Display + defaultDisplay(),
             UI.Element.Text.default(),
             UI.Element.Method.default(),
         )
-        UI.Element.Display -> emptyList()
         UI.Element.Method -> listOf(
             UI.Element.Selection + emptyList(),
             UI.Element.Args + when (config.autoFill) {
                 true -> matchedArgs()
                 false -> defaultArgs()
-            },
+            }
         )
         UI.Element.Args -> listOf(
-            UI.Element.Param + nextParam()
+            UI.Element.Param + nextParam(),
         )
         UI.Element.Param -> when {
             param == null -> listOf(
@@ -154,12 +155,17 @@ private fun UI.State.processUpdate(
                         UI.Element.Method + first().method,
                     )
                     else -> listOf(
-                        UI.Element.Display + UIDisplay.Panel
+                        UI.Element.Display + displayPanel()
                     )
                 }
             }
             else -> emptyList()
 
+        } + when {
+            inputMatching != null -> listOf(
+                UI.Element.Display + display.plus(UIDisplay.Input)
+            )
+            else -> emptyList()
         }
         UI.Element.Ready -> when {
             isReady && config.autoExecute -> listOf(
@@ -168,16 +174,18 @@ private fun UI.State.processUpdate(
             else -> emptyList()
         }
         UI.Element.Execute -> when {
-            method!!.result != Api.Type.Empty -> listOf(
+            method!!.hasResult -> listOf(
                 UI.Element.Stack + resolveNextView()
             )
-            else -> executeCommand().run {
+            else -> {
+                executeCommand()
                 listOf(
-                    UI.Element.Display + displayDataOrPanel(),
+                    UI.Element.Display + defaultDisplay(),
                     UI.Element.Text.default(),
                     UI.Element.Method.default(),
                 )
             }
         }
+        UI.Element.Display -> emptyList()
         else -> emptyList()
     }

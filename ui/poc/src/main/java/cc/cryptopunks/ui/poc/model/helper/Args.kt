@@ -5,7 +5,7 @@ import cc.cryptopunks.ui.poc.model.UI
 import cc.cryptopunks.ui.poc.model.UIData
 
 fun UI.State.isRequiredArg(text: String): Boolean =
-    null != when (param?.type?.type) {
+    text.isNotBlank() && null != when (param?.type?.type) {
         "string" -> text
         "boolean" -> text.toBooleanStrictOrNull()
         "integer" -> text.toIntOrNull()

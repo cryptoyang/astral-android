@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 typealias UIArgs = Map<String, Any>
 
-enum class UIDisplay { Panel, Data }
+enum class UIDisplay { Panel, Data, Input, Method }
 
 data class UIParam(val name: String, val type: Api.Type, val resolvers: Iterable<UIResolver>)
 
