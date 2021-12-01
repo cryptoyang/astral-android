@@ -12,8 +12,7 @@ private fun eventHandler(
 
     var state: UI.State = stateRef.get()
     var remaining: List<UIMessage> = state.generateMessages(event)
-    var acc: List<UIMessage> = remaining
-    var acc2: List<UIMessage> = emptyList()
+    var acc: List<UIMessage> = emptyList()
 
     while (remaining.isNotEmpty()) {
         val next = remaining.first()
@@ -27,8 +26,7 @@ private fun eventHandler(
         }
         state = newState
         remaining = results + remaining.drop(1)
-        acc = acc + results
-        acc2 = acc2 + next
+        acc = acc + next
     }
 
     val output = acc.map { message ->
@@ -53,9 +51,12 @@ private fun UI.State.generateMessages(
     is UI.Event.Configure -> listOf(
         UI.Element.Config + UIConfig(config + event.config)
     )
-    is UI.Event.Text -> listOf(
-        UI.Element.Text + event.value.orEmpty(),
-    )
+    is UI.Event.Text -> when (text) {
+//        event.value.orEmpty() -> emptyList() // TODO to fix refresh after send issue, start here
+        else -> listOf(
+            UI.Element.Text + event.value.orEmpty(),
+        )
+    }
     is UI.Event.Method -> listOf(
         UI.Element.Method + event.method,
     )
@@ -161,11 +162,13 @@ private fun UI.State.processUpdate(
             }
             else -> emptyList()
 
-        } + when {
-            inputMatching != null -> listOf(
+        } + when (val matching = inputMatching) {
+            null -> emptyList()
+            else -> listOfNotNull(
+                if (method != null) null
+                else UI.Element.Method + matching.method,
                 UI.Element.Display + display.plus(UIDisplay.Input)
             )
-            else -> emptyList()
         }
         UI.Element.Ready -> when {
             isReady && config.autoExecute -> listOf(
