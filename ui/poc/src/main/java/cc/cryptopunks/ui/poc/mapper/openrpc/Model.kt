@@ -67,7 +67,7 @@ private fun Parser.parseType(
     type: String
 ): Api.Type =
     when (type) {
-        "int", "boolean", "string" -> Api.Type(type, shortName, options = parseOptions(node))
+        "integer", "boolean", "string" -> Api.Type(type, shortName, options = parseOptions(node))
         "array" -> parseArray(shortName, node, type)
         "object" -> Api.Type(type, shortName, parseProperties(node))
         else -> throw IllegalArgumentException("Cannot parse unknown type $type of $node")

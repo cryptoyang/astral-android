@@ -84,10 +84,12 @@ suspend fun DataView.update(
         if (layout.content != UILayout.Many.Empty) {
             val node = data.resolve(layout.content.path)
             dataAdapter.updateView = updateView
-            dataAdapter.items = when {
-                node.isArray -> (node as ArrayNode).toList()
-                node.isEmpty -> emptyList()
-                else -> listOf(node)
+            when {
+                node.isEmpty -> dataAdapter.set(emptyList())
+                node.isArray -> dataAdapter.set((node as ArrayNode).toList())
+                node.isObject -> when {
+                    node["add"] != null -> dataAdapter.add((node["add"] as ArrayNode))
+                }
             }
         } else {
             dataAdapter.items = emptyList()

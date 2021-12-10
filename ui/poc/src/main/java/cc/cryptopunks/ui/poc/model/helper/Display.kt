@@ -11,9 +11,7 @@ fun UI.State.switchDisplay() = when {
 
 fun UI.State.displayPanel() = display - UIDisplay.Data + UIDisplay.Panel
 
-fun UI.State.displayData() = display - UIDisplay.Panel + UIDisplay.Data
-
-fun UI.State.defaultDisplay() = when {
+fun UI.State.properDisplay() = when {
     stack.isNotEmpty() -> setOf(UIDisplay.Data)
     else -> setOf(UIDisplay.Panel)
 }

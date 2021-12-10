@@ -7,16 +7,25 @@ import androidx.recyclerview.widget.RecyclerView
 import cc.cryptopunks.ui.poc.R
 import com.fasterxml.jackson.databind.JsonNode
 import splitties.views.inflate
-import kotlin.properties.Delegates
 
 @SuppressLint("NotifyDataSetChanged")
 class DataAdapter(
     var updateView: UpdateView = {},
-    var onClickListener: View.OnClickListener = View.OnClickListener { },
+    var onClickListener: View.OnClickListener = View.OnClickListener {},
 ) : RecyclerView.Adapter<DataAdapter.ViewHolder>() {
 
-    var items: List<JsonNode> by Delegates.observable(emptyList()) { property, oldValue, newValue ->
+    var items: List<JsonNode> = emptyList()
+
+    fun set(iterable: Iterable<JsonNode>) {
+        items = iterable.toList()
         notifyDataSetChanged()
+    }
+
+    fun add(iterable: Iterable<JsonNode>) {
+        val positionStart = items.size
+        val newItems = iterable.toList()
+        items = items + newItems
+        notifyItemRangeInserted(positionStart, newItems.size)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =

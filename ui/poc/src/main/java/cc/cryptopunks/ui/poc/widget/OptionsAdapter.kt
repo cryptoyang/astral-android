@@ -10,8 +10,7 @@ import androidx.viewbinding.ViewBinding
 import cc.cryptopunks.ui.poc.databinding.CommandItemBinding
 import cc.cryptopunks.ui.poc.databinding.TextItemBinding
 import cc.cryptopunks.ui.poc.model.Api
-import cc.cryptopunks.ui.poc.model.UIMatching
-import cc.cryptopunks.ui.poc.model.UIMethodScore
+import cc.cryptopunks.ui.poc.model.UIMethod
 import kotlin.properties.Delegates
 
 class ViewBindingHolder(val binding: ViewBinding) : RecyclerView.ViewHolder(binding.root)
@@ -42,8 +41,7 @@ class OptionsAdapter(
         when (item) {
             is String -> holder.itemView.let { it as TextView }.text = item
             is Boolean -> holder.itemView.let { it as TextView }.text = item.toString()
-            is UIMethodScore -> holder.binding.let { it as CommandItemBinding }.set(item)
-            is UIMatching -> holder.binding.let { it as CommandItemBinding }.set(item)
+            is UIMethod -> holder.binding.let { it as CommandItemBinding }.set(item)
             is Api.Method -> holder.binding.let { it as CommandItemBinding }.set(item)
         }
         holder.itemView.tag = item
@@ -54,8 +52,7 @@ class OptionsAdapter(
     override fun getItemViewType(position: Int): Int = when (items[position]) {
         is String -> 0
         is Boolean -> 0
-        is UIMethodScore -> 1
-        is UIMatching -> 1
+        is UIMethod -> 1
         is Api.Method -> 1
         else -> -1
     }

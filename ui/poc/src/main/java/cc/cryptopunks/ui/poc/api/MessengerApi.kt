@@ -26,6 +26,7 @@ object MessengerApi : Rpc.Api() {
         val from: Contact.Id,
         val to: Contact.Id,
         val text: String,
+        val time: Long = System.currentTimeMillis()
     ) {
         data class Id(val value: String)
     }

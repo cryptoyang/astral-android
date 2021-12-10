@@ -21,8 +21,13 @@ private fun eventHandler(
             else -> state
         }
         val results = when (next) {
-            is UIUpdate<*, *> -> newState.processUpdate(event, next)
-            UI.Action.Exit -> emptyList()
+            is UIUpdate<*, *> -> {
+                if (next.element is UI.Element.Execute) {
+                    remaining = remaining.take(1)
+                }
+                newState.processUpdate(event, next)
+            }
+            else -> emptyList()
         }
         state = newState
         remaining = results + remaining.drop(1)
@@ -45,7 +50,7 @@ private fun UI.State.generateMessages(
         UI.Element.Config + UIConfig(config + event.config)
     )
     is UI.Event.Text -> when (text) {
-//        event.value.orEmpty() -> emptyList() // TODO to fix refresh after send issue, start here
+        event.value.orEmpty() -> emptyList() // TODO to fix refresh after send issue, start here
         else -> listOf(
             UI.Element.Text + event.value.orEmpty(),
         )
@@ -94,9 +99,9 @@ private fun UI.State.processUpdate(
     when (update.element) {
         UI.Element.Context -> emptyList()
         UI.Element.Stack -> listOf(
-            UI.Element.Display + defaultDisplay(),
-            UI.Element.Text.default(),
-            UI.Element.Method.default(),
+            UI.Element.Display + properDisplay(),
+            UI.Element.Method + null,
+            UI.Element.Text + "",
         )
         UI.Element.Method -> listOf(
             UI.Element.Selection + emptyList(),
@@ -107,14 +112,12 @@ private fun UI.State.processUpdate(
         )
         UI.Element.Args -> listOf(
             UI.Element.Param + nextParam(),
+            UI.Element.Ready + isReady()
         )
         UI.Element.Param -> when {
-            param == null -> listOf(
-                UI.Element.Ready + isReady()
-            )
-            config.autoFill -> when (val selectedArg = argDataFromSelection()) {
+            method != null && config.autoFill -> when (val selectedArg = argDataFromSelection()) {
                 null -> listOf(
-                    UI.Element.Matching + calculateMatching(),
+                    UI.Element.Methods + calculateMatching(),
                 )
                 else -> listOf(
                     UI.Element.Args + argsWith(selectedArg),
@@ -125,43 +128,43 @@ private fun UI.State.processUpdate(
         }
         UI.Element.Selection -> when {
             selection.isEmpty() -> emptyList()
-            else -> when {
-                method != null -> listOf(
-                    UI.Element.Param + param
-                )
-                method == null -> listOf(
-                    UI.Element.Matching + calculateMatching(),
-                )
-                else -> emptyList()
-            }
+            method != null -> listOf(UI.Element.Param + param)
+            method == null -> listOf(UI.Element.Methods + calculateMatching())
+            else -> emptyList()
         }
         UI.Element.Text -> listOf(
-            UI.Element.Matching + calculateMatching(),
+            UI.Element.Methods + calculateMatching(),
         )
-        UI.Element.Matching -> when {
-            method == null
-                && event is UI.Event.Clicked
-                && config.autoFill
-            -> selectionMatchingMethods().filter(UIMatching::isReady).run {
-                when {
-                    isEmpty() -> emptyList()
-                    size == 1 -> listOf(
-                        UI.Element.Method + first().method,
-                    )
-                    else -> listOf(
-                        UI.Element.Display + displayPanel()
-                    )
+        UI.Element.Methods -> {
+            if (!(config.autoFill && (
+                    event is UI.Event.Clicked ||
+                        event is UI.Event.Action ||
+                        event is UI.Event.Text
+                    ))
+            ) emptyList()
+            else when (method) {
+                null -> selectionMatchingMethods().filter(UIMethod::isReady).run {
+                    when {
+                        isEmpty() -> emptyList()
+                        size == 1 -> listOf(
+                            UI.Element.Method + first().method,
+                        )
+                        else -> listOf(
+                            UI.Element.Display + displayPanel()
+                        )
+                    }
                 }
+                else -> emptyList()
+            } + when (
+                val matching = inputMethod
+            ) {
+                null -> emptyList()
+                else -> listOfNotNull(
+                    if (method != null) null
+                    else UI.Element.Method + matching.method,
+                    UI.Element.Display + display.plus(UIDisplay.Input)
+                )
             }
-            else -> emptyList()
-
-        } + when (val matching = inputMatching) {
-            null -> emptyList()
-            else -> listOfNotNull(
-                if (method != null) null
-                else UI.Element.Method + matching.method,
-                UI.Element.Display + display.plus(UIDisplay.Input)
-            )
         }
         UI.Element.Ready -> when {
             isReady && config.autoExecute -> listOf(
@@ -176,9 +179,9 @@ private fun UI.State.processUpdate(
             else -> {
                 executeCommand()
                 listOf(
-                    UI.Element.Display + defaultDisplay(),
-                    UI.Element.Text.default(),
-                    UI.Element.Method.default(),
+                    UI.Element.Display + properDisplay(),
+                    UI.Element.Method.empty(),
+                    UI.Element.Text.empty(),
                 )
             }
         }

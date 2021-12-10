@@ -1,35 +1,46 @@
 package cc.cryptopunks.ui.poc.model.helper
 
-import cc.cryptopunks.ui.poc.model.UI
-import cc.cryptopunks.ui.poc.model.UIParam
-import cc.cryptopunks.ui.poc.model.UIResolver
+import cc.cryptopunks.ui.poc.model.*
 
-fun UI.State.nextParam() =
-    (method?.params ?: emptyMap())
-        .minus(args.keys).toList().firstOrNull()
+fun UI.State.nextParam(): UIParam? =
+    context.nextParam(stack, method, args)
+
+fun UI.Context.nextParam(
+    stack: List<UIView>,
+    method: Api.Method?,
+    args: UIArgs
+): UIParam? =
+    if (method == null) null
+    else method.params.minus(args.keys)
+        .toList().firstOrNull()
         ?.let { (name, type) ->
             UIParam(
                 name = name,
                 type = type,
-                resolvers = context.resolvers[type.id]
-                    ?: context.resolvers[type.type]
-                    ?: throw IllegalArgumentException("no resolver ${context.resolvers} for $type")
-            ).let { param ->
-                val next = updateResolvers(param)
-                next
-            }
+                resolvers = resolvers(stack, type)
+            )
         }
 
+private fun UI.Context.resolvers(
+    stack: List<UIView>,
+    type: Api.Type
+): Iterable<UIResolver> {
 
-private fun UI.State.updateResolvers(param: UIParam): UIParam {
+    val defaultResolvers = resolvers[type.id]
+        ?: resolvers[type.type]
+        ?: throw IllegalArgumentException("no resolver $resolvers for $type")
 
-    val view = stack.lastOrNull() ?: return param
-
-    param.resolvers
-        .filterIsInstance<UIResolver.Method>()
-        .any { method -> method.method.id == view.source.id } || return param
-
-    return param.copy(
-        resolvers = param.resolvers + UIResolver.Data(view)
+    val additionalResolvers = listOfNotNull(
+        stack.lastOrNull()
+            ?.takeIf { view ->
+                defaultResolvers
+                    .filterIsInstance<UIResolver.Method>()
+                    .any { method -> method.method.id == view.source.id }
+            }
+            ?.let { view ->
+                UIResolver.Data(view)
+            }
     )
+
+    return defaultResolvers + additionalResolvers
 }

@@ -20,3 +20,9 @@ interface Rpc {
 
 fun Any.rpcCommands(): List<KClass<*>> =
     this::class.nestedClasses.filter { type -> type.isSubclassOf(Rpc.Command::class) }
+
+data class ListUpdate<T>(
+    val init: List<T> = emptyList(),
+    val add: List<T> = emptyList(),
+    val remove: List<T> = emptyList(),
+)

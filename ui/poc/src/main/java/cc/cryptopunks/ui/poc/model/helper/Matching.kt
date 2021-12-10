@@ -4,71 +4,74 @@ import cc.cryptopunks.ui.poc.model.*
 import cc.cryptopunks.ui.poc.model.util.removeFirst
 import com.fasterxml.jackson.databind.JsonNode
 
-fun UI.State.calculateMatching(): List<UIMatching> {
-    val availableData = generateUIDataFromStack() + selection + textChunks
+fun UI.State.calculateMatching(): List<UIMethod> =
+    context.model.methods.values.calculateMatching(
+        availableData = generateUIDataFromStack() + selection + textChunks
+    )
 
-    return context.model.methods.values.map { method ->
+fun Collection<Api.Method>.calculateMatching(
+    availableData: List<UIData> = emptyList()
+): List<UIMethod> = map { method ->
 
-        val template = method.template().toMutableList()
-        val remaining = availableData.toMutableList()
-        val elements = mutableListOf<UIMatching.Element>()
+    val template = method.template().toMutableList()
+    val remaining = availableData.toMutableList()
+    val elements = mutableListOf<UIMethod.Element>()
 
-        while (remaining.isNotEmpty()) {
-            val data = remaining.removeAt(0)
+    while (remaining.isNotEmpty()) {
+        val data = remaining.removeAt(0)
 
-            val matchingType = template.removeFirst { type ->
-                when (data.value) {
-                    is String -> when (type) {
-                        UIMatching.Type.MethodName -> method.id.startsWith(data.value)
-                        is UIMatching.Type.ArgName -> type.name.startsWith(data.value)
-                        is UIMatching.Type.ArgType -> method.params[type.name]!!.id.startsWith(data.value)
-                        is UIMatching.Type.ArgValue -> {
-                            val paramType = method.params[type.name]!!
-                            if (data.value.toString() in paramType.options) true
-                            else when (paramType.type) {
-                                Api.Type.str -> true
-                                Api.Type.bool -> data.value.toBooleanStrictOrNull() != null
-                                Api.Type.int -> data.value.toIntOrNull() != null
-                                Api.Type.num -> data.value.toDoubleOrNull() != null
-                                else -> false
-                            }
+        val matchingType = template.removeFirst { type ->
+            when (data.value) {
+                is String -> when (type) {
+                    UIMethod.Type.MethodName -> method.id.startsWith(data.value)
+                    is UIMethod.Type.ArgName -> type.name.startsWith(data.value)
+                    is UIMethod.Type.ArgType -> method.params[type.name]!!.id.startsWith(data.value)
+                    is UIMethod.Type.ArgValue -> {
+                        val paramType = method.params[type.name]!!
+                        if (data.value.toString() in paramType.options) true
+                        else when (paramType.type) {
+                            Api.Type.str -> true
+                            Api.Type.bool -> data.value.toBooleanStrictOrNull() != null
+                            Api.Type.int -> data.value.toIntOrNull() != null
+                            Api.Type.num -> data.value.toDoubleOrNull() != null
+                            else -> false
                         }
-                        else -> false
                     }
-                    else -> when (type) {
-                        is UIMatching.Type.ArgValue -> method.params[type.name]!!.id == data.type.id
-                        else -> false
-                    }
+                    else -> false
                 }
-            } ?: UIMatching.Type.Unknown
+                else -> when (type) {
+                    is UIMethod.Type.ArgValue -> method.params[type.name]!!.id == data.type.id
+                    else -> false
+                }
+            }
+        } ?: UIMethod.Type.Unknown
 
-            elements += UIMatching.Element(
-                type = matchingType,
-                value = data.value
-            )
-        }
-
-        elements += template.map { type ->
-            UIMatching.Element(
-                type = type,
-                value = UIMatching.Type.Unknown,
-            )
-        }
-
-        UIMatching(
-            method = method,
-            elements = elements,
+        elements += UIMethod.Element(
+            type = matchingType,
+            value = data.value
         )
-    }.sortedBy(UIMatching::score)
-}
+    }
 
-private fun Api.Method.template(): List<UIMatching.Type> = listOf(
-    UIMatching.Type.MethodName
+    elements += template.map { type ->
+        UIMethod.Element(
+            type = type,
+            value = UIMethod.Type.Unknown,
+        )
+    }
+
+    UIMethod(
+        method = method,
+        elements = elements,
+    )
+}.sortedBy(UIMethod::score)
+
+private fun Api.Method.template(): List<UIMethod.Type> = listOf(
+    UIMethod.Type.MethodName
 ) + params.flatMap { (name, type) ->
     listOf(
-        UIMatching.Type.ArgName(name),
-        UIMatching.Type.ArgType(name),
-        UIMatching.Type.ArgValue(name, type.type == Api.Type.obj),
+        UIMethod.Type.ArgName(name),
+        UIMethod.Type.ArgType(name),
+        UIMethod.Type.ArgValue(name, type.type == Api.Type.obj),
     )
 }
 
@@ -82,15 +85,15 @@ private val UI.State.textChunks
 
 fun CharSequence.splitChunks() = split(" ").filter { it.isNotBlank() }
 
-fun UIMatching.calculateScore(): Int =
+fun UIMethod.calculateScore(): Int =
     elements.mapNotNull { element ->
         when {
-            element.type == UIMatching.Type.Unknown -> when (element.value) {
+            element.type == UIMethod.Type.Unknown -> when (element.value) {
                 is JsonNode -> 2 shl 8
                 else -> 1 shl 4
             }
-            element.value == UIMatching.Type.Unknown -> when (element.type) {
-                is UIMatching.Type.ArgValue -> when {
+            element.value == UIMethod.Type.Unknown -> when (element.type) {
+                is UIMethod.Type.ArgValue -> when {
                     element.type.complex -> 2 shl 8
                     else -> 1 shl 8
                 }
@@ -100,25 +103,24 @@ fun UIMatching.calculateScore(): Int =
         }
     }.sum()
 
-fun UIMatching.args(): UIArgs = elements
-    .filter { it.type is UIMatching.Type.ArgValue }
-    .filter { it.value !is UIMatching.Type.Unknown }
-    .associate { (it.type as UIMatching.Type.ArgValue).name to it.value }
+fun UIMethod.args(): UIArgs = elements
+    .filter { it.type is UIMethod.Type.ArgValue }
+    .filter { it.value !is UIMethod.Type.Unknown }
+    .associate { (it.type as UIMethod.Type.ArgValue).name to it.value }
 
-fun UI.State.selectionMatchingMethods(): List<UIMatching> {
+fun UI.State.selectionMatchingMethods(): List<UIMethod> {
     val selectedValues = selection.map(UIData::value)
-    return matching.filter { (it.args.values intersect selectedValues).isNotEmpty() }
+    return methods.filter { (it.args.values intersect selectedValues).isNotEmpty() }
 }
 
-val UI.State.inputMatching
-    get() = matching.singleOrNull { uiMatching ->
-        uiMatching.method.params.toList()
-            .singleOrNull { it.second.type == Api.Type.str }
-            ?.let { (name, _) ->
-                uiMatching.method.params.keys
-                    .minus(name)
-                    .minus(uiMatching.args.keys)
-                    .isEmpty()
-            }
-            ?: false
-    }
+val UI.State.inputMethod: UIMethod?
+    get() = methods.inputMatching()
+
+fun List<UIMethod>.inputMatching(): UIMethod? =
+    singleOrNull { uiMatching -> uiMatching.singleTextArg }
+
+fun UIMethod.hasSingleTextInput(): Boolean = method.params.toList()
+    .singleOrNull { (_, apiType) -> apiType.type == Api.Type.str }
+    ?.let { (name, _) -> method.params.keys - args.keys - name }
+    ?.isEmpty()
+    ?: false

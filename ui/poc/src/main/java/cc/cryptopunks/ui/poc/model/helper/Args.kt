@@ -4,6 +4,8 @@ import cc.cryptopunks.ui.poc.model.Api
 import cc.cryptopunks.ui.poc.model.UI
 import cc.cryptopunks.ui.poc.model.UIData
 
+val UI.State.textIsRequiredArg get() = isRequiredArg(text)
+
 fun UI.State.isRequiredArg(text: String): Boolean =
     text.isNotBlank() && null != when (param?.type?.type) {
         "string" -> text
@@ -20,6 +22,8 @@ fun UI.State.isRequiredArg(data: UIData): Boolean = when {
 
 fun UI.State.argDataFromSelection() =
     selection.firstOrNull { data -> isRequiredArg(data) }
+
+fun UI.State.argsWith(arg: Pair<String, Any>) = args + arg
 
 fun UI.State.argsWith(value: Any) = args + (param!!.name to value)
 
@@ -43,7 +47,7 @@ fun UI.State.defaultArgs(): Map<String, Any> =
 fun UI.State.matchedArgs() =
     when (val method = method) {
         null -> emptyMap()
-        else -> matching.firstOrNull { it.method.id == method.id }
+        else -> methods.firstOrNull { it.method.id == method.id }
             ?.args
             ?: emptyMap()
     }

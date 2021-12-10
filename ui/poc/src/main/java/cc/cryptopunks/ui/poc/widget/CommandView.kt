@@ -133,8 +133,7 @@ fun CommandView.uiEvents(): Flow<UI.Event> = channelFlow {
 
     optionsAdapter.onClickListener = View.OnClickListener { view ->
         when (val item = view.tag) {
-            is UIMethodScore -> +UI.Event.Method(item.method)
-            is UIMatching -> +UI.Event.Method(item.method)
+            is UIMethod -> +UI.Event.Method(item.method)
             is String -> +UI.Event.Clicked("string", item)
             is Boolean -> +UI.Event.Clicked("boolean", item)
         }
@@ -171,10 +170,10 @@ private fun CommandView.update(state: UI.State, output: UI.Output) {
                 inputView.text = null
         }
 
-        UI.Element.Matching -> {
+        UI.Element.Methods -> {
             if (state.method == null) {
                 inputView.hint = "find command by name or param"
-                optionsAdapter.items = state.matching
+                optionsAdapter.items = state.methods
             }
         }
 
@@ -183,26 +182,18 @@ private fun CommandView.update(state: UI.State, output: UI.Output) {
                 val resolver = resolvers.minOrNull()
             ) {
                 is UIResolver.Data -> {
-                    dynamicView.isVisible = true
-                    recyclerView.isVisible = false
                     inputView.hint = "select data from list"
                 }
                 is UIResolver.Option -> {
                     optionsAdapter.items = resolver.list
-                    dynamicView.isVisible = false
-                    recyclerView.isVisible = true
                     inputView.hint = "select option"
                 }
                 is UIResolver.Input -> when (resolver.type) {
                     Api.Type.bool -> {
                         optionsAdapter.items = listOf(false, true)
-                        dynamicView.isVisible = false
-                        recyclerView.isVisible = true
                         inputView.hint = "select option"
                     }
                     else -> {
-                        dynamicView.isVisible = false
-                        recyclerView.isVisible = false
                         inputView.hint = when (resolver.type) {
                             Api.Type.str -> "type text"
                             Api.Type.int -> "type integer"
@@ -211,17 +202,13 @@ private fun CommandView.update(state: UI.State, output: UI.Output) {
                         }
                     }
                 }
-                is UIResolver.Method -> {
-                    dynamicView.isVisible = false
-                    recyclerView.isVisible = true
-                }
             }
 
             inputView.hint = "provide $name"
         }
 
-        UI.Element.Method, is UI.Element.Args -> {
-            commandLayout.isVisible = state.method != null
+        UI.Element.Method,
+        is UI.Element.Args -> {
             state.method?.let { method ->
                 commandBinding.set(
                     method,
@@ -232,8 +219,8 @@ private fun CommandView.update(state: UI.State, output: UI.Output) {
 
         UI.Element.Display -> state.display.let { display ->
             val displayPanel = UIDisplay.Panel in display
-            val displayInput = displayPanel || UIDisplay.Input in display
-            val displayCommand = displayPanel && UI.Element.Method in state
+            val displayInput = UIDisplay.Input in display
+            val displayCommand = UIDisplay.Method in display
             val displayData = UIDisplay.Data in display
             inputView.isVisible = displayInput
             recyclerView.isVisible = displayPanel
@@ -253,7 +240,7 @@ private fun CommandView.update(state: UI.State, output: UI.Output) {
                 launch {
                     dynamicView.update(
                         layout = state.context.layouts[view.source.id]!!,
-                        updates = view.data
+                        updates = view.data()
                     )
                 }
             }

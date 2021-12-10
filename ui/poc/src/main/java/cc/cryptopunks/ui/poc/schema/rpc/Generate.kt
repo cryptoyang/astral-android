@@ -15,13 +15,31 @@ import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.memberProperties
 
 fun main() {
-    val doc = MessengerApi.generateOpenRpcDocument()
-    Jackson.jsonPrettyWriter.writeValueAsString(doc).let {
-        println(it)
-        val parsed = Jackson.jsonSlimMapper.readValue(it, OpenRpc.Document::class.java)
-        println(parsed)
-    }
+//    val doc = MessengerApi.generateOpenRpcDocument()
+//    Jackson.jsonPrettyWriter.writeValueAsString(doc).let {
+//        println(it)
+//        val parsed = Jackson.jsonSlimMapper.readValue(it, OpenRpc.Document::class.java)
+//        println(parsed)
+//    }
+
+    Jackson.jsonPrettyWriter.writeValueAsString(
+        TestListHolder(
+            int = 1,
+            list = ListUpdate(
+                add = listOf(
+                    "asd",
+                    "dsa",
+                    "1111"
+                )
+            )
+        )
+    ).let(::println)
 }
+
+data class TestListHolder(
+    val int: Int,
+    val list: ListUpdate<String>,
+)
 
 fun Rpc.Api.generateOpenRpcDocument(): OpenRpc.Document =
     generateOpenRpcDocument(

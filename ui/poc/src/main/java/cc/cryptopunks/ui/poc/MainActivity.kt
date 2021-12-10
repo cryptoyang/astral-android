@@ -8,6 +8,7 @@ import cc.cryptopunks.ui.poc.api.MessengerApi
 import cc.cryptopunks.ui.poc.model.UI
 import cc.cryptopunks.ui.poc.model.UIUpdate
 import cc.cryptopunks.ui.poc.model.eventHandler
+import cc.cryptopunks.ui.poc.model.eventHandler2
 import cc.cryptopunks.ui.poc.model.factory.invoke
 import cc.cryptopunks.ui.poc.schema.rpc.generateOpenRpcDocument
 import cc.cryptopunks.ui.poc.widget.*
@@ -29,7 +30,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         val doc = MessengerApi.generateOpenRpcDocument()
         val uiContext = UI.Context(doc)
         val initial = UI.State(uiContext)
-        eventHandler(initial)
+        eventHandler2(initial)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,7 +61,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             else -> throw IllegalArgumentException()
         }
         item.isChecked = !item.isChecked
-        val event = UI.Event.Configure(propertyName to item.isChecked)
+        val event = UI.Event.Configure(mapOf(propertyName to item.isChecked))
         handleAndUpdate(event)
         return true
     }
@@ -74,7 +75,7 @@ fun UI.Change.printLog() = also {
         appendLine("---------")
         output.map { message ->
             val (out, value) = when (message) {
-                is UI.Action -> message to null
+                is UI.Action -> message to message
                 is UIUpdate<*, *> -> message.run { element to value }
             }
             out.formatLogName() + ": " + value

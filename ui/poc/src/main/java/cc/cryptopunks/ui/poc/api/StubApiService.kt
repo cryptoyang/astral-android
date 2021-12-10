@@ -1,5 +1,6 @@
 package cc.cryptopunks.ui.poc.api
 
+import cc.cryptopunks.ui.poc.schema.rpc.ListUpdate
 import cc.cryptopunks.ui.poc.schema.rpc.Rpc
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -51,7 +52,9 @@ private val messagesFlow = MutableSharedFlow<List<MessengerApi.Message>>(replay 
 
 private val overviewFlow: Flow<List<MessengerApi.Overview.Item>>
     get() = messagesFlow.map { list ->
-        list.map {
+        list.groupBy { it.contact }.mapValues { (_, messages) ->
+            messages.maxByOrNull { it.time }!!
+        }.values.sortedByDescending { it.time }.map {
             MessengerApi.Overview.Item(
                 contact = it.contact,
                 lastMessage = it
@@ -70,7 +73,19 @@ fun handle(exec: Rpc.Command): Flow<Any> =
     when (exec) {
         is MessengerApi.GetOverview -> overviewFlow
         is MessengerApi.GetContacts -> flowOf(MessengerApi.Contacts(contacts))
-        is MessengerApi.GetMessages -> messagesFlow.map { messages -> messages.filter { it.contact.id == exec.id } }
+        is MessengerApi.GetMessages -> {
+            var prev = emptyList<MessengerApi.Message>()
+            messagesFlow
+                .map { messages -> messages.filter { it.contact.id == exec.id } }
+                .map { current ->
+                    when {
+                        prev.isEmpty() -> current
+                        else -> ListUpdate(add = current - prev)
+                    }.also {
+                        prev = current
+                    }
+                }
+        }
         is MessengerApi.SendMessage -> {
             scope.launch {
                 val message = MessengerApi.Message(

@@ -5,8 +5,6 @@ import cc.cryptopunks.ui.poc.mapper.openrpc.toModel
 import cc.cryptopunks.ui.poc.model.factory.generateLayouts
 import cc.cryptopunks.ui.poc.model.factory.resolvers
 import cc.cryptopunks.ui.poc.schema.rpc.OpenRpc
-import com.fasterxml.jackson.databind.JsonNode
-import kotlinx.coroutines.flow.Flow
 
 object UI {
 
@@ -14,15 +12,33 @@ object UI {
         object Init : Event
         object Action : Event
         object Back : Event
-        data class Configure(val config: Map<String, Any>) : Event {
-            constructor(vararg config: Pair<String, Any>) : this(config.toMap())
-        }
+        data class Configure(val config: Map<String, Any>) : Event
         data class Clicked(val id: String, val value: Any) : Event
         data class Text(val value: String? = null) : Event
         data class Method(val method: Api.Method) : Event
     }
 
     sealed interface Action : Output, UIMessage {
+        object Init : Action
+        data class SetMethod(val method: Api.Method) : Action
+        data class SetArg(val key: String, val value: Any) : Action
+        data class SetArgs(val args: UIArgs) : Action
+        data class SetText(val text: String) : Action
+        data class SetSelection(val data: List<UIData>) : Action
+        data class Configure(val config: Map<String, Any>) : Action
+        object DropView : Action
+        object DropMethod : Action
+        object DropArg : Action
+
+        // internal
+        object NextParam : Action
+        object CalculateMatching : Action
+        object InferInputMethod : Action
+        object SelectMethod : Action
+        object SelectArg : Action
+        object SwitchDisplay : Action
+        object SwitchMode : Action
+        object Execute : Action
         object Exit : Action
     }
 
@@ -33,8 +49,9 @@ object UI {
         object Config : UIElement<UIConfig>(UIConfig())
         object Stack : UIElement<List<UIView>>(emptyList())
         object Display : UIElement<Set<UIDisplay>>(setOf(UIDisplay.Panel))
+        object Mode : UIElement<UIMode>(UIMode.Command)
         object Method : UIElement<Api.Method?>(null)
-        object Matching : UIElement<List<UIMatching>>(emptyList())
+        object Methods : UIElement<List<UIMethod>>(emptyList())
         object Args : UIElement<UIArgs>(emptyMap())
         object Param : UIElement<UIParam?>(null)
         object Selection : UIElement<List<UIData>>(emptyList())
@@ -45,15 +62,23 @@ object UI {
 
     class State(elements: UIElements = emptyMap()) : UIState(elements) {
         val context by +Element.Context
+
         val config by +Element.Config
+
+        val methods by +Element.Methods
+
         val stack by +Element.Stack
+
+        val mode by +Element.Mode
         val method by +Element.Method
-        val matching by +Element.Matching
         val args by +Element.Args
+
+        val selection by +Element.Selection
+        val text by +Element.Text
+
         val display by +Element.Display
         val param by +Element.Param
-        val text by +Element.Text
-        val selection by +Element.Selection
+
         val isReady by +Element.Ready
 
         companion object
@@ -67,22 +92,7 @@ object UI {
         val requestData: UIRequestData = uiRequestData,
     )
 
-    data class Change(val event: Event, val state: State, val output: List<UIMessage>)
+    data class Change(val event: Event, val state: State, val output: List<UIMessage> = emptyList())
 
     sealed interface Output
-}
-
-typealias UIHandler = (UI.Event) -> UI.Change
-
-typealias UIRequestData = UIRequest.() -> Flow<JsonNode>
-
-data class UIRequest(val context: UI.Context, val method: Api.Method, val args: UIArgs)
-
-sealed class UIResolver(private val ordinal: Int) : Comparable<UIResolver> {
-    override fun compareTo(other: UIResolver): Int = ordinal.compareTo(other.ordinal)
-    data class Data(val view: UIView) : UIResolver(1)
-    data class Option(val list: List<String>) : UIResolver(2)
-    data class Method(val method: Api.Method, val path: Path) : UIResolver(3)
-    data class Path(val chunks: List<String>, val single: Boolean = true)
-    data class Input(val type: String) : UIResolver(4)
 }
