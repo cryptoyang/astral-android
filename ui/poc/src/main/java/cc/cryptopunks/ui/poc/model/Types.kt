@@ -10,14 +10,14 @@ typealias UIHandler = (UI.Event) -> UI.Change
 
 typealias UIRequestData = UIRequest.() -> Flow<JsonNode>
 
-data class UIRequest(val context: UI.Context, val method: Api.Method, val args: UIArgs)
+data class UIRequest(val context: UI.Context, val method: Service.Method, val args: UIArgs)
 
 enum class UIMode { View, Command }
 
 enum class UIDisplay { Panel, Data, Input, Method }
 
 data class UIMethod(
-    val method: Api.Method,
+    val method: Service.Method,
     val elements: List<Element>,
 ) {
     val score by lazy { calculateScore() }
@@ -43,7 +43,7 @@ typealias UIArgs = Map<String, Any>
 
 data class UIParam(
     val name: String,
-    val type: Api.Type,
+    val type: Service.Type,
     val resolvers: Iterable<UIResolver>
 )
 
@@ -51,12 +51,12 @@ sealed class UIResolver(private val ordinal: Int) : Comparable<UIResolver> {
     override fun compareTo(other: UIResolver): Int = ordinal.compareTo(other.ordinal)
     data class Data(val view: UIView) : UIResolver(1)
     data class Option(val list: List<String>) : UIResolver(2)
-    data class Method(val method: Api.Method, val path: Path) : UIResolver(3)
+    data class Method(val method: Service.Method, val path: Path) : UIResolver(3)
     data class Path(val chunks: List<String>, val single: Boolean = true)
     data class Input(val type: String) : UIResolver(4)
 }
 
-class UIView(val source: Api.Method, val args: UIArgs, val data: () -> Flow<JsonNode>) {
+class UIView(val source: Service.Method, val args: UIArgs, val data: () -> Flow<JsonNode>) {
     override fun toString(): String = source.javaClass.simpleName + args.toString()
 }
 
@@ -71,6 +71,43 @@ data class UIConfig(
 }
 
 data class UIData(
-    val type: Api.Type,
+    val type: Service.Type,
     val value: Any,
 )
+
+data class UIUpdate<E : UI.Element<T>, T>(val element: E, val value: T) : UIMessage
+
+typealias UIUpdates = List<UIUpdate<*, *>>
+
+data class UILayout(
+    val type: Service.Type = Service.Type.Empty,
+    val header: Single = Single.Empty,
+    val content: Many = Many.Empty,
+    val footer: Single = Single.Empty,
+) {
+    companion object {
+        val Empty = UILayout()
+    }
+
+    sealed interface Element {
+        val path: List<String>
+    }
+
+    data class Many(
+        val elements: Single = Single.Empty,
+        override val path: List<String> = emptyList(),
+    ) : Element {
+        companion object {
+            val Empty = Many()
+        }
+    }
+
+    data class Single(
+        val type: Service.Type = Service.Type.Empty,
+        override val path: List<String> = emptyList(),
+    ) : Element {
+        companion object {
+            val Empty = Single()
+        }
+    }
+}

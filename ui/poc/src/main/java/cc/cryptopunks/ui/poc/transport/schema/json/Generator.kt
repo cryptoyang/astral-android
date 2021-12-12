@@ -1,6 +1,6 @@
-package cc.cryptopunks.ui.poc.schema.json
+package cc.cryptopunks.ui.poc.transport.schema.json
 
-import cc.cryptopunks.ui.poc.api.MessengerApi
+import cc.cryptopunks.ui.poc.stub.MessengerApi
 import com.github.victools.jsonschema.generator.*
 import kotlin.reflect.KClass
 

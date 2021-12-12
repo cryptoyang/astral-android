@@ -2,14 +2,14 @@ package cc.cryptopunks.ui.poc.model.factory
 
 import cc.cryptopunks.ui.poc.model.*
 
-fun Api.Model.resolvers(): Map<String, Iterable<UIResolver>> = methods.values
+fun Service.Schema.resolvers(): Map<String, Iterable<UIResolver>> = methods.values
     .flatMapTo(mutableSetOf()) { method -> method.params.values }
-    .associateWith { type: Api.Type ->
-        when (type.type) {
+    .associateWith { type: Service.Type ->
+        when (type.kind) {
             "int", "boolean", "string" -> listOf(
                 when {
                     type.options.isNotEmpty() -> UIResolver.Option(type.options)
-                    else -> UIResolver.Input(type.type)
+                    else -> UIResolver.Input(type.kind)
                 }
             )
             "object" -> typeResolvers(type)
@@ -19,8 +19,8 @@ fun Api.Model.resolvers(): Map<String, Iterable<UIResolver>> = methods.values
     }
     .mapKeys { (type, _) -> type.hashId }
 
-private fun Api.Model.typeResolvers(
-    target: Api.Type
+private fun Service.Schema.typeResolvers(
+    target: Service.Type
 ): List<UIResolver.Method> =
     typeResolvers(
         targets = listOf(Chunk(target))
@@ -29,12 +29,12 @@ private fun Api.Model.typeResolvers(
         val path = chunks.mapNotNull { it.next?.first }
         UIResolver.Method(
             method = methods.values.first { it.result.id == chunk.type.id },
-            path = UIResolver.Path(path, chunk.all { it.type.type != "array" })
+            path = UIResolver.Path(path, chunk.all { it.type.kind != "array" })
         )
     }
 
 private data class Chunk(
-    val type: Api.Type,
+    val type: Service.Type,
     val next: Pair<String, Chunk>? = null
 ) : Iterable<Chunk> {
     private class ChunkIterator(
@@ -47,9 +47,9 @@ private data class Chunk(
     override fun iterator(): Iterator<Chunk> = ChunkIterator(this)
 }
 
-private fun Api.Model.typeResolvers(
+private fun Service.Schema.typeResolvers(
     targets: List<Chunk>,
-    types: List<Api.Type> = allTypes() - targets.types(),
+    types: List<Service.Type> = allTypes() - targets.types(),
 ): List<Chunk> = when {
     types.isEmpty() -> targets
 
@@ -80,10 +80,10 @@ private fun Api.Model.typeResolvers(
 
 private fun List<Chunk>.types() = map(Chunk::type)
 
-private fun Api.Model.allTypes(): List<Api.Type> =
+private fun Service.Schema.allTypes(): List<Service.Type> =
     types.values + methods.values
         .map { it.result }
-        .filter { it.type == "array" }
+        .filter { it.kind == "array" }
 
-val Api.Type.hashId: String
-    get() = if (id.isBlank()) type else id
+val Service.Type.hashId: String
+    get() = if (id.isBlank()) kind else id

@@ -1,20 +1,20 @@
 package cc.cryptopunks.ui.poc.mapper.openrpc
 
-import cc.cryptopunks.ui.poc.model.Api
-import cc.cryptopunks.ui.poc.schema.rpc.OpenRpc
-import cc.cryptopunks.ui.poc.schema.Schema
+import cc.cryptopunks.ui.poc.model.Service
+import cc.cryptopunks.ui.poc.transport.schema.rpc.OpenRpc
+import cc.cryptopunks.ui.poc.transport.schema.Schema
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.contains
 
 fun String.splitPath(): List<String> = split(".", "[", "]", "].").filter { it.isNotEmpty() }
 
-fun OpenRpc.Document.toModel(): Api.Model =
+fun OpenRpc.Document.toModel(): Service.Schema =
     Parser(this).run {
-        Api.Model(
+        Service.Schema(
             id = info.title,
             methods = methods.associate { rpcMethod ->
                 val id = shortName(rpcMethod.name)
-                id to Api.Method(
+                id to Service.Method(
                     id = id,
                     result = parseRefOrType(rpcMethod.result),
                     params = rpcMethod.params.associate { descriptor ->
@@ -28,31 +28,31 @@ fun OpenRpc.Document.toModel(): Api.Model =
 
 private class Parser(
     val doc: OpenRpc.Document,
-    val cache: MutableMap<String, Api.Type> = mutableMapOf(),
+    val cache: MutableMap<String, Service.Type> = mutableMapOf(),
 )
 
 private fun Parser.parseRefOrType(
     ref: OpenRpc.Ref<Schema>
-): Api.Type =
+): Service.Type =
     when {
         ref.ref.isNotBlank() -> parseRef(ref.ref)
         ref.value != null -> parseRefOrType(ref.ref, ref.value)
-        else -> Api.Type.Empty
+        else -> Service.Type.Empty
     }
 
 private fun Parser.parseRefOrType(
     shortName: String,
     node: JsonNode,
-): Api.Type =
+): Service.Type =
     when {
         "\$ref" in node -> parseRef(node["\$ref"].asText())
         "type" in node -> parseType(shortName, node, node["type"].asText())
-        else -> Api.Type.Empty
+        else -> Service.Type.Empty
     }
 
 private fun Parser.parseRef(
     fullRef: String
-): Api.Type =
+): Service.Type =
     fullRef.dropPath().let { id ->
         val shortId = shortName(id)
         cache.getOrPut(shortId) {
@@ -65,11 +65,11 @@ private fun Parser.parseType(
     shortName: String,
     node: JsonNode,
     type: String
-): Api.Type =
+): Service.Type =
     when (type) {
-        "integer", "boolean", "string" -> Api.Type(type, shortName, options = parseOptions(node))
+        "integer", "boolean", "string" -> Service.Type(type, shortName, options = parseOptions(node))
         "array" -> parseArray(shortName, node, type)
-        "object" -> Api.Type(type, shortName, parseProperties(node))
+        "object" -> Service.Type(type, shortName, parseProperties(node))
         else -> throw IllegalArgumentException("Cannot parse unknown type $type of $node")
     }
 
@@ -77,11 +77,11 @@ private fun Parser.parseArray(
     shortName: String,
     node: JsonNode,
     type: String
-): Api.Type {
+): Service.Type {
     val item = parseRefOrType(shortName, node["items"])
-    val arrayId = (item.id.takeIf(String::isNotBlank) ?: item.type) + ".array"
+    val arrayId = (item.id.takeIf(String::isNotBlank) ?: item.kind) + ".array"
     return cache.getOrPut(arrayId) {
-        Api.Type(type, arrayId, mapOf("items" to item))
+        Service.Type(type, arrayId, mapOf("items" to item))
     }
 }
 
@@ -96,7 +96,7 @@ private fun parseOptions(
 
 private fun Parser.parseProperties(
     node: JsonNode
-): Map<String, Api.Type> =
+): Map<String, Service.Type> =
     node["properties"]
         ?.run { fields().asSequence().associate { (key, value) -> key to parseRefOrType("", value) } }
         ?: throw NoSuchElementException("No properties for: " + node.toPrettyString())

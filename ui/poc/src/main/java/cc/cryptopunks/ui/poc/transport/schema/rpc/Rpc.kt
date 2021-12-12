@@ -1,4 +1,4 @@
-package cc.cryptopunks.ui.poc.schema.rpc
+package cc.cryptopunks.ui.poc.transport.schema.rpc
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import kotlin.reflect.KClass

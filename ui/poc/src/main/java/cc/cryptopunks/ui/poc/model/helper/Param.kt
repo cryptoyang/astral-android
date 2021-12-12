@@ -7,7 +7,7 @@ fun UI.State.nextParam(): UIParam? =
 
 fun UI.Context.nextParam(
     stack: List<UIView>,
-    method: Api.Method?,
+    method: Service.Method?,
     args: UIArgs
 ): UIParam? =
     if (method == null) null
@@ -23,11 +23,11 @@ fun UI.Context.nextParam(
 
 private fun UI.Context.resolvers(
     stack: List<UIView>,
-    type: Api.Type
+    type: Service.Type
 ): Iterable<UIResolver> {
 
     val defaultResolvers = resolvers[type.id]
-        ?: resolvers[type.type]
+        ?: resolvers[type.kind]
         ?: throw IllegalArgumentException("no resolver $resolvers for $type")
 
     val additionalResolvers = listOfNotNull(

@@ -1,9 +1,5 @@
 package cc.cryptopunks.ui.poc.model
 
-import cc.cryptopunks.ui.poc.api.MessengerApi
-import cc.cryptopunks.ui.poc.model.factory.invoke
-import cc.cryptopunks.ui.poc.schema.rpc.generateOpenRpcDocument
-
 fun main() {
     (0..10).forEach { params ->
 

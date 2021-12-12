@@ -3,188 +3,262 @@ package cc.cryptopunks.ui.poc.model
 import cc.cryptopunks.ui.poc.model.helper.*
 import java.util.concurrent.atomic.AtomicReference
 
+
 fun eventHandler(state: UI.State): UIHandler =
     eventHandler(AtomicReference(state))
 
-private fun eventHandler(
-    stateRef: AtomicReference<UI.State>,
-): UIHandler = { event: UI.Event ->
-
-    var state: UI.State = stateRef.get()
-    var remaining: List<UIMessage> = state.generateMessages(event)
-    var acc: List<UIMessage> = emptyList()
-
-    while (remaining.isNotEmpty()) {
-        val next = remaining.first()
-        val newState = when (next) {
-            is UIUpdate<*, *> -> state + next
-            else -> state
-        }
-        val results = when (next) {
-            is UIUpdate<*, *> -> {
-                if (next.element is UI.Element.Execute) {
-                    remaining = remaining.take(1)
-                }
-                newState.processUpdate(event, next)
-            }
-            else -> emptyList()
-        }
-        state = newState
-        remaining = results + remaining.drop(1)
-        acc = acc + next
-    }
-
-    stateRef.set(state)
-
-    UI.Change(event, state, acc)
+fun eventHandler(stateRef: AtomicReference<UI.State>): UIHandler = { event ->
+    stateRef.get().handle(event).apply { stateRef.set(state) }
 }
 
-private fun UI.State.generateMessages(
-    event: UI.Event
-): List<UIMessage> = when (event) {
+tailrec fun UI.State.handle(
+    event: UI.Event,
+    actions: List<UIMessage> = listOfNotNull(interpret(event)),
+    messages: List<UIMessage> = emptyList(),
+): UI.Change =
+    when {
+        actions.isEmpty() -> {
+            val update = UI.Element.Display + calculateDisplay()
+            UI.Change(event, plus(update), messages + update)
+        }
+        else -> {
+            val action = actions.first()
+            val newUpdates = when (action) {
+                is UIUpdate<*, *> -> listOf(action)
+                is UI.Action -> execute(action)
+            }
+            val newState = plus(newUpdates)
+            val newMessages = when (action) {
+                is UIUpdate<*, *> -> messages + newUpdates
+                is UI.Action -> messages + action + newUpdates
+            }
+            val inferred = when (action) {
+                is UI.Action -> newState.infer(action, newMessages)
+                else -> emptyList()
+            }
+            val newActions = actions.drop(1) + inferred
+            newState.handle(event, newActions, newMessages)
+        }
+    }
 
-    UI.Event.Init -> listOf(
-        UI.Element.Stack + emptyList()
-    )
-    is UI.Event.Configure -> listOf(
-        UI.Element.Config + UIConfig(config + event.config)
-    )
-    is UI.Event.Text -> when (text) {
-        event.value.orEmpty() -> emptyList() // TODO to fix refresh after send issue, start here
-        else -> listOf(
-            UI.Element.Text + event.value.orEmpty(),
-        )
+
+fun UI.State.interpret(event: UI.Event): UI.Action? =
+    when (event) {
+        UI.Event.Init -> UI.Action.Init
+        is UI.Event.Configure -> UI.Action.Configure(event.config)
+        is UI.Event.Text -> when (event.value) {
+            text -> null
+            else -> UI.Action.SetText(event.value.orEmpty())
+        }
+        is UI.Event.Method -> UI.Action.SetMethod(event.method)
+        is UI.Event.Clicked -> UI.Action.SetSelection(generateSelection(event))
+        UI.Event.Action -> when {
+            isReady -> UI.Action.Execute
+            textIsRequiredArg -> UI.Action.SetArg(param!!.name, text)
+            else -> UI.Action.SwitchMode
+        }
+        UI.Event.Back -> when {
+            UIDisplay.Data in display -> UI.Action.DropView
+            args.isNotEmpty() -> UI.Action.DropArg
+            method != null -> UI.Action.DropMethod
+            stack.isEmpty() -> UI.Action.Exit
+            else -> UI.Action.SwitchMode
+        }
     }
-    is UI.Event.Method -> listOf(
-        UI.Element.Method + event.method,
-    )
-    is UI.Event.Clicked -> listOf(
-        UI.Element.Selection + generateSelection(event)
-    )
-    UI.Event.Action -> when {
-        isReady -> listOf(
-            UI.Element.Execute + Unit
+
+fun UI.State.execute(action: UI.Action): UIUpdates =
+    when (action) {
+        UI.Action.Init -> listOf(
+            UI.Element.Stack.empty(),
+            UI.Element.Method.empty(),
+            UI.Element.Param.empty(),
+            UI.Element.Args.empty(),
         )
-        isRequiredArg(text) -> listOf(
-            UI.Element.Args + argsWith(text),
+        is UI.Action.Configure -> listOf(
+            UI.Element.Config + UIConfig(config + action.config)
         )
-        else -> listOf(
-            UI.Element.Display + switchDisplay()
-        )
-    }
-    UI.Event.Back -> when {
-        UIDisplay.Data in display -> listOf(
-            UI.Element.Stack + dropLastView(),
-        )
-        args.isNotEmpty() -> listOf(
+        UI.Action.DropArg -> listOf(
             UI.Element.Args + dropLastArg()
         )
-        method != null -> listOf(
-            UI.Element.Stack + stack,
-            UI.Element.Display + displayPanel(),
+        UI.Action.DropMethod -> listOf(
+            UI.Element.Method.empty(),
+            UI.Element.Param.empty(),
+            UI.Element.Args.empty(),
         )
-        stack.isEmpty() -> listOf(
-            UI.Action.Exit
+        UI.Action.DropView -> listOf(
+            UI.Element.Stack + dropLastView(),
+            UI.Element.Method.empty(),
+            UI.Element.Param.empty(),
+            UI.Element.Args.empty(),
         )
-        else -> listOf(
-            UI.Element.Display + switchDisplay(),
-        )
-    }
-}
-
-private fun UI.State.processUpdate(
-    event: UI.Event,
-    update: UIUpdate<*, *>
-): List<UIMessage> =
-    when (update.element) {
-        UI.Element.Context -> emptyList()
-        UI.Element.Stack -> listOf(
-            UI.Element.Display + properDisplay(),
-            UI.Element.Method + null,
-            UI.Element.Text + "",
-        )
-        UI.Element.Method -> listOf(
-            UI.Element.Selection + emptyList(),
-            UI.Element.Args + when (config.autoFill) {
-                true -> matchedArgs()
-                false -> defaultArgs()
-            }
-        )
-        UI.Element.Args -> listOf(
-            UI.Element.Param + nextParam(),
-            UI.Element.Ready + isReady()
-        )
-        UI.Element.Param -> when {
-            method != null && config.autoFill -> when (val selectedArg = argDataFromSelection()) {
-                null -> listOf(
-                    UI.Element.Methods + calculateMatching(),
-                )
-                else -> listOf(
-                    UI.Element.Args + argsWith(selectedArg),
-                    UI.Element.Selection + selection.minus(selectedArg)
-                )
-            }
-            else -> emptyList()
-        }
-        UI.Element.Selection -> when {
-            selection.isEmpty() -> emptyList()
-            method != null -> listOf(UI.Element.Param + param)
-            method == null -> listOf(UI.Element.Methods + calculateMatching())
-            else -> emptyList()
-        }
-        UI.Element.Text -> listOf(
-            UI.Element.Methods + calculateMatching(),
-        )
-        UI.Element.Methods -> {
-            if (!(config.autoFill && (
-                    event is UI.Event.Clicked ||
-                        event is UI.Event.Action ||
-                        event is UI.Event.Text
-                    ))
-            ) emptyList()
-            else when (method) {
-                null -> selectionMatchingMethods().filter(UIMethod::isReady).run {
-                    when {
-                        isEmpty() -> emptyList()
-                        size == 1 -> listOf(
-                            UI.Element.Method + first().method,
-                        )
-                        else -> listOf(
-                            UI.Element.Display + displayPanel()
-                        )
-                    }
-                }
-                else -> emptyList()
-            } + when (
-                val matching = inputMethod
-            ) {
-                null -> emptyList()
-                else -> listOfNotNull(
-                    if (method != null) null
-                    else UI.Element.Method + matching.method,
-                    UI.Element.Display + display.plus(UIDisplay.Input)
-                )
-            }
-        }
-        UI.Element.Ready -> when {
-            isReady && config.autoExecute -> listOf(
-                UI.Element.Execute + Unit
-            )
-            else -> emptyList()
-        }
-        UI.Element.Execute -> when {
+        UI.Action.Execute -> listOf(
+            UI.Element.Selection.empty(),
+            UI.Element.Method.empty(),
+            UI.Element.Text.empty(),
+            UI.Element.Param.empty(),
+            UI.Element.Args.empty(),
+        ) + when {
             method!!.hasResult -> listOf(
-                UI.Element.Stack + resolveNextView()
+                UI.Element.Stack + resolveNextView(),
             )
             else -> {
                 executeCommand()
-                listOf(
-                    UI.Element.Display + properDisplay(),
-                    UI.Element.Method.empty(),
-                    UI.Element.Text.empty(),
+                listOf()
+            }
+        }
+        is UI.Action.SetArg -> listOf(
+            UI.Element.Args + argsWith(action.arg),
+        )
+        is UI.Action.SetMethod -> listOf(
+            UI.Element.Method + action.method
+        )
+        is UI.Action.SetSelection -> listOf(
+            UI.Element.Selection + action.data
+        )
+        is UI.Action.SetText -> listOf(
+            UI.Element.Text + action.text
+        )
+        UI.Action.SwitchMode -> listOf(
+            UI.Element.Mode + UIMode.values().toList().minus(mode).single()
+        )
+        UI.Action.CalculateMatching -> listOf(
+            UI.Element.Methods + calculateMatching()
+        )
+        UI.Action.InferInputMethod -> when (val matching = inputMethod) {
+            null -> emptyList()
+            else -> listOfNotNull(
+                UI.Element.Method + matching.method,
+            )
+        }
+        UI.Action.SelectMethod -> selectionMatchingMethods().filter(UIMethod::isReady).run {
+            when {
+                isEmpty() -> emptyList()
+                size == 1 -> listOf(
+                    UI.Element.Method + first().method,
+                )
+                else -> listOf(
                 )
             }
         }
-        UI.Element.Display -> emptyList()
+        UI.Action.SelectArg -> when (val selectedArg = argDataFromSelection()) {
+            null -> listOf()
+            else -> listOf(
+                UI.Element.Args + argsWith(selectedArg),
+                UI.Element.Selection.empty(),
+            )
+        }
+        UI.Action.NextParam -> listOf(
+            UI.Element.Param + nextParam()
+        )
+        is UI.Action.SetArgs -> listOf(
+            UI.Element.Args + action.args
+        )
+        UI.Action.SwitchDisplay -> emptyList()
+        UI.Action.Exit -> emptyList()
+    }
+
+fun UI.State.infer(
+    action: UI.Action,
+    messages: List<UIMessage>,
+): List<UIMessage> =
+    when (action) {
+
+        UI.Action.Init,
+        UI.Action.Execute,
+        UI.Action.DropView,
+        UI.Action.DropMethod,
+        -> listOf(
+            UI.Element.Mode + if (stack.isEmpty())
+                UIMode.Command else
+                UIMode.View,
+            UI.Element.Selection.empty(),
+            UI.Action.CalculateMatching,
+            UI.Action.InferInputMethod,
+        )
+
+        is UI.Action.SetText
+        -> listOf(
+            UI.Action.CalculateMatching
+        )
+
+        is UI.Action.SetArg,
+        is UI.Action.SetArgs,
+        is UI.Action.SelectArg,
+        -> listOf(
+            UI.Action.NextParam
+        ) + when {
+            isReady() -> when {
+                config.autoExecute -> listOf(
+                    UI.Action.Execute
+                )
+                else -> listOf(
+                    UI.Element.Ready + true
+                )
+            }
+            else -> listOf(
+                UI.Element.Ready + false
+            )
+        }
+
+        is UI.Action.NextParam
+        -> emptyList()
+
+        is UI.Action.InferInputMethod,
+        is UI.Action.SetMethod,
+        is UI.Action.SelectMethod,
+        -> when (method) {
+            null -> listOf()
+            else -> listOf(
+                UI.Element.Selection.empty(),
+                UI.Action.SetArgs(matchedArgs())
+            )
+        }
+
+        is UI.Action.SetSelection
+        -> when {
+            config.autoFill -> when (method) {
+                null -> listOf(
+                    UI.Action.CalculateMatching,
+                    UI.Action.SelectMethod,
+                )
+                else -> listOf(
+                    UI.Action.CalculateMatching,
+                    UI.Action.SelectArg
+                )
+            }
+            else -> listOf(
+                UI.Action.CalculateMatching,
+                UI.Action.SwitchMode,
+            )
+        }
+
         else -> emptyList()
     }
+
+val UI.Action.SetArg.arg get() = key to value
+
+fun UI.State.calculateDisplay(): Set<UIDisplay> =
+    when (mode) {
+        UIMode.Command -> setOf(UIDisplay.Input) + when (method) {
+            null -> setOf(UIDisplay.Panel)
+            else -> setOfNotNull(
+                UIDisplay.Method,
+                when (val resolver = resolver) {
+                    null,
+                    is UIResolver.Option,
+                    is UIResolver.Method -> UIDisplay.Panel
+                    is UIResolver.Data -> UIDisplay.Data
+                    is UIResolver.Input -> when (resolver.type) {
+                        Service.Type.bool -> UIDisplay.Panel
+                        else -> UIDisplay.Panel
+                    }
+                },
+            )
+        }
+        UIMode.View -> setOfNotNull(
+            UIDisplay.Data,
+            UIDisplay.Input.takeIf { method != null && method == inputMethod?.method },
+        )
+    }
+
+val UI.State.resolver get() = param?.resolvers?.minOrNull()

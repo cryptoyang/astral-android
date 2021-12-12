@@ -1,10 +1,8 @@
 package cc.cryptopunks.ui.poc.model
 
-import cc.cryptopunks.ui.poc.api.uiRequestData
-import cc.cryptopunks.ui.poc.mapper.openrpc.toModel
+import cc.cryptopunks.ui.poc.stub.uiRequestData
 import cc.cryptopunks.ui.poc.model.factory.generateLayouts
 import cc.cryptopunks.ui.poc.model.factory.resolvers
-import cc.cryptopunks.ui.poc.schema.rpc.OpenRpc
 
 object UI {
 
@@ -15,12 +13,12 @@ object UI {
         data class Configure(val config: Map<String, Any>) : Event
         data class Clicked(val id: String, val value: Any) : Event
         data class Text(val value: String? = null) : Event
-        data class Method(val method: Api.Method) : Event
+        data class Method(val method: Service.Method) : Event
     }
 
     sealed interface Action : Output, UIMessage {
         object Init : Action
-        data class SetMethod(val method: Api.Method) : Action
+        data class SetMethod(val method: Service.Method) : Action
         data class SetArg(val key: String, val value: Any) : Action
         data class SetArgs(val args: UIArgs) : Action
         data class SetText(val text: String) : Action
@@ -50,45 +48,36 @@ object UI {
         object Stack : UIElement<List<UIView>>(emptyList())
         object Display : UIElement<Set<UIDisplay>>(setOf(UIDisplay.Panel))
         object Mode : UIElement<UIMode>(UIMode.Command)
-        object Method : UIElement<Api.Method?>(null)
+        object Method : UIElement<Service.Method?>(null)
         object Methods : UIElement<List<UIMethod>>(emptyList())
         object Args : UIElement<UIArgs>(emptyMap())
         object Param : UIElement<UIParam?>(null)
         object Selection : UIElement<List<UIData>>(emptyList())
         object Ready : UIElement<Boolean>(false)
         object Text : UIElement<String>("")
-        object Execute : UIElement<Unit>(Unit)
     }
 
     class State(elements: UIElements = emptyMap()) : UIState(elements) {
         val context by +Element.Context
-
         val config by +Element.Config
-
         val methods by +Element.Methods
-
         val stack by +Element.Stack
-
         val mode by +Element.Mode
         val method by +Element.Method
         val args by +Element.Args
-
         val selection by +Element.Selection
         val text by +Element.Text
-
         val display by +Element.Display
         val param by +Element.Param
-
         val isReady by +Element.Ready
 
         companion object
     }
 
     data class Context(
-        val doc: OpenRpc.Document,
-        val model: Api.Model = doc.toModel(),
-        val layouts: Map<String, UILayout> = model.generateLayouts(),
-        val resolvers: Map<String, Iterable<UIResolver>> = model.resolvers(),
+        val schema: Service.Schema,
+        val layouts: Map<String, UILayout> = schema.generateLayouts(),
+        val resolvers: Map<String, Iterable<UIResolver>> = schema.resolvers(),
         val requestData: UIRequestData = uiRequestData,
     )
 

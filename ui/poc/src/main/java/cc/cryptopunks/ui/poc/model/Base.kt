@@ -50,14 +50,4 @@ private class UIStateProperty<T>(private val element: UI.Element<T>) :
         }
 }
 
-typealias UIUpdates = List<UIUpdate<*, *>>
-
-data class UIUpdate<E : UI.Element<T>, T>(val element: E, val value: T) : UIMessage
-
 sealed interface UIMessage
-
-val UIMessage.output
-    get() = when (this) {
-        is UIUpdate<*, *> -> element
-        is UI.Action -> this
-    }

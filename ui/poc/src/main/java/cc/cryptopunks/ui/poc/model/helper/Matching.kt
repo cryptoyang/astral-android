@@ -5,11 +5,11 @@ import cc.cryptopunks.ui.poc.model.util.removeFirst
 import com.fasterxml.jackson.databind.JsonNode
 
 fun UI.State.calculateMatching(): List<UIMethod> =
-    context.model.methods.values.calculateMatching(
+    context.schema.methods.values.calculateMatching(
         availableData = generateUIDataFromStack() + selection + textChunks
     )
 
-fun Collection<Api.Method>.calculateMatching(
+fun Collection<Service.Method>.calculateMatching(
     availableData: List<UIData> = emptyList()
 ): List<UIMethod> = map { method ->
 
@@ -29,11 +29,11 @@ fun Collection<Api.Method>.calculateMatching(
                     is UIMethod.Type.ArgValue -> {
                         val paramType = method.params[type.name]!!
                         if (data.value.toString() in paramType.options) true
-                        else when (paramType.type) {
-                            Api.Type.str -> true
-                            Api.Type.bool -> data.value.toBooleanStrictOrNull() != null
-                            Api.Type.int -> data.value.toIntOrNull() != null
-                            Api.Type.num -> data.value.toDoubleOrNull() != null
+                        else when (paramType.kind) {
+                            Service.Type.str -> true
+                            Service.Type.bool -> data.value.toBooleanStrictOrNull() != null
+                            Service.Type.int -> data.value.toIntOrNull() != null
+                            Service.Type.num -> data.value.toDoubleOrNull() != null
                             else -> false
                         }
                     }
@@ -65,20 +65,20 @@ fun Collection<Api.Method>.calculateMatching(
     )
 }.sortedBy(UIMethod::score)
 
-private fun Api.Method.template(): List<UIMethod.Type> = listOf(
+private fun Service.Method.template(): List<UIMethod.Type> = listOf(
     UIMethod.Type.MethodName
 ) + params.flatMap { (name, type) ->
     listOf(
         UIMethod.Type.ArgName(name),
         UIMethod.Type.ArgType(name),
-        UIMethod.Type.ArgValue(name, type.type == Api.Type.obj),
+        UIMethod.Type.ArgValue(name, type.kind == Service.Type.obj),
     )
 }
 
 private val UI.State.textChunks
     get() = text.splitChunks().map { chunk ->
         UIData(
-            type = Api.Type("string"),
+            type = Service.Type("string"),
             value = chunk
         )
     }
@@ -120,7 +120,7 @@ fun List<UIMethod>.inputMatching(): UIMethod? =
     singleOrNull { uiMatching -> uiMatching.singleTextArg }
 
 fun UIMethod.hasSingleTextInput(): Boolean = method.params.toList()
-    .singleOrNull { (_, apiType) -> apiType.type == Api.Type.str }
+    .singleOrNull { (_, apiType) -> apiType.kind == Service.Type.str }
     ?.let { (name, _) -> method.params.keys - args.keys - name }
     ?.isEmpty()
     ?: false

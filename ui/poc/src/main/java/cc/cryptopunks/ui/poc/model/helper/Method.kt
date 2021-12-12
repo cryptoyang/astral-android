@@ -1,5 +1,5 @@
 package cc.cryptopunks.ui.poc.model.helper
 
-import cc.cryptopunks.ui.poc.model.Api
+import cc.cryptopunks.ui.poc.model.Service
 
-val Api.Method.hasResult get() = result != Api.Type.Empty
+val Service.Method.hasResult get() = result != Service.Type.Empty

@@ -1,6 +1,6 @@
-package cc.cryptopunks.ui.poc.schema.rpc
+package cc.cryptopunks.ui.poc.transport.schema.rpc
 
-import cc.cryptopunks.ui.poc.schema.Schema
+import cc.cryptopunks.ui.poc.transport.schema.Schema
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.BeanProperty

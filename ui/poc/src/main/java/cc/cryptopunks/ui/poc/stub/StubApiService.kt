@@ -1,7 +1,7 @@
-package cc.cryptopunks.ui.poc.api
+package cc.cryptopunks.ui.poc.stub
 
-import cc.cryptopunks.ui.poc.schema.rpc.ListUpdate
-import cc.cryptopunks.ui.poc.schema.rpc.Rpc
+import cc.cryptopunks.ui.poc.transport.schema.rpc.ListUpdate
+import cc.cryptopunks.ui.poc.transport.schema.rpc.Rpc
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*

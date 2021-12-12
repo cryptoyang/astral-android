@@ -1,13 +1,13 @@
 package cc.cryptopunks.ui.poc.model.helper
 
-import cc.cryptopunks.ui.poc.model.Api
+import cc.cryptopunks.ui.poc.model.Service
 import cc.cryptopunks.ui.poc.model.UI
 import cc.cryptopunks.ui.poc.model.UIData
 
 val UI.State.textIsRequiredArg get() = isRequiredArg(text)
 
 fun UI.State.isRequiredArg(text: String): Boolean =
-    text.isNotBlank() && null != when (param?.type?.type) {
+    text.isNotBlank() && null != when (param?.type?.kind) {
         "string" -> text
         "boolean" -> text.toBooleanStrictOrNull()
         "integer" -> text.toIntOrNull()
@@ -16,8 +16,8 @@ fun UI.State.isRequiredArg(text: String): Boolean =
     }
 
 fun UI.State.isRequiredArg(data: UIData): Boolean = when {
-    data.type.type == Api.Type.obj -> data.type.id == param?.type?.id
-    else -> data.type.type == param?.type?.type
+    data.type.kind == Service.Type.obj -> data.type.id == param?.type?.id
+    else -> data.type.kind == param?.type?.kind
 }
 
 fun UI.State.argDataFromSelection() =

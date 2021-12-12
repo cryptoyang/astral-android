@@ -1,10 +1,10 @@
 package cc.cryptopunks.ui.poc.mapper.model
 
-import cc.cryptopunks.ui.poc.api.MessengerApi
+import cc.cryptopunks.ui.poc.stub.MessengerApi
 import cc.cryptopunks.ui.poc.mapper.Jackson
 import cc.cryptopunks.ui.poc.mapper.openrpc.toModel
-import cc.cryptopunks.ui.poc.model.Api
-import cc.cryptopunks.ui.poc.schema.rpc.generateOpenRpcDocument
+import cc.cryptopunks.ui.poc.model.Service
+import cc.cryptopunks.ui.poc.transport.schema.rpc.generateOpenRpcDocument
 
 fun main() {
     val doc = MessengerApi.generateOpenRpcDocument()
@@ -15,24 +15,24 @@ fun main() {
         .let(::println)
 }
 
-fun Api.Model.generateProteusLayouts(): Map<String, Map<String, Any>> {
+fun Service.Schema.generateProteusLayouts(): Map<String, Map<String, Any>> {
 
-    val rootTypes: List<Api.Type> = methods.values.map { it.result }
-    val subTypes = types.minus(rootTypes.map(Api.Type::id)).values
+    val rootTypes: List<Service.Type> = methods.values.map { it.result }
+    val subTypes = types.minus(rootTypes.map(Service.Type::id)).values
 
     return subTypes.toProteusLayouts(listOf("item")) + rootTypes.toProteusLayouts(emptyList())
 }
 
-fun Iterable<Api.Type>.toProteusLayouts(
+fun Iterable<Service.Type>.toProteusLayouts(
     path: List<String>
 ): Map<String, Map<String, Any>> =
     associate { type -> type.id to type.toProteusLayout(path) }
 
 
 
-fun Api.Type.toProteusLayout(
+fun Service.Type.toProteusLayout(
     path: List<String>,
-): Map<String, Any> = when (type) {
+): Map<String, Any> = when (kind) {
 
     "object" -> mutableMapOf(
         "type" to "LinearLayout",
@@ -90,11 +90,11 @@ fun Api.Type.toProteusLayout(
     )
 }
 
-fun Api.Type.toProteusLayoutRef(
+fun Service.Type.toProteusLayoutRef(
     path: List<String>,
 ): Map<String, Any> = when {
 
-    type != "array" && path.isNotEmpty() && id.isNotBlank() -> mutableMapOf<String, Any>(
+    kind != "array" && path.isNotEmpty() && id.isNotBlank() -> mutableMapOf<String, Any>(
         "type" to "include",
         "layout" to id,
     ).also { map ->

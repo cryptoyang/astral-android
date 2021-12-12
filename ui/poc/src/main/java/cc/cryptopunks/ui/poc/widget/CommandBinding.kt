@@ -2,7 +2,7 @@ package cc.cryptopunks.ui.poc.widget
 
 import androidx.core.view.isVisible
 import cc.cryptopunks.ui.poc.databinding.CommandItemBinding
-import cc.cryptopunks.ui.poc.model.Api
+import cc.cryptopunks.ui.poc.model.Service
 import cc.cryptopunks.ui.poc.model.UIMethod
 
 fun CommandItemBinding.set(item: UIMethod) {
@@ -12,7 +12,7 @@ fun CommandItemBinding.set(item: UIMethod) {
 }
 
 fun CommandItemBinding.set(
-    method: Api.Method,
+    method: Service.Method,
     args: Map<String, Any> = emptyMap()
 ) {
     commandTitle.text = method.id
@@ -24,12 +24,12 @@ fun CommandItemBinding.set(
             name + type + value
         }
         .joinToString("\n")
-    commandResult.isVisible = method.result != Api.Type.Empty
+    commandResult.isVisible = method.result != Service.Type.Empty
     commandResult.text = method.result.formatType()
 }
 
-private fun Api.Type.formatType(): String = when {
-    type == "array" -> "Array<${properties["items"]!!.formatType()}>"
+private fun Service.Type.formatType(): String = when {
+    kind == "array" -> "Array<${properties["items"]!!.formatType()}>"
     id.isNotBlank() -> id
-    else -> type
+    else -> kind
 }

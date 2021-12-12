@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import cc.cryptopunks.ui.poc.R
 import cc.cryptopunks.ui.poc.databinding.CommandItemBinding
 import cc.cryptopunks.ui.poc.model.*
+import cc.cryptopunks.ui.poc.model.helper.output
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
@@ -189,15 +190,15 @@ private fun CommandView.update(state: UI.State, output: UI.Output) {
                     inputView.hint = "select option"
                 }
                 is UIResolver.Input -> when (resolver.type) {
-                    Api.Type.bool -> {
+                    Service.Type.bool -> {
                         optionsAdapter.items = listOf(false, true)
                         inputView.hint = "select option"
                     }
                     else -> {
                         inputView.hint = when (resolver.type) {
-                            Api.Type.str -> "type text"
-                            Api.Type.int -> "type integer"
-                            Api.Type.num -> "type number"
+                            Service.Type.str -> "type text"
+                            Service.Type.int -> "type integer"
+                            Service.Type.num -> "type number"
                             else -> inputView.hint
                         }
                     }

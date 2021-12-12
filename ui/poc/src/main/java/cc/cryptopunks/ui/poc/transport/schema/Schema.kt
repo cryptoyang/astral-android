@@ -1,4 +1,4 @@
-package cc.cryptopunks.ui.poc.schema
+package cc.cryptopunks.ui.poc.transport.schema
 
 import com.fasterxml.jackson.databind.JsonNode
 

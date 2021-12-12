@@ -1,23 +1,23 @@
 package cc.cryptopunks.ui.poc.model.factory
 
-import cc.cryptopunks.ui.poc.model.Api
+import cc.cryptopunks.ui.poc.model.Service
 import cc.cryptopunks.ui.poc.model.UILayout
 import cc.cryptopunks.ui.poc.model.util.removeFirst
 
-fun Api.Model.generateLayouts(): Map<String, UILayout> =
+fun Service.Schema.generateLayouts(): Map<String, UILayout> =
     methods.mapValues { (_, method) ->
         method.result.mainLayout()
     }
 
-fun Api.Type.mainLayout(): UILayout =
-    when (type) {
-        Api.Type.obj -> when {
+private fun Service.Type.mainLayout(): UILayout =
+    when (kind) {
+        Service.Type.obj -> when {
 
             properties.size > 3 -> UILayout(header = single())
 
             else -> {
                 properties
-                    .filterValues { it.type == Api.Type.arr }
+                    .filterValues { it.kind == Service.Type.arr }
                     .apply { require(size < 2) }
 
                 val remaining = properties.toList()
@@ -37,7 +37,7 @@ fun Api.Type.mainLayout(): UILayout =
                 )
             }
         }
-        Api.Type.arr -> UILayout(
+        Service.Type.arr -> UILayout(
             content = many()
         )
         else -> UILayout(
@@ -48,13 +48,13 @@ fun Api.Type.mainLayout(): UILayout =
     }
 
 
-fun Api.Type.element(path: List<String> = emptyList()) = when (type) {
-    Api.Type.arr -> many(path)
+private fun Service.Type.element(path: List<String> = emptyList()) = when (kind) {
+    Service.Type.arr -> many(path)
     else -> single(path)
 }
 
-fun Api.Type.single(path: List<String> = emptyList()) = UILayout.Single(this, path)
+private fun Service.Type.single(path: List<String> = emptyList()) = UILayout.Single(this, path)
 
-fun Api.Type.many(path: List<String> = emptyList()) =
+private fun Service.Type.many(path: List<String> = emptyList()) =
     UILayout.Many(properties["items"]!!.single(), path)
 

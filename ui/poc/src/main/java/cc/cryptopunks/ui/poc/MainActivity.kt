@@ -4,13 +4,13 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import cc.cryptopunks.ui.poc.api.MessengerApi
+import cc.cryptopunks.ui.poc.stub.MessengerApi
+import cc.cryptopunks.ui.poc.mapper.openrpc.toModel
 import cc.cryptopunks.ui.poc.model.UI
 import cc.cryptopunks.ui.poc.model.UIUpdate
 import cc.cryptopunks.ui.poc.model.eventHandler
-import cc.cryptopunks.ui.poc.model.eventHandler2
 import cc.cryptopunks.ui.poc.model.factory.invoke
-import cc.cryptopunks.ui.poc.schema.rpc.generateOpenRpcDocument
+import cc.cryptopunks.ui.poc.transport.schema.rpc.generateOpenRpcDocument
 import cc.cryptopunks.ui.poc.widget.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
@@ -28,9 +28,10 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
     private val handle by lazy {
         val doc = MessengerApi.generateOpenRpcDocument()
-        val uiContext = UI.Context(doc)
+        val model = doc.toModel()
+        val uiContext = UI.Context(model)
         val initial = UI.State(uiContext)
-        eventHandler2(initial)
+        eventHandler(initial)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

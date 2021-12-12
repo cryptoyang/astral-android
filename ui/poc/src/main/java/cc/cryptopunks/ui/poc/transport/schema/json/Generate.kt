@@ -1,4 +1,4 @@
-package cc.cryptopunks.ui.poc.schema.json
+package cc.cryptopunks.ui.poc.transport.schema.json
 
 import com.fasterxml.jackson.databind.node.ObjectNode
 import kotlin.reflect.KClass

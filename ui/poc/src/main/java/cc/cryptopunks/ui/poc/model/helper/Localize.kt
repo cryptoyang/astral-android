@@ -1,9 +1,9 @@
 package cc.cryptopunks.ui.poc.model.helper
 
-import cc.cryptopunks.ui.poc.model.Api
+import cc.cryptopunks.ui.poc.model.Service
 
-fun Api.Type.localize(
-    target: Api.Type,
+fun Service.Type.localize(
+    target: Service.Type,
     path: List<String> = emptyList(),
 ): List<List<String>> = when (target) {
     this -> listOf(path + target.id)

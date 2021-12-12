@@ -1,11 +1,10 @@
-package cc.cryptopunks.ui.poc.schema.rpc
+package cc.cryptopunks.ui.poc.transport.schema.rpc
 
 import cc.cryptopunks.ui.poc.mapper.Jackson
-import cc.cryptopunks.ui.poc.api.MessengerApi
-import cc.cryptopunks.ui.poc.schema.rpc.OpenRpc.ContentDescriptor
-import cc.cryptopunks.ui.poc.schema.rpc.OpenRpc.Ref
-import cc.cryptopunks.ui.poc.schema.Schema
-import cc.cryptopunks.ui.poc.schema.json.multipleDefinitionsSchema
+import cc.cryptopunks.ui.poc.transport.schema.rpc.OpenRpc.ContentDescriptor
+import cc.cryptopunks.ui.poc.transport.schema.rpc.OpenRpc.Ref
+import cc.cryptopunks.ui.poc.transport.schema.Schema
+import cc.cryptopunks.ui.poc.transport.schema.json.multipleDefinitionsSchema
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.contains
