@@ -11,18 +11,23 @@ import cc.cryptopunks.ui.poc.databinding.CommandItemBinding
 import cc.cryptopunks.ui.poc.databinding.TextItemBinding
 import cc.cryptopunks.ui.poc.model.Service
 import cc.cryptopunks.ui.poc.model.UIMethod
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlin.properties.Delegates
 
 class ViewBindingHolder(val binding: ViewBinding) : RecyclerView.ViewHolder(binding.root)
 
 
 @SuppressLint("NotifyDataSetChanged")
-class OptionsAdapter(
-    var onClickListener: View.OnClickListener = View.OnClickListener { },
-) : RecyclerView.Adapter<ViewBindingHolder>() {
+class OptionsAdapter : RecyclerView.Adapter<ViewBindingHolder>() {
 
     var items: List<Any> by Delegates.observable(emptyList()) { property, oldValue, newValue ->
         notifyDataSetChanged()
+    }
+
+    val clicks = MutableSharedFlow<View>(extraBufferCapacity = 32)
+
+    private val onClickListener: View.OnClickListener = View.OnClickListener {
+        clicks.tryEmit(it)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewBindingHolder {

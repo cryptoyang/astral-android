@@ -30,7 +30,6 @@ import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import splitties.views.imageDrawable
-import kotlin.properties.Delegates
 
 
 data class CommandView(
@@ -44,6 +43,7 @@ data class CommandView(
     val inputView: EditText = container(R.id.inputEditText),
     val actionButton: View = container(R.id.actionButton),
 ) : CoroutineScope by MainScope() {
+
     val cmdDrawable: Drawable = ShapeTextDrawable("$")
 
     val returnDrawable: Drawable = ResourcesCompat.getDrawable(
@@ -55,15 +55,6 @@ data class CommandView(
     val optionsAdapter = OptionsAdapter()
 
     val commandBinding = CommandItemBinding.bind(commandView)
-
-    var showInterface by Delegates.observable(true) { _, shown, show ->
-        if (shown != show) {
-            dynamicView.isVisible = !show
-            recyclerView.isVisible = show
-            inputView.isVisible = show
-            commandLayout.isVisible = show && commandLayout.tag != null
-        }
-    }
 
     init {
 
@@ -132,16 +123,18 @@ fun CommandView.uiEvents(): Flow<UI.Event> = channelFlow {
         +UI.Event.Action
     }
 
-    optionsAdapter.onClickListener = View.OnClickListener { view ->
-        when (val item = view.tag) {
-            is UIMethod -> +UI.Event.Method(item.method)
-            is String -> +UI.Event.Clicked("string", item)
-            is Boolean -> +UI.Event.Clicked("boolean", item)
-        }
-    }
-
     dynamicView.onEvent = { event ->
         +event
+    }
+
+    launch {
+        optionsAdapter.clicks.collect { view ->
+            when (val item = view.tag) {
+                is UIMethod -> +UI.Event.Method(item.method)
+                is String -> +UI.Event.Clicked("string", item)
+                is Boolean -> +UI.Event.Clicked("boolean", item)
+            }
+        }
     }
 
     launch {
@@ -155,8 +148,6 @@ fun CommandView.uiEvents(): Flow<UI.Event> = channelFlow {
             +UI.Event.Back
         }
     }
-
-    launch { +UI.Event.Init }
 }
 
 
@@ -252,8 +243,6 @@ private fun CommandView.update(state: UI.State, output: UI.Output) {
             activity.finish()
         }
 
-        UI.Element.Selection -> Unit
-        UI.Element.Config -> Unit
-        UI.Element.Context -> Unit
+        else -> Unit
     }
 }

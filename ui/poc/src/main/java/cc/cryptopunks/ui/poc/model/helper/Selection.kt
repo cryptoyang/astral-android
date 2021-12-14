@@ -7,17 +7,17 @@ import cc.cryptopunks.ui.poc.model.UIView
 import com.fasterxml.jackson.databind.JsonNode
 
 fun UI.State.generateSelection(clicked: UI.Event.Clicked): List<UIData> =
-    context.schema.generateUIData(clicked.id, clicked.value)
+    context.generateUIData(clicked.id, clicked.value)
 
 fun UI.State.generateUIDataFromStack(): List<UIData> =
-    context.schema.generateUIData(stack)
+    context.generateUIData(stack)
 
-fun Service.Schema.generateUIData(stack: List<UIView>) = stack
+fun UI.Context.generateUIData(stack: List<UIView>) = stack
     .flatMap { view -> view.args.mapKeys { (key, _) -> view.source.params[key]!! }.toList() }
     .flatMap { (type, value) -> generateUIData(type.id, value) }
 
 
-fun Service.Schema.generateUIData(id: String, value: Any): List<UIData> =
+fun UI.Context.generateUIData(id: String, value: Any): List<UIData> =
     when (value) {
         is JsonNode -> {
             val type = requireNotNull(types[id]) {

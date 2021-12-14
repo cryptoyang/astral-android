@@ -67,7 +67,7 @@ private val MessengerApi.Message.contact
         .minus(contacts[0].id).first()
         .let(contactsMap::getValue)
 
-private val scope = CoroutineScope(Dispatchers.IO)
+val stubServiceScope = CoroutineScope(Dispatchers.IO)
 
 fun handle(exec: Rpc.Command): Flow<Any> =
     when (exec) {
@@ -87,7 +87,7 @@ fun handle(exec: Rpc.Command): Flow<Any> =
                 }
         }
         is MessengerApi.SendMessage -> {
-            scope.launch {
+            stubServiceScope.launch {
                 val message = MessengerApi.Message(
                     id = MessengerApi.Message.Id(lastMessageId++.toString()),
                     from = contacts.first().id,

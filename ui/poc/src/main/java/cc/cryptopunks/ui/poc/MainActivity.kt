@@ -4,20 +4,19 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import cc.cryptopunks.ui.poc.stub.MessengerApi
-import cc.cryptopunks.ui.poc.mapper.openrpc.toModel
 import cc.cryptopunks.ui.poc.model.UI
-import cc.cryptopunks.ui.poc.model.UIUpdate
-import cc.cryptopunks.ui.poc.model.eventHandler
-import cc.cryptopunks.ui.poc.model.factory.invoke
-import cc.cryptopunks.ui.poc.transport.schema.rpc.generateOpenRpcDocument
-import cc.cryptopunks.ui.poc.widget.*
+import cc.cryptopunks.ui.poc.model.interpret
+import cc.cryptopunks.ui.poc.widget.CommandView
+import cc.cryptopunks.ui.poc.widget.uiEvents
+import cc.cryptopunks.ui.poc.widget.update
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
-import java.lang.IllegalArgumentException
-import java.lang.StringBuilder
 
 class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
@@ -26,13 +25,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         CommandView(this)
     }
 
-    private val handle by lazy {
-        val doc = MessengerApi.generateOpenRpcDocument()
-        val model = doc.toModel()
-        val uiContext = UI.Context(model)
-        val initial = UI.State(uiContext)
-        eventHandler(initial)
-    }
+    private val uiEvents = Channel<UI.Event>(Channel.BUFFERED)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,12 +35,20 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
     private fun setupCommandView() {
         launch {
-            commandView.uiEvents().collect { event -> handleAndUpdate(event) }
+            merge(
+                uiEvents.consumeAsFlow(),
+                commandView.uiEvents(),
+            ).mapNotNull {
+                app.model.state.interpret(it)
+            }.collect {
+                app.model.handle(it)
+            }
         }
-    }
-
-    private fun handleAndUpdate(event: UI.Event) {
-        handle(event).printLog().update(commandView)
+        launch {
+            app.model.changes().collect { change ->
+                change.update(commandView)
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -56,33 +57,15 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        item.isChecked = !item.isChecked
+
         val propertyName = when (item.itemId) {
             R.id.autoFill -> "autoFill"
             R.id.autoExecute -> "autoExecute"
             else -> throw IllegalArgumentException()
         }
-        item.isChecked = !item.isChecked
         val event = UI.Event.Configure(mapOf(propertyName to item.isChecked))
-        handleAndUpdate(event)
+        uiEvents.trySend(event)
         return true
     }
 }
-
-fun UI.Change.printLog() = also {
-    StringBuilder().apply {
-        appendLine()
-        appendLine("=========")
-        appendLine(event.formatLogName() + ": " + event)
-        appendLine("---------")
-        output.map { message ->
-            val (out, value) = when (message) {
-                is UI.Action -> message to message
-                is UIUpdate<*, *> -> message.run { element to value }
-            }
-            out.formatLogName() + ": " + value
-        }.forEach(this::appendLine)
-        appendLine("=========")
-    }.toString().let(::println)
-}
-
-fun Any.formatLogName(): String = javaClass.name.split("$", limit = 2).last()

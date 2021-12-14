@@ -1,24 +1,34 @@
 package cc.cryptopunks.ui.poc.model
 
-import cc.cryptopunks.ui.poc.mapper.Jackson
 import com.fasterxml.jackson.databind.JsonNode
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 
 object Service {
 
-    interface API {
-        fun schemas(): Flow<Schema>
+    interface Interface : Info, Repo
+
+    interface Info {
+        fun schemas(known: Set<Schema.Version> = emptySet()): Flow<Schema>
         fun status(): Flow<Status>
+    }
+
+    interface Repo {
         fun execute(request: Request): Job
         fun subscribe(request: Request): Flow<JsonNode>
     }
 
     data class Schema(
-        val id: String = "",
+        val version: Version = Version(),
         val methods: Map<String, Method> = emptyMap(),
         val types: Map<String, Type> = emptyMap(),
-    )
+    ) {
+        data class Version(
+            val id: String = "",
+            val name: String = "",
+            val number: Int = 0,
+        )
+    }
 
     data class Method(
         val id: String = "",
@@ -52,6 +62,6 @@ object Service {
 
     data class Request(
         val method: String,
-        val arg: JsonNode = Jackson.emptyNode
+        val args: Map<String, Any> = emptyMap()
     )
 }

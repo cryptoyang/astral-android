@@ -6,7 +6,7 @@ import cc.cryptopunks.ui.poc.model.helper.hasSingleTextInput
 import com.fasterxml.jackson.databind.JsonNode
 import kotlinx.coroutines.flow.Flow
 
-typealias UIHandler = (UI.Event) -> UI.Change
+typealias UIHandler = (UI.Event) -> UI.EventChange
 
 typealias UIRequestData = UIRequest.() -> Flow<JsonNode>
 

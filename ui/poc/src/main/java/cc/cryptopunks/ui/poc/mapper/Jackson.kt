@@ -1,9 +1,12 @@
 package cc.cryptopunks.ui.poc.mapper
 
-import cc.cryptopunks.ui.poc.ReferenceProblemHandler
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.DeserializationContext
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.ObjectWriter
+import com.fasterxml.jackson.databind.deser.DeserializationProblemHandler
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.node.ObjectNode
@@ -45,5 +48,25 @@ object Jackson {
 
     val emptyNode: ObjectNode by lazy {
         jsonMapper.createObjectNode()
+    }
+}
+
+private class ReferenceProblemHandler : DeserializationProblemHandler() {
+
+    override fun handleUnknownProperty(
+        ctxt: DeserializationContext?,
+        p: JsonParser?,
+        deserializer: JsonDeserializer<*>?,
+        beanOrClass: Any?,
+        propertyName: String,
+    ): Boolean = propertyName == "\$ref"
+
+    override fun handleInstantiationProblem(
+        ctxt: DeserializationContext?,
+        instClass: Class<*>?,
+        argument: Any?,
+        t: Throwable?,
+    ): Any {
+        return super.handleInstantiationProblem(ctxt, instClass, argument, t)
     }
 }

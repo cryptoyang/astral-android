@@ -1,9 +1,5 @@
 package cc.cryptopunks.ui.poc.model
 
-import cc.cryptopunks.ui.poc.stub.uiRequestData
-import cc.cryptopunks.ui.poc.model.factory.generateLayouts
-import cc.cryptopunks.ui.poc.model.factory.resolvers
-
 object UI {
 
     sealed interface Event {
@@ -18,6 +14,7 @@ object UI {
 
     sealed interface Action : Output, UIMessage {
         object Init : Action
+        data class AddContext(val context: Context) : Action
         data class SetMethod(val method: Service.Method) : Action
         data class SetArg(val key: String, val value: Any) : Action
         data class SetArgs(val args: UIArgs) : Action
@@ -43,7 +40,8 @@ object UI {
     sealed interface Element<T> : Output {
         val defaultValue: T
 
-        object Context : UIElement<UI.Context>()
+        object Repo : UIElement<Service.Repo>()
+        object Context : UIElement<UI.Context>(Context())
         object Config : UIElement<UIConfig>(UIConfig())
         object Stack : UIElement<List<UIView>>(emptyList())
         object Display : UIElement<Set<UIDisplay>>(setOf(UIDisplay.Panel))
@@ -58,6 +56,7 @@ object UI {
     }
 
     class State(elements: UIElements = emptyMap()) : UIState(elements) {
+        val repo by +Element.Repo
         val context by +Element.Context
         val config by +Element.Config
         val methods by +Element.Methods
@@ -75,13 +74,21 @@ object UI {
     }
 
     data class Context(
-        val schema: Service.Schema,
-        val layouts: Map<String, UILayout> = schema.generateLayouts(),
-        val resolvers: Map<String, Iterable<UIResolver>> = schema.resolvers(),
-        val requestData: UIRequestData = uiRequestData,
+        val methods: Map<String, Service.Method> = emptyMap(),
+        val types: Map<String, Service.Type> = emptyMap(),
+        val layouts: Map<String, UILayout> = emptyMap(),
+        val resolvers: Map<String, Iterable<UIResolver>> = emptyMap(),
     )
 
-    data class Change(val event: Event, val state: State, val output: List<UIMessage> = emptyList())
+    data class Change(val state: State, val output: List<UIMessage> = emptyList())
+
+    data class EventChange(
+        val event: Event,
+        val change: Change,
+    ) {
+        val state get() = change.state
+        val output get() = change.output
+    }
 
     sealed interface Output
 }

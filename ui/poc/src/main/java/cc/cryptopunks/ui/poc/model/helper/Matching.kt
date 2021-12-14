@@ -5,7 +5,7 @@ import cc.cryptopunks.ui.poc.model.util.removeFirst
 import com.fasterxml.jackson.databind.JsonNode
 
 fun UI.State.calculateMatching(): List<UIMethod> =
-    context.schema.methods.values.calculateMatching(
+    context.methods.values.calculateMatching(
         availableData = generateUIDataFromStack() + selection + textChunks
     )
 

@@ -2,10 +2,9 @@ package cc.cryptopunks.ui.poc.mapper.jsonschema
 
 import cc.cryptopunks.ui.poc.mapper.Jackson
 import cc.cryptopunks.ui.poc.stub.MessengerApi
+import cc.cryptopunks.ui.poc.transport.schema.Schema
 import cc.cryptopunks.ui.poc.transport.schema.rpc.OpenRpc
 import cc.cryptopunks.ui.poc.transport.schema.rpc.generateOpenRpcDocument
-import cc.cryptopunks.ui.poc.transport.schema.JsonSchema
-import cc.cryptopunks.ui.poc.transport.schema.Schema
 import com.fasterxml.jackson.databind.JsonNode
 
 fun main() {
@@ -35,7 +34,7 @@ fun OpenRpc.Document.generateProteusLayouts(): Map<String, Map<String, Any>> {
     return layouts
 }
 
-fun Map<String, JsonSchema>.toProteusLayouts(
+fun Map<String, Schema>.toProteusLayouts(
     path: List<String> = emptyList()
 ): Map<String, Map<String, Any>> =
     mapValues { (_, scheme) -> scheme.toProteusLayout(path) }

@@ -8,10 +8,13 @@ import com.fasterxml.jackson.module.kotlin.contains
 
 fun String.splitPath(): List<String> = split(".", "[", "]", "].").filter { it.isNotEmpty() }
 
-fun OpenRpc.Document.toModel(): Service.Schema =
+fun OpenRpc.Document.toSchema(): Service.Schema =
     Parser(this).run {
         Service.Schema(
-            id = info.title,
+            version = Service.Schema.Version(
+                id = info.title,
+                name = info.version,
+            ),
             methods = methods.associate { rpcMethod ->
                 val id = shortName(rpcMethod.name)
                 id to Service.Method(
@@ -104,4 +107,5 @@ private fun Parser.parseProperties(
 // helpers
 
 private fun String.dropPath() = split("/").last()
-private fun Parser.shortName(id: String) = id.removePrefix(doc.info.title + "$")
+
+private fun Parser.shortName(id: String) = id //id.removePrefix(doc.info.title + "$")

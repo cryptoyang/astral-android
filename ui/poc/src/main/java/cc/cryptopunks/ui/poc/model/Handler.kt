@@ -1,8 +1,46 @@
 package cc.cryptopunks.ui.poc.model
 
 import cc.cryptopunks.ui.poc.model.helper.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.newSingleThreadContext
 import java.util.concurrent.atomic.AtomicReference
 
+
+class UIModel(initial: UI.State = UI.State()) {
+
+    private val scope = CoroutineScope(newSingleThreadContext("UIModel"))
+
+    private val changes = MutableStateFlow(UI.Change(initial))
+
+    private val input = Channel<UI.Action>(Channel.BUFFERED)
+
+    val state get() = changes.value.state
+
+    init {
+        scope.launch {
+            input.send(UI.Action.Init)
+            input.consumeEach { action ->
+                changes.run {
+                    value = value.state.handle(action).printLog()
+                    if (UI.Action.Exit in value.output) scope.launch {
+                        input.send(UI.Action.Init)
+                    }
+                }
+            }
+        }
+    }
+
+    fun changes(): Flow<UI.Change> = changes
+
+    fun handle(action: UI.Action) {
+        input.trySend(action)
+    }
+}
 
 fun eventHandler(state: UI.State): UIHandler =
     eventHandler(AtomicReference(state))
@@ -11,15 +49,20 @@ fun eventHandler(stateRef: AtomicReference<UI.State>): UIHandler = { event ->
     stateRef.get().handle(event).apply { stateRef.set(state) }
 }
 
+fun UI.State.handle(event: UI.Event): UI.EventChange =
+    UI.EventChange(event, handle(listOfNotNull(interpret(event))))
+
+fun UI.State.handle(event: UI.Action): UI.Change =
+    handle(listOf(event))
+
 tailrec fun UI.State.handle(
-    event: UI.Event,
-    actions: List<UIMessage> = listOfNotNull(interpret(event)),
+    actions: List<UIMessage>,
     messages: List<UIMessage> = emptyList(),
 ): UI.Change =
     when {
         actions.isEmpty() -> {
             val update = UI.Element.Display + calculateDisplay()
-            UI.Change(event, plus(update), messages + update)
+            UI.Change(plus(update), messages + update)
         }
         else -> {
             val action = actions.first()
@@ -37,7 +80,7 @@ tailrec fun UI.State.handle(
                 else -> emptyList()
             }
             val newActions = actions.drop(1) + inferred
-            newState.handle(event, newActions, newMessages)
+            newState.handle(newActions, newMessages)
         }
     }
 
@@ -68,6 +111,9 @@ fun UI.State.interpret(event: UI.Event): UI.Action? =
 
 fun UI.State.execute(action: UI.Action): UIUpdates =
     when (action) {
+        is UI.Action.AddContext -> listOf(
+            UI.Element.Context + addContext(action.context)
+        )
         UI.Action.Init -> listOf(
             UI.Element.Stack.empty(),
             UI.Element.Method.empty(),
@@ -167,6 +213,7 @@ fun UI.State.infer(
         UI.Action.Execute,
         UI.Action.DropView,
         UI.Action.DropMethod,
+        is UI.Action.AddContext,
         -> listOf(
             UI.Element.Mode + if (stack.isEmpty())
                 UIMode.Command else

@@ -2,13 +2,13 @@ package cc.cryptopunks.ui.poc.mapper.model
 
 import cc.cryptopunks.ui.poc.stub.MessengerApi
 import cc.cryptopunks.ui.poc.mapper.Jackson
-import cc.cryptopunks.ui.poc.mapper.openrpc.toModel
+import cc.cryptopunks.ui.poc.mapper.openrpc.toSchema
 import cc.cryptopunks.ui.poc.model.Service
 import cc.cryptopunks.ui.poc.transport.schema.rpc.generateOpenRpcDocument
 
 fun main() {
     val doc = MessengerApi.generateOpenRpcDocument()
-    val model = doc.toModel()
+    val model = doc.toSchema()
 
     model.generateProteusLayouts()
         .let { Jackson.jsonPrettyWriter.writeValueAsString(it) }
