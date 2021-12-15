@@ -106,7 +106,7 @@ fun CommandBinding.uiEvents(): Flow<UI.Event> = channelFlow {
 
 
 fun UI.Change.update(view: CommandBinding): Unit = output
-    .map(UIMessage::output).toSet()
+    .map(UI.Message::output).toSet()
     .forEach { output -> view.update(state, output) }
 
 private fun CommandBinding.update(state: UI.State, output: UI.Output) {

@@ -6,6 +6,8 @@ import cc.cryptopunks.ui.model.internal.hasSingleTextInput
 import com.fasterxml.jackson.databind.JsonNode
 import kotlinx.coroutines.flow.Flow
 
+typealias UIUpdates = List<UI.Update<*, *>>
+
 enum class UIMode { View, Command }
 
 enum class UIDisplay { Panel, Data, Input, Method }
@@ -68,10 +70,6 @@ data class UIData(
     val type: Service.Type,
     val value: Any,
 )
-
-data class UIUpdate<E : UI.Element<T>, T>(val element: E, val value: T) : UIMessage
-
-typealias UIUpdates = List<UIUpdate<*, *>>
 
 data class UILayout(
     val type: Service.Type = Service.Type.Empty,

@@ -2,7 +2,7 @@ package cc.cryptopunks.ui.model
 
 object UI {
 
-    sealed interface Event : Input, Output {
+    sealed interface Event : Input {
         object Init : Event
         object Action : Event
         object Back : Event
@@ -12,7 +12,7 @@ object UI {
         data class Method(val method: Service.Method) : Event
     }
 
-    sealed interface Action : Input, Output, UIMessage {
+    sealed interface Action : Input, Output, Message {
         object Init : Action
         data class AddContext(val context: Context) : Action
         data class SetMethod(val method: Service.Method) : Action
@@ -38,7 +38,7 @@ object UI {
         object Exit : Action
     }
 
-    sealed interface Element<T>: Output {
+    sealed interface Element<T> : Output {
         val defaultValue: T
 
         object Repo : UIElement<Service.Repo>()
@@ -55,6 +55,8 @@ object UI {
         object Ready : UIElement<Boolean>(false)
         object Text : UIElement<String>("")
     }
+
+    data class Update<E : Element<T>, T>(val element: E, val value: T) : Message
 
     class State(elements: UIElements = emptyMap()) : UIState(elements) {
         val repo by +Element.Repo
@@ -79,10 +81,13 @@ object UI {
         val types: Map<String, Service.Type> = emptyMap(),
         val layouts: Map<String, UILayout> = emptyMap(),
         val resolvers: Map<String, Iterable<UIResolver>> = emptyMap(),
-    )
+    ) {
+        companion object
+    }
 
-    data class Change(val state: State, val output: List<UIMessage> = emptyList())
+    data class Change(val state: State, val output: List<Message> = emptyList())
 
     sealed interface Input
     sealed interface Output
+    sealed interface Message
 }

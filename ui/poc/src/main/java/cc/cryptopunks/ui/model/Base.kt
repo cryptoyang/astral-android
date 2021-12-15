@@ -49,5 +49,3 @@ private class UIStateProperty<T>(private val element: UI.Element<T>) :
             value = it
         }
 }
-
-sealed interface UIMessage

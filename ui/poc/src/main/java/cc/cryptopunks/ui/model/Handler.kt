@@ -66,8 +66,8 @@ internal fun UI.State.interpret(event: UI.Event): UI.Action? =
     }
 
 internal tailrec fun UI.State.handle(
-    actions: List<UIMessage>,
-    messages: List<UIMessage> = emptyList(),
+    actions: List<UI.Message>,
+    messages: List<UI.Message> = emptyList(),
 ): UI.Change =
     when {
         actions.isEmpty() -> {
@@ -77,12 +77,12 @@ internal tailrec fun UI.State.handle(
         else -> {
             val action = actions.first()
             val newUpdates = when (action) {
-                is UIUpdate<*, *> -> listOf(action)
+                is UI.Update<*, *> -> listOf(action)
                 is UI.Action -> execute(action)
             }
             val newState = plus(newUpdates)
             val newMessages = when (action) {
-                is UIUpdate<*, *> -> messages + newUpdates
+                is UI.Update<*, *> -> messages + newUpdates
                 is UI.Action -> messages + action + newUpdates
             }
             val inferred = when (action) {
@@ -190,7 +190,7 @@ private fun UI.State.execute(action: UI.Action): UIUpdates = when (action) {
     UI.Action.Exit -> emptyList()
 }
 
-private fun UI.State.infer(action: UI.Action): List<UIMessage> = when (action) {
+private fun UI.State.infer(action: UI.Action): List<UI.Message> = when (action) {
     UI.Action.Init,
     UI.Action.Execute,
     UI.Action.DropView,
