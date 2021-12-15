@@ -9,17 +9,17 @@ import kotlinx.coroutines.newSingleThreadContext
 
 class Handler(initial: UI.State = UI.State()) {
 
-    private val scope = CoroutineScope(newSingleThreadContext("UIModel"))
-
-    private val stateFlow = MutableStateFlow(UI.Change(initial))
-
-    private val inputFlow = Channel<UI.Input>(Channel.BUFFERED)
-
     val state get() = stateFlow.value.state
 
     val changes: Flow<UI.Change> get() = stateFlow
 
     fun handle(action: UI.Input) = inputFlow.trySend(action)
+
+    private val scope = CoroutineScope(newSingleThreadContext("UIModel"))
+
+    private val stateFlow = MutableStateFlow(UI.Change(initial))
+
+    private val inputFlow = Channel<UI.Input>(Channel.BUFFERED)
 
     init {
         scope.launch {
@@ -65,7 +65,7 @@ internal fun UI.State.interpret(event: UI.Event): UI.Action? =
         }
     }
 
-private tailrec fun UI.State.handle(
+internal tailrec fun UI.State.handle(
     actions: List<UIMessage>,
     messages: List<UIMessage> = emptyList(),
 ): UI.Change =

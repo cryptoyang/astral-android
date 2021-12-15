@@ -4,31 +4,23 @@ import android.graphics.drawable.Drawable
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import androidx.activity.ComponentActivity
-import androidx.activity.OnBackPressedCallback
-import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
-import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import cc.cryptopunks.ui.model.*
 import cc.cryptopunks.ui.android.databinding.CommandItemBinding
+import cc.cryptopunks.ui.model.*
 import cc.cryptopunks.ui.model.internal.output
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import splitties.views.imageDrawable
 
 
 data class CommandBinding(
@@ -77,43 +69,6 @@ data class CommandBinding(
     }
 }
 
-operator fun <T : View> View.invoke(@IdRes id: Int): T =
-    findViewById(id)
-
-fun ComponentActivity.backEventsFlow(): Flow<Unit> = callbackFlow {
-    val onBackPressedCallback = object : OnBackPressedCallback(true) {
-        override fun handleOnBackPressed() {
-            trySend(Unit)
-        }
-    }
-    onBackPressedDispatcher.addCallback(onBackPressedCallback)
-    awaitClose {
-        onBackPressedCallback.remove()
-    }
-}
-
-fun EditText.textChangesFlow(): Flow<String?> = callbackFlow {
-    val watcher = doOnTextChanged { text, _, _, _ ->
-        trySend(text?.toString())
-    }
-    awaitClose {
-        removeTextChangedListener(watcher)
-    }
-}
-
-private fun FloatingActionButton.setIcon(drawable: Drawable? = null) {
-    when (drawable) {
-        is ShapeTextDrawable -> {
-            foreground = drawable
-            imageDrawable = null
-        }
-        else -> {
-            foreground = null
-            imageDrawable = drawable
-        }
-    }
-}
-
 fun CommandBinding.uiEvents(): Flow<UI.Event> = channelFlow {
 
     operator fun UI.Event.unaryPlus() = trySend(this)
@@ -150,8 +105,9 @@ fun CommandBinding.uiEvents(): Flow<UI.Event> = channelFlow {
 }
 
 
-fun UI.Change.update(view: CommandBinding): UI.Change =
-    apply { output.map(UIMessage::output).toSet().forEach { output -> view.update(state, output) } }
+fun UI.Change.update(view: CommandBinding): Unit = output
+    .map(UIMessage::output).toSet()
+    .forEach { output -> view.update(state, output) }
 
 private fun CommandBinding.update(state: UI.State, output: UI.Output) {
     when (output) {
