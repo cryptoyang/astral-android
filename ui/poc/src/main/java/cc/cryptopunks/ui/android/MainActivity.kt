@@ -17,20 +17,16 @@ import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
+    private val uiEvents = Channel<UI.Event>(Channel.BUFFERED)
+
     private val commandView: CommandBinding by lazy {
-        setContentView(R.layout.command_view)
+        setContentView(R.layout.main)
         CommandBinding(this)
     }
-
-    private val uiEvents = Channel<UI.Event>(Channel.BUFFERED)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         commandView
-        setupCommandView()
-    }
-
-    private fun setupCommandView() {
         launch {
             merge(
                 uiEvents.consumeAsFlow(),
@@ -55,7 +51,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         item.isChecked = !item.isChecked
-
         val propertyName = when (item.itemId) {
             R.id.autoFill -> "autoFill"
             R.id.autoExecute -> "autoExecute"

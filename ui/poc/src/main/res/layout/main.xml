@@ -34,7 +34,7 @@
         tools:listitem="@layout/command_item" />
 
     <include
-        layout="@layout/data_view"
+        layout="@layout/data"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/actionButton"

@@ -51,14 +51,14 @@ class DataBinding(
 val displayJson: UpdateView = { data ->
     removeAllViews()
     tag = data
-    inflateAndAttach(R.layout.json_view)
+    inflateAndAttach(R.layout.text_item)
     (get(0) as TextView).text = Jackson.jsonPrettyWriter.writeValueAsString(data)
 }
 
 val displayYaml: UpdateView = { data ->
     removeAllViews()
     tag = data
-    inflateAndAttach(R.layout.json_view)
+    inflateAndAttach(R.layout.text_item)
     (get(0) as TextView).text = Jackson.yamlMapper.writeValueAsString(data)
 }
 

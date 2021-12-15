@@ -28,7 +28,7 @@ class DataItemAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
-        ViewHolder(parent.inflate(R.layout.data_item_view, false))
+        ViewHolder(parent.inflate(R.layout.data_item, false))
             .apply { itemView.setOnClickListener(onClickListener) }
 
     class ViewHolder(val view: ViewGroup) : RecyclerView.ViewHolder(view)

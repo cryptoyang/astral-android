@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import cc.cryptopunks.ui.android.databinding.CommandItemBinding
-import cc.cryptopunks.ui.android.databinding.TextItemBinding
+import cc.cryptopunks.ui.android.databinding.OptionItemBinding
 import cc.cryptopunks.ui.model.Service
 import cc.cryptopunks.ui.model.UIMethod
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -33,7 +33,7 @@ class OptionsAdapter : RecyclerView.Adapter<ViewBindingHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewBindingHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = when (viewType) {
-            0 -> TextItemBinding.inflate(inflater, parent, false)
+            0 -> OptionItemBinding.inflate(inflater, parent, false)
             1 -> CommandItemBinding.inflate(inflater, parent, false)
             else -> throw IllegalArgumentException("Unknown view type $viewType")
         }
