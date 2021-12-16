@@ -14,7 +14,7 @@ private var lastContactId = 0
 private fun nextMessageId() = MessengerApi.Message.Id(lastMessageId++.toString())
 private fun nextContactId() = MessengerApi.Contact.Id(lastContactId++.toString())
 
-val contacts = listOf(
+private val contacts = listOf(
     MessengerApi.Contact(nextContactId(), "User"),
 
     MessengerApi.Contact(nextContactId(), "Joe"),
@@ -67,9 +67,9 @@ private val MessengerApi.Message.contact
         .minus(contacts[0].id).first()
         .let(contactsMap::getValue)
 
-val stubServiceScope = CoroutineScope(Dispatchers.IO)
+internal val stubServiceScope = CoroutineScope(Dispatchers.IO)
 
-fun handle(exec: Rpc.Command): Flow<Any> =
+internal fun handle(exec: Rpc.Command): Flow<Any> =
     when (exec) {
         is MessengerApi.GetOverview -> overviewFlow
         is MessengerApi.GetContacts -> flowOf(MessengerApi.Contacts(contacts))
@@ -104,7 +104,7 @@ fun handle(exec: Rpc.Command): Flow<Any> =
         else -> emptyFlow()
     }
 
-fun main() = runBlocking {
+private fun main() = runBlocking {
     overviewFlow.first().forEach {
         println(it)
     }

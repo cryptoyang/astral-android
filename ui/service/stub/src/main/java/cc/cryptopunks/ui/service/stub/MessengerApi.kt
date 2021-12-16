@@ -2,7 +2,7 @@ package cc.cryptopunks.ui.service.stub
 
 import cc.cryptopunks.ui.service.base.Rpc
 
-object MessengerApi : Rpc.Api() {
+internal object MessengerApi : Rpc.Api() {
 
     // Methods
 

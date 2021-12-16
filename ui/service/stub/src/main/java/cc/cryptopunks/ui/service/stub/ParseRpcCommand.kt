@@ -3,7 +3,7 @@ package cc.cryptopunks.ui.service.stub
 import cc.cryptopunks.ui.mapper.Jackson
 import cc.cryptopunks.ui.service.base.Rpc
 
-fun parseRpcCommand(
+internal fun parseRpcCommand(
     method: String,
     args: Map<String, Any>
 ): Rpc.Command {
@@ -20,4 +20,4 @@ fun parseRpcCommand(
     return rpcCommand
 }
 
-const val EmptyJson = "{}"
+internal const val EmptyJson = "{}"
