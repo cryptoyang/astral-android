@@ -22,9 +22,12 @@ include ':app:warpdrive:core'
 include ':app:warpdrive:slim'
 include ':app:warpdrive:fat'
 
+include ':app:ui:demo'
+include ':app:ui'
+
 include ':util:binary'
 
-include ':ui:app'
+include ':ui:android'
 include ':ui:model'
 include ':ui:mapper'
 include ':ui:service:base'
