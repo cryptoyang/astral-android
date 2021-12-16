@@ -1,0 +1,23 @@
+plugins {
+    id 'java-library'
+    id 'kotlin'
+}
+
+dependencies {
+    implementation project(':ui:mapper')
+    implementation project(':ui:model')
+    implementation project(':ui:service:base')
+    implementation project(':ui:service:schema')
+    implementation project(':client:tcp')
+    implementation project(':client:coder:gson')
+    implementation project(":util:binary")
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation 'com.github.victools:jsonschema-generator:4.20.0'
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1"
+    testImplementation 'junit:junit:4.13.2'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
