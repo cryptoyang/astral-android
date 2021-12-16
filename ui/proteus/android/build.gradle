@@ -39,17 +39,17 @@ repositories {
 }
 
 dependencies {
-//    implementation(name: 'astral-binary', ext: 'aar')
-    implementation project(':client:tcp')
-    implementation project(':client:coder:gson')
-    implementation project(":util:binary")
+    implementation project(':ui:mapper')
 
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.1"
-    implementation 'androidx.core:core-ktx:1.6.0'
-    implementation 'androidx.appcompat:appcompat:1.3.1'
-    implementation 'com.google.android.material:material:1.4.0'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.recyclerview:recyclerview:1.2.1'
+    implementation 'com.google.code.gson:gson:2.8.8'
+
+    implementation 'com.github.flipkart-incubator.proteus:proteus-core:5.0.1'
+    implementation 'com.github.flipkart-incubator.proteus:gson-adapter:5.0.1'
+    implementation 'com.github.flipkart-incubator.proteus:cardview-v7:5.0.1'
+    implementation 'com.github.flipkart-incubator.proteus:design:5.0.1'
+    implementation 'com.github.flipkart-incubator.proteus:recyclerview-v7:5.0.1'
+    implementation 'com.github.flipkart-incubator.proteus:support-v4:5.0.1'
+
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'

@@ -24,4 +24,11 @@ include ':app:warpdrive:fat'
 
 include ':util:binary'
 
-include ':ui:poc'
+include ':ui:app'
+include ':ui:model'
+include ':ui:mapper'
+include ':ui:service:base'
+include ':ui:service:schema'
+include ':ui:service:stub'
+include ':ui:proteus:android'
+include ':ui:proteus:legacy'
