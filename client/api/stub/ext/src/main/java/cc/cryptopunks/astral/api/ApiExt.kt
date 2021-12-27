@@ -70,30 +70,52 @@ fun Stream.readMessage(handle: (String) -> Unit): Boolean =
 fun Stream.inputStream(): InputStream = InputStreamWrapper(this::read)
 fun Stream.outputStream(): OutputStream = OutputStreamWrapper(this::write)
 
-fun InputStream.readN(n: Int) = ByteArray(n)
+fun InputStream.readN(n: Number) = ByteArray(n.toInt())
     .also { buff -> check(read(buff) == n) }
 
-fun Stream.readN(n: Int) = ByteArray(n)
-    .also { buff -> check(read(buff) == n) }
+fun Stream.readN(n: Number) = ByteArray(n.toInt()).also { buff ->
+    val len = read(buff)
+    check(len == n.toInt()) { "Expected $n bytes but was $len" }
+}
 
 var Stream.byte: Byte
     get() = readN(1).byte
-    set(value) { write(value.bytes) }
+    set(value) {
+        write(value.bytes)
+    }
 
 var Stream.short: Short
     get() = readN(2).short
-    set(value) { write(value.bytes) }
+    set(value) {
+        write(value.bytes)
+    }
 
 var Stream.int: Int
     get() = readN(4).int
-    set(value) { write(value.bytes) }
+    set(value) {
+        write(value.bytes)
+    }
 
 var Stream.long: Long
     get() = readN(8).long
-    set(value) { write(value.bytes) }
+    set(value) {
+        write(value.bytes)
+    }
 
-fun Stream.readString(readSize: Stream.() -> Int) = String(readN(readSize()))
+fun Stream.readString(readSize: Stream.() -> Number) = String(readN(readSize()))
+
 fun Stream.writeString(string: String, getSize: String.() -> ByteArray) {
     write(string.getSize())
     write(string.toByteArray())
 }
+
+fun Stream.writeL8String(string: String) {
+    writeString(string) { string.length.toByte().bytes }
+}
+
+fun Stream.readL8String(): String =
+    readString { byte }
+
+
+fun Stream.readL64Bytes(): ByteArray =
+    readN(long)

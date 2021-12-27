@@ -1,8 +1,8 @@
-package cc.cryptopunks.ui.service.stub
+package cc.cryptopunks.ui.testing
 
 import cc.cryptopunks.ui.service.base.Rpc
 
-internal object MessengerApi : Rpc.Api() {
+object MessengerApi : Rpc.Api() {
 
     // Methods
 

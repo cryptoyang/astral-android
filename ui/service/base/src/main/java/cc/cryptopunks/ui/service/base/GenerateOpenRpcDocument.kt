@@ -11,16 +11,6 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.memberProperties
 
-//private fun main() {
-//    val doc = MessengerApi.generateOpenRpcDocument()
-//    val json = Jackson.jsonPrettyWriter.writeValueAsString(doc)
-//    val parsed = Jackson.jsonSlimMapper.readValue(json, OpenRpc.Document::class.java)
-//    println(json)
-//    println(doc)
-//    println(parsed)
-//    assert(doc == parsed)
-//}
-
 fun Rpc.Api.generateOpenRpcDocument(): OpenRpc.Document =
     generateOpenRpcDocument(
         title = title,
@@ -66,7 +56,9 @@ internal fun generateOpenRpcDocument(
             OpenRpc.Method(
                 name = name,
                 params = params,
-                result = result
+                result = OpenRpc.ContentDescriptor(
+                    schema = result
+                )
             )
         }
 

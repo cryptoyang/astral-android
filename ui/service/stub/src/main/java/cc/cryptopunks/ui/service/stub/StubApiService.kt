@@ -2,6 +2,7 @@ package cc.cryptopunks.ui.service.stub
 
 import cc.cryptopunks.ui.service.base.ListUpdate
 import cc.cryptopunks.ui.service.base.Rpc
+import cc.cryptopunks.ui.testing.MessengerApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*

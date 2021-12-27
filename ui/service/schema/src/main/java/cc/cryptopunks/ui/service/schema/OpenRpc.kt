@@ -71,7 +71,7 @@ object OpenRpc {
         val description: String? = null,
         val externalDocs: ExternalDocument? = null,
         val params: List<ContentDescriptor> = emptyList(),
-        val result: Ref<JsonSchema>,
+        val result: ContentDescriptor? = null,
         val deprecated: Boolean = false,
         val servers: List<Server> = emptyList(),
         val errors: List<Ref<Error>> = emptyList(),
@@ -81,7 +81,7 @@ object OpenRpc {
     )
 
     data class ContentDescriptor(
-        val name: String,
+        val name: String = "",
         val summary: String? = null,
         val description: String? = null,
         val required: Boolean = false,

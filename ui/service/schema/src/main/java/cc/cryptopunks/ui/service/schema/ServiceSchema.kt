@@ -15,7 +15,7 @@ fun OpenRpc.Document.toSchema(): Service.Schema =
                 val id = shortName(rpcMethod.name)
                 id to Service.Method(
                     id = id,
-                    result = parseRefOrType(rpcMethod.result),
+                    result = parseRefOrType(rpcMethod.result?.schema),
                     params = rpcMethod.params.associate { descriptor ->
                         descriptor.name to parseRefOrType(descriptor.schema)
                     }
@@ -31,9 +31,10 @@ private class Parser(
 )
 
 private fun Parser.parseRefOrType(
-    ref: OpenRpc.Ref<JsonSchema>
+    ref: OpenRpc.Ref<JsonSchema>?
 ): Service.Type =
     when {
+        ref == null -> Service.Type.Empty
         ref.ref.isNotBlank() -> parseRef(ref.ref)
         ref.value != null -> parseRefOrType(ref.ref, ref.value)
         else -> Service.Type.Empty
@@ -42,17 +43,30 @@ private fun Parser.parseRefOrType(
 private fun Parser.parseRefOrType(
     shortName: String,
     node: JsonNode,
-): Service.Type =
-    when {
+): Service.Type {
+    val node = when {
+        node.isArray -> node.first()
+        else -> node
+    }
+    return when {
         "\$ref" in node -> parseRef(node["\$ref"].asText())
-        "type" in node -> parseType(shortName, node, node["type"].asText())
+        "type" in node -> parseType(shortName, node, node.firstType)
         else -> Service.Type.Empty
     }
+}
+
+private val JsonNode.firstType: String
+    get() = get("type").run {
+        when {
+            isArray -> first()
+            else -> this
+        }
+    }.asText()
 
 private fun Parser.parseRef(
     fullRef: String
 ): Service.Type =
-    fullRef.dropPath().let { id ->
+    fullRef.let { id ->
         val shortId = shortName(id)
         cache.getOrPut(shortId) {
             val schema = requireNotNull(doc.components.schemas[id]) { "No schema for $id" }
@@ -66,7 +80,11 @@ private fun Parser.parseType(
     type: String
 ): Service.Type =
     when (type) {
-        "integer", "boolean", "string" -> Service.Type(type, shortName, options = parseOptions(node))
+        "integer", "boolean", "string" -> Service.Type(
+            type,
+            shortName,
+            options = parseOptions(node)
+        )
         "array" -> parseArray(shortName, node, type)
         "object" -> Service.Type(type, shortName, parseProperties(node))
         else -> throw IllegalArgumentException("Cannot parse unknown type $type of $node")
@@ -97,7 +115,9 @@ private fun Parser.parseProperties(
     node: JsonNode
 ): Map<String, Service.Type> =
     node["properties"]
-        ?.run { fields().asSequence().associate { (key, value) -> key to parseRefOrType("", value) } }
+        ?.run {
+            fields().asSequence().associate { (key, value) -> key to parseRefOrType("", value) }
+        }
         ?: throw NoSuchElementException("No properties for: " + node.toPrettyString())
 
 // helpers

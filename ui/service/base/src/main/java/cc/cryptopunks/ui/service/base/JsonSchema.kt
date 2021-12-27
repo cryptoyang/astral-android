@@ -4,13 +4,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.github.victools.jsonschema.generator.*
 import kotlin.reflect.KClass
 
-//private fun main() {
-//    MessengerApi.methods
-//        .generateJsonSchema("")
-//        .toPrettyString()
-//        .let(::println)
-//}
-
 fun List<KClass<*>>.generateJsonSchema(
     definitionsPath: String,
 ): ObjectNode =

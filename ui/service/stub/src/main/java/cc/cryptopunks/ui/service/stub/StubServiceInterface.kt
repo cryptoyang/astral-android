@@ -4,6 +4,7 @@ import cc.cryptopunks.ui.mapper.Jackson
 import cc.cryptopunks.ui.model.Service
 import cc.cryptopunks.ui.service.base.generateOpenRpcDocument
 import cc.cryptopunks.ui.service.schema.toSchema
+import cc.cryptopunks.ui.testing.MessengerApi
 import com.fasterxml.jackson.module.kotlin.convertValue
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
