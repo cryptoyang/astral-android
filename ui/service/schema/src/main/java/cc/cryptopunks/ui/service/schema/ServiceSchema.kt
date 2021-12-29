@@ -116,7 +116,9 @@ private fun Parser.parseProperties(
 ): Map<String, Service.Type> =
     node["properties"]
         ?.run {
-            fields().asSequence().associate { (key, value) -> key to parseRefOrType("", value) }
+            fields().asSequence()
+                .filter { (key, _) -> !key.contains("_") }
+                .associate { (key, value) -> key to parseRefOrType("", value) }
         }
         ?: throw NoSuchElementException("No properties for: " + node.toPrettyString())
 

@@ -9,10 +9,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cc.cryptopunks.ui.mapper.Jackson
-import cc.cryptopunks.ui.model.JsonArray
-import cc.cryptopunks.ui.model.JsonObject
-import cc.cryptopunks.ui.model.UI
-import cc.cryptopunks.ui.model.UILayout
+import cc.cryptopunks.ui.model.*
 import kotlinx.coroutines.flow.*
 import splitties.views.inflateAndAttach
 
@@ -90,21 +87,39 @@ fun DataBinding.update(
     this.layout = layout
     header.apply {
         if (layout.header != UILayout.Single.Empty) {
-            val node = data.resolve(layout.header.path)
+            val node = data.resolveAny(layout.header.path)
             updateView(node)
         } else {
             removeAllViews()
         }
     }
     content.run {
+        dataAdapter.updateView = updateView
         if (layout.content != UILayout.Many.Empty) {
-            val node = data.resolve(layout.content.path)
-            dataAdapter.updateView = updateView
-            when (node) {
-                null -> dataAdapter.set(emptyList())
-                is List<*> -> dataAdapter.set(node as JsonArray)
-                is Map<*, *> -> when {
-                    node["add"] != null -> dataAdapter.add((node["add"] as JsonArray))
+            when {
+                layout.content.path.isEmpty() -> {
+                    val items = data.resolve<JsonArray?>() ?: return
+                    dataAdapter.set(items)
+                }
+                else -> {
+                    val path = layout.content.path.dropLast(1)
+                    val key = layout.content.path.last()
+                    val parent = data.resolve<JsonObjectNullable?>(path) ?: return
+                    parent
+                        .filterValues { it != null }
+                        .filterKeys { name -> name.startsWith(key) }
+                        .mapKeys { (name, _) -> name.split("_", limit = 2).last() }
+                        .forEach { (action, value) ->
+                            value!!.resolve<JsonArray?>()?.let { items ->
+                                when (action) {
+                                    key -> dataAdapter.set(items)
+                                    "add" -> {
+                                        dataAdapter.add(items)
+                                        content.smoothScrollToPosition(dataAdapter.items.size - 1)
+                                    }
+                                }
+                            }
+                        }
                 }
             }
         } else {
@@ -113,7 +128,7 @@ fun DataBinding.update(
     }
     footer.apply {
         if (layout.footer != UILayout.Single.Empty) {
-            val node = data.resolve(layout.footer.path)
+            val node = data.resolveAny(layout.footer.path)
             updateView(node)
         } else {
             removeAllViews()
@@ -121,5 +136,7 @@ fun DataBinding.update(
     }
 }
 
-private fun Any.resolve(path: List<String>): Any? =
-    path.fold(this) { acc: Any?, s -> (acc as? JsonObject)?.get(s) }
+fun Any.resolveAny(path: List<String>): Any? = resolve(path)
+
+fun <T> Any.resolve(path: List<String> = emptyList()): T =
+    path.fold(this) { acc: Any?, s -> (acc as? JsonObject)?.get(s) } as T

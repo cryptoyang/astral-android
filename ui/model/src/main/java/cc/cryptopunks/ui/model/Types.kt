@@ -5,6 +5,7 @@ import cc.cryptopunks.ui.model.internal.calculateScore
 import cc.cryptopunks.ui.model.internal.hasSingleTextInput
 import kotlinx.coroutines.flow.Flow
 
+typealias JsonObjectNullable = Map<String, Any?>
 typealias JsonObject = Map<String, Any>
 typealias JsonArray = List<Any>
 

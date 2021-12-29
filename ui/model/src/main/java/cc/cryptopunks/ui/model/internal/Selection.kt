@@ -33,10 +33,14 @@ private fun UIData.unfoldComplexTypes(): List<UIData> =
     type.properties.flatMap { (key, type) ->
         when {
             type.id.isBlank() -> emptyList()
-            else -> {
-                val value = (value as JsonObject)[key]!!
-                val data = UIData(type, value)
-                data.unfoldComplexTypes().plus(data)
+            else -> when (
+                val value = (value as JsonObject)[key]
+            ) {
+                null -> emptyList()
+                else -> {
+                    val data = UIData(type, value)
+                    data.unfoldComplexTypes().plus(data)
+                }
             }
         }
     } + this
