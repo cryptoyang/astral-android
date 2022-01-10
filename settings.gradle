@@ -18,9 +18,9 @@ project(':app:node').projectDir = new File(settingsDir, '/astrald/mobile/android
 
 include ':app:test:connect'
 
-include ':app:warpdrive:core'
-include ':app:warpdrive:slim'
-include ':app:warpdrive:fat'
+include ':app:warpdrive-poc:core'
+include ':app:warpdrive-poc:slim'
+include ':app:warpdrive-poc:fat'
 
 include ':app:ui:demo'
 include ':app:ui'

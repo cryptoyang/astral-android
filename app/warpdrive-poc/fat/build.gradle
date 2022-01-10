@@ -43,7 +43,7 @@ repositories {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation project(':app:warpdrive:core')
+    implementation project(':app:warpdrive-poc:core')
     implementation project(':service')
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

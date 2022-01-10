@@ -19,7 +19,7 @@ class AstralUIService(
     CoroutineScope by CoroutineScope(SupervisorJob() + Dispatchers.IO) {
 
     private val port = "ui"
-    private val nodeId = "024d47047667312be7cd0a14033323b716030f5fc9dd7ae774eb96527a76fa55f9"
+    private val nodeId = ""
 
     private object Method {
         val Schemas = "schema"
