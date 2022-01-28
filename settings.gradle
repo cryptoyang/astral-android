@@ -1,32 +1,21 @@
 rootProject.name = "astral-android"
 
-include ':client:api:stub'
-include ':client:api:stub:ext'
-include ':client:api:stream'
+include ':client'
+include ':node:wrapper'
+include ':node:service'
+include ':node:app'
+include ':service:notification'
+include ':service:content'
 
-include ':client:tcp'
-include ':client:coder'
-include ':client:coder:gson'
+project(':client').projectDir = new File(settingsDir, '/astrald/mobile/android/client')
+project(':node:wrapper').projectDir = new File(settingsDir, '/astrald/mobile/android/node/wrapper')
+project(':node:service').projectDir = new File(settingsDir, '/astrald/mobile/android/node/service')
+project(':node:app').projectDir = new File(settingsDir, '/astrald/mobile/android/node/app')
+project(':service:notification').projectDir = new File(settingsDir, '/astrald/mobile/android/service/notification')
+project(':service:content').projectDir = new File(settingsDir, '/astrald/mobile/android/node/service/content')
 
-include ':wrapper'
-include ':service'
-include ':app:node'
-
-project(':wrapper').projectDir = new File(settingsDir, '/astrald/mobile/android/wrapper')
-project(':service').projectDir = new File(settingsDir, '/astrald/mobile/android/service')
-project(':app:node').projectDir = new File(settingsDir, '/astrald/mobile/android/app')
-
-include ':app:test:connect'
-
-include ':app:warpdrive-poc:core'
-include ':app:warpdrive-poc:slim'
-include ':app:warpdrive-poc:fat'
-
-include ':app:ui:demo'
-include ':app:ui'
-
-include ':util:binary'
-
+include ':ui:app'
+include ':ui:demo'
 include ':ui:android'
 include ':ui:model'
 include ':ui:mapper'
@@ -37,3 +26,7 @@ include ':ui:proteus:android'
 include ':ui:proteus:legacy'
 include ':ui:service:astral'
 include ':ui:testing'
+
+include ':warpdrive-poc:core'
+include ':warpdrive-poc:slim'
+include ':warpdrive-poc:fat'

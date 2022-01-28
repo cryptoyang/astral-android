@@ -1,6 +1,9 @@
 package cc.cryptopunks.ui.service.astral
 
-import cc.cryptopunks.astral.api.*
+import cc.cryptopunks.astral.ext.bytesL32
+import cc.cryptopunks.astral.ext.stringL8
+import cc.cryptopunks.astral.io.reader
+import cc.cryptopunks.astral.net.Network
 import cc.cryptopunks.ui.mapper.Jackson
 import cc.cryptopunks.ui.model.Service
 import cc.cryptopunks.ui.service.schema.OpenRpc
@@ -13,13 +16,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 
 class AstralUIService(
-    private val network: Network
+    private val network: Network,
 ) :
     Service.Interface,
     CoroutineScope by CoroutineScope(SupervisorJob() + Dispatchers.IO) {
 
     private val port = "ui"
-    private val nodeId = ""
+    private val nodeId = "024d47047667312be7cd0a14033323b716030f5fc9dd7ae774eb96527a76fa55f9"
 
     private object Method {
         val Schemas = "schema"
@@ -29,12 +32,12 @@ class AstralUIService(
 
     override fun execute(request: Service.Request): Job = launch {
         network.run {
-            connect(nodeId, connect(nodeId, port).run {
-                writeL8String(Method.Request)
-                readL8String()
-            }).run {
+            connect(nodeId, port).run {
+                stringL8 = Method.Request
+                connect(nodeId, stringL8)
+            }.run {
                 val (destPort, method) = request.method.split("/")
-                writeL8String(destPort)
+                stringL8 = destPort
                 write(
                     Jackson.jsonMapper.writeValueAsBytes(
                         RpcJsonRequest(
@@ -50,17 +53,16 @@ class AstralUIService(
     override fun subscribe(request: Service.Request): Flow<Any> = channelFlow {
         val stream = withContext(Dispatchers.IO) {
             network.run {
-                val queryPort = connect(nodeId, port).run {
-                    writeL8String(Method.Subscribe)
-                    readL8String()
+                connect(nodeId, port).run {
+                    stringL8 = Method.Subscribe
+                    connect(nodeId, stringL8)
                 }
-                connect(nodeId, queryPort)
             }
         }
         launch(Dispatchers.IO) {
             stream.run {
                 val (destPort, method) = request.method.split("/")
-                writeL8String(destPort)
+                stringL8 = destPort
                 val rpcRequest = RpcJsonRequest(
                     method = method,
                     params = request.args.values.toList(),
@@ -70,7 +72,7 @@ class AstralUIService(
                 println(Jackson.jsonPrettyWriter.writeValueAsString(rpcRequest))
                 write(Jackson.jsonMapper.writeValueAsString(rpcRequest).toByteArray())
                 println("reading subscribed elements")
-                inputStream().reader().runCatching {
+                reader().runCatching {
                     forEachLine { line ->
                         println(line)
                         val data = Jackson.jsonSlimMapper.readValue<Map<String, Any>>(line)
@@ -88,22 +90,20 @@ class AstralUIService(
     }
 
     override fun schemas(
-        known: Set<Service.Schema.Version>
+        known: Set<Service.Schema.Version>,
     ): Flow<Service.Schema> = channelFlow {
         withContext(Dispatchers.IO) {
             network.run {
-                connect(nodeId,
-                    connect(nodeId, port).run {
-                        writeL8String(Method.Schemas)
-                        readL8String()
-                    }
-                ).run {
-                    while (true) {
-                        val bytes = readL64Bytes()
-                        val doc = Jackson.jsonMapper.readValue<OpenRpc.Document>(bytes)
-                        val schema = doc.toSchema()
-                        send(schema)
-                    }
+                connect(nodeId, port).run {
+                    stringL8 = Method.Schemas
+                    connect(nodeId, stringL8)
+                }
+            }.run {
+                while (true) {
+                    val bytes = bytesL32
+                    val doc = Jackson.jsonMapper.readValue<OpenRpc.Document>(bytes)
+                    val schema = doc.toSchema()
+                    send(schema)
                 }
             }
         }
