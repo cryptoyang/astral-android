@@ -1,0 +1,9 @@
+<resources>
+
+    <style name="Theme.Warpdrive" parent="Theme.MaterialComponents.DayNight.DarkActionBar" />
+
+    <style name="Theme.Warpdrive.NoActionBar" parent="Theme.MaterialComponents.DayNight.NoActionBar" >
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primaryDark</item>
+    </style>
+</resources>

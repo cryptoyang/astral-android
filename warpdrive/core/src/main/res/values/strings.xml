@@ -1,0 +1,4 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="warp_drive_app_name" tools:ignore="ExtraTranslation">Warp Drive</string>
+    <string name="share_file_label" tools:ignore="ExtraTranslation">Warp Share</string>
+</resources>

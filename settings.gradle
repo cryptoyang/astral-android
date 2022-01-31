@@ -12,7 +12,7 @@ project(':node:wrapper').projectDir = new File(settingsDir, '/astrald/mobile/and
 project(':node:service').projectDir = new File(settingsDir, '/astrald/mobile/android/node/service')
 project(':node:app').projectDir = new File(settingsDir, '/astrald/mobile/android/node/app')
 project(':service:notification').projectDir = new File(settingsDir, '/astrald/mobile/android/service/notification')
-project(':service:content').projectDir = new File(settingsDir, '/astrald/mobile/android/node/service/content')
+project(':service:content').projectDir = new File(settingsDir, '/astrald/mobile/android/service/content')
 
 include ':ui:app'
 include ':ui:demo'
@@ -30,3 +30,7 @@ include ':ui:testing'
 include ':warpdrive-poc:core'
 include ':warpdrive-poc:slim'
 include ':warpdrive-poc:fat'
+
+include ':warpdrive:core'
+include ':warpdrive:slim'
+include ':warpdrive:fat'

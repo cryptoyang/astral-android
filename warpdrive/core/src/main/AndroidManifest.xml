@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="cc.cryptopunks.astral.wrapdrive">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:name=".Warpdrive"
+        android:allowBackup="true"
+        android:label="@string/warp_drive_app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Warpdrive">
+
+        <activity
+            android:name=".offer.OfferActivity"
+            android:exported="true"
+            android:label="@string/warp_drive_app_name"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            <intent-filter>
+                <data android:scheme="warpdrive" />
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".share.ShareActivity"
+            android:exported="true"
+            android:label="@string/share_file_label"
+            android:theme="@style/Theme.Warpdrive.NoActionBar"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <data android:mimeType="*/*" />
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+    </application>
+
+</manifest>

@@ -21,7 +21,7 @@ private const val R_OK: Byte = 0
 
 @Suppress("BlockingMethodInNonBlockingContext")
 suspend fun Network.listPeers(): List<String> = withContext(Dispatchers.IO) {
-    connect("", Port).run {
+    query("", Port).run {
         write(List.bytes)
         inputStream().run {
             (0 until read()).map {
@@ -38,7 +38,7 @@ fun Network.sendFile(
     fileName: String,
     inputStream: InputStream,
 ) = channelFlow<Long> {
-    connect("", Port).run {
+    query("", Port).run {
         write(SendStream.bytes)
         nodeId.toByteArray().run {
             write(size.toByte().bytes)

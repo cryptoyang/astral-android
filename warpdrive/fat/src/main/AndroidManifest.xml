@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="cc.cryptopunks.warpdrive.app">
+
+    <application
+        android:label="@string/warp_drive_app_name"
+        android:theme="@style/Theme.Warpdrive"
+        tools:replace="android:theme,android:label" />
+</manifest>
