@@ -4,8 +4,6 @@ import android.util.Log
 import cc.cryptopunks.astral.binary.bytes
 import cc.cryptopunks.astral.ext.byte
 import cc.cryptopunks.astral.ext.read
-import cc.cryptopunks.astral.io.inputStream
-import cc.cryptopunks.astral.io.outputStream
 import cc.cryptopunks.astral.net.Network
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.SendChannel
@@ -21,9 +19,9 @@ private const val R_OK: Byte = 0
 
 @Suppress("BlockingMethodInNonBlockingContext")
 suspend fun Network.listPeers(): List<String> = withContext(Dispatchers.IO) {
-    query("", Port).run {
+    query(Port).run {
         write(List.bytes)
-        inputStream().run {
+        input.run {
             (0 until read()).map {
                 String(read(read()))
             }
@@ -38,7 +36,7 @@ fun Network.sendFile(
     fileName: String,
     inputStream: InputStream,
 ) = channelFlow<Long> {
-    query("", Port).run {
+    query(Port).run {
         write(SendStream.bytes)
         nodeId.toByteArray().run {
             write(size.toByte().bytes)
@@ -51,7 +49,7 @@ fun Network.sendFile(
         Log.d("Client", "reading response")
         if (byte == R_OK) {
             Log.d("Client", "sending stream")
-            copy(inputStream, outputStream(), progress = channel)
+            copy(inputStream, output, progress = channel)
             Log.d("Client", "sending finish")
         } else {
             Log.d("Client", "sending rejected")

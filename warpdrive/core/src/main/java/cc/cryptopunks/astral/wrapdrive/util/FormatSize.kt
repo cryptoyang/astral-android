@@ -4,7 +4,6 @@ import java.text.DecimalFormat
 import kotlin.math.log10
 import kotlin.math.pow
 
-
 private val units = arrayOf("B", "KB", "MB", "GB", "TB")
 
 fun Long.formatSize(): String =

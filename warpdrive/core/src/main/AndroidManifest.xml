@@ -16,7 +16,7 @@
             android:name=".offer.OfferActivity"
             android:exported="true"
             android:label="@string/warp_drive_app_name"
-            android:launchMode="singleTop">
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

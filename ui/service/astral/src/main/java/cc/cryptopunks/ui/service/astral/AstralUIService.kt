@@ -2,18 +2,22 @@ package cc.cryptopunks.ui.service.astral
 
 import cc.cryptopunks.astral.ext.bytesL32
 import cc.cryptopunks.astral.ext.stringL8
-import cc.cryptopunks.astral.io.reader
 import cc.cryptopunks.astral.net.Network
 import cc.cryptopunks.ui.mapper.Jackson
 import cc.cryptopunks.ui.model.Service
 import cc.cryptopunks.ui.service.schema.OpenRpc
 import cc.cryptopunks.ui.service.schema.toSchema
 import com.fasterxml.jackson.module.kotlin.readValue
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class AstralUIService(
     private val network: Network,
@@ -32,9 +36,9 @@ class AstralUIService(
 
     override fun execute(request: Service.Request): Job = launch {
         network.run {
-            query(nodeId, port).run {
+            query(port, nodeId).run {
                 stringL8 = Method.Request
-                query(nodeId, stringL8)
+                query(stringL8, nodeId)
             }.run {
                 val (destPort, method) = request.method.split("/")
                 stringL8 = destPort
@@ -53,9 +57,9 @@ class AstralUIService(
     override fun subscribe(request: Service.Request): Flow<Any> = channelFlow {
         val stream = withContext(Dispatchers.IO) {
             network.run {
-                query(nodeId, port).run {
+                query(port, nodeId).run {
                     stringL8 = Method.Subscribe
-                    query(nodeId, stringL8)
+                    query(stringL8, nodeId)
                 }
             }
         }
@@ -72,7 +76,7 @@ class AstralUIService(
                 println(Jackson.jsonPrettyWriter.writeValueAsString(rpcRequest))
                 write(Jackson.jsonMapper.writeValueAsString(rpcRequest).toByteArray())
                 println("reading subscribed elements")
-                reader().runCatching {
+                input.bufferedReader().runCatching {
                     forEachLine { line ->
                         println(line)
                         val data = Jackson.jsonSlimMapper.readValue<Map<String, Any>>(line)
@@ -94,9 +98,9 @@ class AstralUIService(
     ): Flow<Service.Schema> = channelFlow {
         withContext(Dispatchers.IO) {
             network.run {
-                query(nodeId, port).run {
+                query(port, nodeId).run {
                     stringL8 = Method.Schemas
-                    query(nodeId, stringL8)
+                    query(stringL8, nodeId)
                 }
             }.run {
                 while (true) {

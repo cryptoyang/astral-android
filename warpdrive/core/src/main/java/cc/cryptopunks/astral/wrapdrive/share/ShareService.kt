@@ -1,47 +1,78 @@
 package cc.cryptopunks.astral.wrapdrive.share
 
-import android.app.Activity
-import android.content.ClipData
-import android.content.Intent
-import cc.cryptopunks.astral.wrapdrive.api.OfferId
-import cc.cryptopunks.astral.wrapdrive.api.ProvideAction
-import cc.cryptopunks.astral.wrapdrive.api.ResultCode
+import android.net.Uri
+import cc.cryptopunks.astral.err.AstralLocalConnectionException
+import cc.cryptopunks.astral.wrapdrive.api.Peer
+import cc.cryptopunks.astral.wrapdrive.api.client.peers
 import cc.cryptopunks.astral.wrapdrive.api.client.send
 import cc.cryptopunks.astral.wrapdrive.api.network
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
+import cc.cryptopunks.astral.wrapdrive.warpdrive
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 
-val isSharing = MutableStateFlow(false)
-val sharingStatus =
-    MutableSharedFlow<Result<Pair<OfferId, ResultCode>>>(extraBufferCapacity = Byte.MAX_VALUE.toInt())
+fun ShareModel.refresh() = launch {
+    isRefreshing.emit(true)
+    refresh.emit(Unit)
+}
 
-fun Activity.shareService() = fun(
-    id: String,
-): ProvideAction = {
-    val items: List<ClipData.Item> = intent.clipData?.items()
-        ?: throw IllegalStateException("No clip data")
-    val uri = items.first().uri
-    grantUriPermission(
-        "cc.cryptopunks.astral.node", uri,
-        Intent.FLAG_GRANT_READ_URI_PERMISSION
-    )
-    suspend {
-        try {
-            isSharing.value = true
-            val result = withTimeout(5000) {
-                network.send(
-                    peerId = id,
-                    uri = uri.toString()
-                )
-            }
-            sharingStatus.emit(Result.success(result))
-        } catch (e: Throwable) {
-            sharingStatus.emit(Result.failure(e))
-        } finally {
-            isSharing.value = false
+fun ShareModel.subscribeShare() = launch {
+    share.collect { peerId ->
+        val uri = uri.value
+        warpdrive.launch {
+            share(peerId, uri)
         }
     }
 }
 
-fun ClipData.items(): List<ClipData.Item> = List(itemCount, this::getItemAt)
+private suspend fun share(peerId: String, uri: Uri) {
+    try {
+        isSharing.value = true
+        val result = withTimeout(5000) {
+            network.send(
+                peerId = peerId,
+                uri = uri.toString()
+            )
+        }
+        sharingStatus.emit(Result.success(result))
+    } catch (e: Throwable) {
+        sharingStatus.emit(Result.failure(e))
+    } finally {
+        isSharing.value = false
+    }
+}
+
+fun ShareModel.subscribePeers() {
+    peersJob.cancel()
+    peersJob = launch {
+        merge(
+            refresh.debounce(500),
+            ticker()
+        ).collect {
+            try {
+                val list = network.peers()
+                peers.value = list.sortedBy(Peer::id)
+                isRefreshing.emit(false)
+            } catch (e: Throwable) {
+                if (e is AstralLocalConnectionException) {
+                    throw e
+                } else {
+                    error.value = e
+                }
+            }
+        }
+    }
+}
+
+private fun ticker(
+    delay: Long = 3000,
+) = flow {
+    while (true) {
+        emit(Unit)
+        delay(delay)
+    }
+}

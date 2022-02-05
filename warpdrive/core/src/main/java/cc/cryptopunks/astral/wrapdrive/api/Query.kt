@@ -2,16 +2,14 @@ package cc.cryptopunks.astral.wrapdrive.api
 
 const val Port = "warpdrive"
 
-const val SenPeers  = "$Port/sender/peers"
-const val SenSend   = "$Port/sender/send"
-const val SenStatus = "$Port/sender/status"
-const val SenSent   = "$Port/sender/sent"
-const val SenEvents = "$Port/sender/events"
+const val QueryPeers     = "$Port/peers"
+const val QuerySend      = "$Port/send"
+const val QueryAccept    = "$Port/accept"
+const val QuerySubscribe = "$Port/subscribe"
+const val QueryStatus    = "$Port/status"
+const val QueryOffers    = "$Port/offers"
+const val QueryUpdate    = "$Port/update"
 
-const val RecIncoming = "$Port/recipient/incoming"
-const val RecReceived = "$Port/recipient/received"
-const val RecAccept   = "$Port/recipient/accept"
-const val RecReject   = "$Port/recipient/reject"
-const val RecUpdate   = "$Port/recipient/update"
-const val RecEvents   = "$Port/recipient/events"
-
+const val FilterAll = "all"
+const val FilterIn = "in"
+const val FilterOut = "out"

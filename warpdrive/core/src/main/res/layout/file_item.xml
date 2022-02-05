@@ -3,26 +3,42 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:padding="16dp">
 
     <TextView
         android:id="@+id/uri"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+        tools:text="some/long/path_and_file_name asddsadad adsad asd asdsa dasd asd asd asd sadasdas.jpg"/>
 
     <TextView
         android:id="@+id/mime"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
 
-    <TextView
-        android:id="@+id/progress"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/size"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <TextView
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+            android:id="@+id/progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="56MB/"/>
+
+        <TextView
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+            android:id="@+id/size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="126MB"/>
+    </LinearLayout>
 
 </LinearLayout>

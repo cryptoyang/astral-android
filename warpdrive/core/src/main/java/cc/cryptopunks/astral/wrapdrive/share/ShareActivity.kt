@@ -1,105 +1,92 @@
 package cc.cryptopunks.astral.wrapdrive.share
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.widget.ProgressBar
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import androidx.lifecycle.asLiveData
 import cc.cryptopunks.astral.wrapdrive.R
+import cc.cryptopunks.astral.wrapdrive.util.DisconnectionFragment
+import cc.cryptopunks.astral.wrapdrive.util.items
+import cc.cryptopunks.astral.wrapdrive.warpdrive
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 
-class ShareActivity : AppCompatActivity(), CoroutineScope by MainScope() {
+class ShareActivity : AppCompatActivity() {
 
-    private val peerAdapter = PeerAdapter(shareService())
-
-    private val refreshLayout get() = findViewById<SwipeRefreshLayout>(R.id.swipeRefresh)
-
-    private val toolbarProgress by lazy { findViewById<ProgressBar>(R.id.toolbarProgress) }
+    private val model by viewModels<ShareModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.share_activity)
         setSupportActionBar(findViewById(R.id.toolbar))
-        findViewById<RecyclerView>(R.id.list).apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = peerAdapter
+        setUri(intent)
+        warpdrive.isConnected.asLiveData().observe(this) { isConnected ->
+            val fragment = if (isConnected) {
+                model.subscribePeers()
+                PeerListFragment()
+            } else {
+                model.peersJob.cancel()
+                DisconnectionFragment()
+            }
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.container, fragment)
+                .commit()
         }
-        refreshLayout.apply {
-            setOnRefreshListener {
-                launch {
-                    loadPeers()
+        Snackbar.make(
+            findViewById(R.id.coordinator),
+            "Cannot obtain file uri, please select file once again",
+            Snackbar.LENGTH_INDEFINITE
+        ).let { info ->
+            model.uri.asLiveData().observe(this) { uri ->
+                when (uri) {
+                    Uri.EMPTY -> info.show()
+                    else -> {
+                        grantUriPermission(
+                            "cc.cryptopunks.astral.node", uri,
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        )
+                        info.dismiss()
+                    }
                 }
             }
         }
-        launch {
-            peersFetching.collect { value ->
-                refreshLayout.isRefreshing = value
+        findViewById<ProgressBar>(R.id.toolbarProgress).let { progress ->
+            isSharing.asLiveData().observe(this) { value ->
+                progress.isVisible = value
             }
         }
-        launch {
-            peersResult.collect { result ->
-                result.onSuccess {
-                    peerAdapter.items = it
-                }
-                result.onFailure {
-                    Snackbar.make(
-                        findViewById(R.id.coordinator),
-                        "Cannot load peers: " + it.localizedMessage,
-                        Snackbar.LENGTH_LONG
-                    ).show()
-                }
-            }
-        }
-        launch {
-            isSharing.collect { value ->
-                toolbarProgress.isVisible = value
-            }
-        }
-        launch {
-            sharingStatus.collect { result ->
+        Snackbar.make(
+            findViewById(R.id.coordinator),
+            "",
+            Snackbar.LENGTH_LONG
+        ).also { info ->
+            sharingStatus.asLiveData().observe(this) { result ->
                 result.onSuccess { (_, code) ->
-                    Snackbar.make(
-                        findViewById(R.id.coordinator),
-                        when (code.toInt()) {
-                            1 -> "Share accepted, the files are sending in background"
-                            else -> "Share delivered and waiting for approval"
-                        },
-                        Snackbar.LENGTH_LONG
-                    ).show()
+                    info.setText(when (code.toInt()) {
+                        1 -> "Share accepted, the files are sending in background"
+                        else -> "Share delivered and waiting for approval"
+                    })
                 }
                 result.onFailure {
-                    Snackbar.make(
-                        findViewById(R.id.coordinator),
-                        "Cannot share files: " + it.localizedMessage,
-                        Snackbar.LENGTH_LONG
-                    ).show()
+                    info.setText("Cannot share files: " + it.localizedMessage)
                 }
+                info.show()
             }
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        launch {
-            loadPeers()
         }
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         this.intent = intent
+        setUri(intent)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        cancel()
+    private fun setUri(intent: Intent) {
+        val data = intent.clipData ?: return
+        val uri = data.items().firstOrNull()?.uri ?: return
+        model.uri.value = uri
     }
 }
