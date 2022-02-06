@@ -37,7 +37,7 @@ class OfferListAdapter : RecyclerView.Adapter<OfferListAdapter.ViewHolder>() {
 
         var item by Delegates.observable(EmptyPeerOffer) { _, _, new ->
             binding.apply {
-                peer.text = new.peer.formattedName
+                peer.text = new.formattedName
                 amount.text = new.offer.formattedAmount
                 info.text = new.offer.formattedInfo
                 size.text = new.offer.formattedSize

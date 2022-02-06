@@ -27,9 +27,9 @@ include ':ui:proteus:legacy'
 include ':ui:service:astral'
 include ':ui:testing'
 
-include ':warpdrive-poc:core'
-include ':warpdrive-poc:slim'
-include ':warpdrive-poc:fat'
+//include ':warpdrive-poc:core'
+//include ':warpdrive-poc:slim'
+//include ':warpdrive-poc:fat'
 
 include ':warpdrive:core'
 include ':warpdrive:slim'

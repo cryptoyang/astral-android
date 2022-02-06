@@ -10,6 +10,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.asLiveData
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import cc.cryptopunks.astral.wrapdrive.api.PeerOffer
 import cc.cryptopunks.astral.wrapdrive.api.client.accept
 import cc.cryptopunks.astral.wrapdrive.api.network
 import cc.cryptopunks.astral.wrapdrive.databinding.OfferViewBinding
@@ -50,7 +51,7 @@ class OfferFragment : Fragment(), CoroutineScope by MainScope() {
             it != OfferModel.EmptyCurrent
         }.asLiveData().observe(viewLifecycleOwner) { data ->
             offerId.text = shortOfferId(data.offer.id)
-            peer.text = data.peer.formattedName
+            peer.text = PeerOffer(data.peer, data.offer).formattedName
             status.text = data.offer.formattedStatus
             createdAt.text = dateTime.format(data.offer.create)
             if (data.offer.create != data.offer.update)

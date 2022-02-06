@@ -93,6 +93,7 @@ fun OfferModel.subscribeChanges() {
                 else -> e
             }
             if (cause != null && cause !is AstralLocalConnectionException) {
+                e.printStackTrace()
                 error.value = OfferModel.Error("Cannot subscribe for offers", cause)
             }
         }

@@ -1,5 +1,7 @@
 package cc.cryptopunks.astral.wrapdrive.util
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,8 +17,7 @@ class DisconnectionFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View = DisconnectionBinding.inflate(inflater, container, false).apply {
         startAstralButton.setOnClickListener {
-            val intent = requireActivity().packageManager
-                .getLaunchIntentForPackage("cc.cryptopunks.astral.node")
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("astral://main"))
             startActivity(intent)
         }
     }.root

@@ -44,8 +44,9 @@ class ShareActivity : AppCompatActivity() {
                 when (uri) {
                     Uri.EMPTY -> info.show()
                     else -> {
+                        val astralPackage = getString(R.string.astral_package)
                         grantUriPermission(
-                            "cc.cryptopunks.astral.node", uri,
+                            astralPackage, uri,
                             Intent.FLAG_GRANT_READ_URI_PERMISSION
                         )
                         info.dismiss()

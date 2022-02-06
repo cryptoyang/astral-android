@@ -53,7 +53,7 @@ class OfferModel : CoroutineViewModel() {
 }
 
 fun OfferModel.Update.peersOffers() = offers.map { offer ->
-    val peer = peers.getValue(offer.peer)
+    val peer = peers[offer.peer] ?: EmptyPeer
     PeerOffer(peer, offer)
 }
 
