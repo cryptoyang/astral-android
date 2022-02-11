@@ -10,7 +10,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.asLiveData
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import cc.cryptopunks.wrapdrive.api.FilterIn
+import cc.cryptopunks.wrapdrive.api.Offer
 import cc.cryptopunks.wrapdrive.api.OffersFilter
 import cc.cryptopunks.wrapdrive.databinding.OfferListBinding
 
@@ -18,6 +20,7 @@ class OfferListFragment : Fragment() {
 
     private val model by activityViewModels<OfferModel>()
     private val offersAdapter = OfferListAdapter()
+    private val linearLayoutManager by lazy { LinearLayoutManager(context) }
     private val filter get() = requireArguments().getString(FILTER)!!
 
     @SuppressLint("NotifyDataSetChanged")
@@ -26,39 +29,39 @@ class OfferListFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View = OfferListBinding.inflate(inflater, container, false).apply {
-        val manager = LinearLayoutManager(context)
         list.apply {
-            layoutManager = manager
+            layoutManager = linearLayoutManager
             adapter = offersAdapter
             addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
         }
         model.updates.getValue(filter).observe(viewLifecycleOwner) { change ->
-            offersAdapter.apply {
-                items = change.peersOffers()
-                when (change.action) {
-                    OfferModel.Update.Action.Init,
-                    -> notifyDataSetChanged()
-                    OfferModel.Update.Action.Changed,
-                    -> notifyItemRangeChanged(change.position, change.value)
-                    OfferModel.Update.Action.Inserted,
-                    -> notifyItemInserted(change.position)
-                }
-            }
+            offersAdapter update change
         }
         model.currentOffer.asLiveData().observe(viewLifecycleOwner) { offer ->
-            if (filter == FilterIn == offer.`in`) {
-                offersAdapter.items.indexOfFirst {
-                    it.offer.id == offer.id
-                }.takeIf { index ->
-                    index > -1 && manager.run {
-                        index !in findFirstCompletelyVisibleItemPosition()..findLastCompletelyVisibleItemPosition()
-                    }
-                }?.let { index ->
-                    list.scrollToPosition(index)
-                }
-            }
+            list tryScrollToViewedOffer offer
         }
     }.root
+
+    @SuppressLint("NotifyDataSetChanged")
+    private infix fun OfferListAdapter.update(change: OfferModel.Update) {
+        items = change.peersOffers()
+        when (change.action) {
+            OfferModel.Update.Action.Init,
+            -> notifyDataSetChanged()
+            OfferModel.Update.Action.Changed,
+            -> notifyItemRangeChanged(change.position, change.value)
+            OfferModel.Update.Action.Inserted,
+            -> notifyItemInserted(change.position)
+        }
+    }
+
+    private infix fun RecyclerView.tryScrollToViewedOffer(offer: Offer) {
+        filter == FilterIn == offer.`in` || return
+        val index = offersAdapter.items.indexOfFirst { it.offer.id == offer.id }
+        index > -1 || return
+        index !in linearLayoutManager.completelyVisibleItemPositions() || return
+        scrollToPosition(index)
+    }
 
     companion object {
         private const val FILTER = "filter"
@@ -69,3 +72,6 @@ class OfferListFragment : Fragment() {
         }
     }
 }
+
+private fun LinearLayoutManager.completelyVisibleItemPositions(): IntRange =
+    findFirstCompletelyVisibleItemPosition()..findLastCompletelyVisibleItemPosition()
