@@ -44,7 +44,7 @@ class OfferListFragment : Fragment() {
             adapter = offersAdapter
             addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
         }
-        model.updates.getValue(filter).observe(viewLifecycleOwner) { change ->
+        model.updates(filter).observe(viewLifecycleOwner) { change ->
             val hasItems = change.offers.isNotEmpty()
             offers.isVisible = hasItems
             noOffers.root.isVisible = hasItems.not()

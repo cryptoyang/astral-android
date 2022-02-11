@@ -1,6 +1,6 @@
 package cc.cryptopunks.wrapdrive.offer
 
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asLiveData
 import cc.cryptopunks.wrapdrive.api.EmptyOffer
 import cc.cryptopunks.wrapdrive.api.EmptyPeer
 import cc.cryptopunks.wrapdrive.api.FilterIn
@@ -14,6 +14,7 @@ import cc.cryptopunks.wrapdrive.util.CoroutineViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.map
 
 class OfferModel : CoroutineViewModel() {
@@ -23,8 +24,8 @@ class OfferModel : CoroutineViewModel() {
     val current = MutableStateFlow(Current())
     val error = MutableStateFlow(null as Error?)
     val updates = mapOf(
-        FilterIn to MutableLiveData(Update()),
-        FilterOut to MutableLiveData(Update()),
+        FilterIn to MutableStateFlow(EmptyUpdate),
+        FilterOut to MutableStateFlow(EmptyUpdate),
     )
     var job = Job() as Job
 
@@ -50,6 +51,7 @@ class OfferModel : CoroutineViewModel() {
 
     companion object {
         val EmptyCurrent = Current()
+        val EmptyUpdate = Update()
     }
 }
 
@@ -58,20 +60,19 @@ fun OfferModel.Update.peersOffers() = offers.map { offer ->
     PeerOffer(peer, offer)
 }
 
+fun OfferModel.updates(filter: String) =
+    updates.getValue(filter).filterNot { it == OfferModel.EmptyUpdate }.asLiveData()
+
 fun OfferModel.setCurrent(id: OfferId?) {
     currentId.value = id
     current.value = if (id == null)
         OfferModel.EmptyCurrent
     else {
-        val offer = updates.values
-            .mapNotNull { it.value }
-            .flatMap(OfferModel.Update::offers)
-            .find { offer -> offer.id == id }
-            ?: EmptyOffer
-        val peer = updates.values.first().value
-            ?.peers
-            ?.get(offer.peer)
-            ?: EmptyPeer
+        val offer = updates
+            .flatMap { (_, state) -> state.value.offers }
+            .find { offer -> offer.id == id } ?: EmptyOffer
+        val peer = updates.values
+            .first().value.peers[offer.peer] ?: EmptyPeer
         OfferModel.Current(peer, offer)
     }
 
