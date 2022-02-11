@@ -2,7 +2,7 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="cc.cryptopunks.warpdrive.app">
+    package="cc.cryptopunks.astral">
 
     <application
         android:label="@string/warp_drive_app_name"

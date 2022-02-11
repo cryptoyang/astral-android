@@ -1,4 +1,4 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="astral_node_app_name">Warp Astral Node</string>
-    <string name="astral_package" tools:ignore="ExtraTranslation">cc.cryptopunks.warpdrive</string>
+    <string name="astral_node_app_name">Astral</string>
+    <string name="astral_package" tools:ignore="ExtraTranslation">cc.cryptopunks.astral</string>
 </resources>
