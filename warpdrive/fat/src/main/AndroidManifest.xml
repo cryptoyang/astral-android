@@ -5,7 +5,7 @@
     package="cc.cryptopunks.astral">
 
     <application
-        android:label="@string/warp_drive_app_name"
+        android:label="@string/astral_node_app_name"
         android:theme="@style/Theme.Warpdrive"
         tools:replace="android:theme,android:label" />
 </manifest>
