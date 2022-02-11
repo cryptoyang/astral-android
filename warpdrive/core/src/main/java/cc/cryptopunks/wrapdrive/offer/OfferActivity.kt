@@ -3,12 +3,15 @@ package cc.cryptopunks.wrapdrive.offer
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
 import androidx.lifecycle.asLiveData
 import cc.cryptopunks.astral.err.AstralLocalConnectionException
 import cc.cryptopunks.wrapdrive.R
+import cc.cryptopunks.wrapdrive.share.ShareActivity
 import cc.cryptopunks.wrapdrive.util.DisconnectionFragment
 import cc.cryptopunks.wrapdrive.warpdrive
 import com.google.android.material.snackbar.Snackbar
@@ -79,6 +82,20 @@ class OfferActivity : AppCompatActivity() {
             intent.data = null
             intent = intent
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.offer, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        var result = true
+        when (item.itemId) {
+            R.id.share -> startActivity(ShareActivity.intent(this))
+            else -> result = super.onOptionsItemSelected(item)
+        }
+        return result
     }
 
     private fun setOfferId(intent: Intent) {

@@ -1,9 +1,11 @@
 package cc.cryptopunks.wrapdrive.share
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.widget.ProgressBar
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -17,6 +19,10 @@ import com.google.android.material.snackbar.Snackbar
 class ShareActivity : AppCompatActivity() {
 
     private val model by viewModels<ShareModel>()
+    private val selectUri = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        if (uri == null) finish()
+        else model.uri.value = uri
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,8 +92,15 @@ class ShareActivity : AppCompatActivity() {
     }
 
     private fun setUri(intent: Intent) {
-        val data = intent.clipData ?: return
-        val uri = data.items().firstOrNull()?.uri ?: return
-        model.uri.value = uri
+        val uri = intent.clipData?.items()?.firstOrNull()?.uri
+        if (uri != null) {
+            model.uri.value = uri
+        } else {
+            selectUri.launch("*/*")
+        }
+    }
+
+    companion object {
+        fun intent(context: Context) = Intent(context, ShareActivity::class.java)
     }
 }

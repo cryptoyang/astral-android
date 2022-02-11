@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.asLiveData
@@ -12,9 +13,11 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cc.cryptopunks.wrapdrive.api.FilterIn
+import cc.cryptopunks.wrapdrive.api.FilterOut
 import cc.cryptopunks.wrapdrive.api.Offer
 import cc.cryptopunks.wrapdrive.api.OffersFilter
 import cc.cryptopunks.wrapdrive.databinding.OfferListBinding
+import cc.cryptopunks.wrapdrive.share.ShareActivity
 
 class OfferListFragment : Fragment() {
 
@@ -29,16 +32,26 @@ class OfferListFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View = OfferListBinding.inflate(inflater, container, false).apply {
-        list.apply {
+        noOffers.chooseAppButton.setOnClickListener {
+            startActivity(ShareActivity.intent(requireContext()))
+        }
+        when (filter) {
+            FilterIn -> noOffers.noReceived.isVisible = true
+            FilterOut -> noOffers.noSent.isVisible = true
+        }
+        offers.apply {
             layoutManager = linearLayoutManager
             adapter = offersAdapter
             addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
         }
         model.updates.getValue(filter).observe(viewLifecycleOwner) { change ->
+            val hasItems = change.offers.isNotEmpty()
+            offers.isVisible = hasItems
+            noOffers.root.isVisible = hasItems.not()
             offersAdapter update change
         }
         model.currentOffer.asLiveData().observe(viewLifecycleOwner) { offer ->
-            list tryScrollToViewedOffer offer
+            offers tryScrollToViewedOffer offer
         }
     }.root
 
