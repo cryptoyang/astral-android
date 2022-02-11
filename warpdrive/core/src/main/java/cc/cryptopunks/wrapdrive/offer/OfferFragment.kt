@@ -36,15 +36,8 @@ class OfferFragment : Fragment(), CoroutineScope by MainScope() {
             addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
         }
         download.setOnClickListener {
-            model.currentId.value?.let { offerId ->
-                launch {
-                    try {
-                        network.accept(offerId)
-                    } catch (e: Throwable) {
-                        model.error.value = OfferModel.Error("Cannot share files", e)
-                    }
-                }
-            }
+            if (model.hasWritePermission) download()
+            else requireContext().startWritePermissionActivity()
         }
         val dateTime = SimpleDateFormat.getDateTimeInstance()
         model.current.filter {
@@ -70,4 +63,20 @@ class OfferFragment : Fragment(), CoroutineScope by MainScope() {
             }
         }
     }.root
+
+    override fun onResume() {
+        super.onResume()
+        model.hasWritePermission = requireContext().hasWriteStoragePermissions()
+    }
+
+    private fun download() {
+        val offerId = model.currentId.value ?: return
+        launch {
+            try {
+                network.accept(offerId)
+            } catch (e: Throwable) {
+                model.error.value = OfferModel.Error("Cannot share files", e)
+            }
+        }
+    }
 }

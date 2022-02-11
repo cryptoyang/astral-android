@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.map
 
 class OfferModel : CoroutineViewModel() {
 
+    var hasWritePermission: Boolean = false
     val currentId = MutableStateFlow(null as OfferId?)
     val current = MutableStateFlow(Current())
     val error = MutableStateFlow(null as Error?)
