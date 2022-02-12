@@ -56,6 +56,7 @@ class OfferFragment : Fragment(), CoroutineScope by MainScope() {
                 progress = data.offer.progress
                 items = data.offer.files
                 when {
+                    offerId != data.offer.id -> notifyDataSetChanged()
                     prevIndex != index -> notifyDataSetChanged()
                     data.offer.index > 0 -> notifyItemChanged(data.offer.index)
                     else -> notifyItemRangeChanged(0, data.offer.files.size)

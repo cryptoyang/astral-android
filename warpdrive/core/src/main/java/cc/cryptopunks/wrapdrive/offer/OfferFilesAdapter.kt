@@ -13,6 +13,7 @@ import kotlin.properties.Delegates
 
 class OfferFilesAdapter : RecyclerView.Adapter<OfferFilesAdapter.ViewHolder>() {
 
+    var offerId: String = ""
     var index: Int = -1
     var progress: Long = 0
     var items: List<Info> = emptyList()
