@@ -18,11 +18,13 @@
             android:label="Warp Drive"
             android:launchMode="singleTask">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
-                <data android:scheme="warpdrive" />
+                <data
+                    android:host="offer"
+                    android:scheme="warpdrive" />
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
@@ -34,12 +36,28 @@
             android:name=".share.ShareActivity"
             android:exported="true"
             android:label="@string/share_file_label"
-            android:theme="@style/Theme.Warpdrive.NoActionBar"
-            android:launchMode="singleTop">
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.Warpdrive.NoActionBar">
             <intent-filter>
                 <data android:mimeType="*/*" />
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".offer.DownloadActivity"
+            android:theme="@style/Theme.Warpdrive.Translucent"
+            android:launchMode="singleTask"
+            android:exported="true">
+            <intent-filter>
+                <data
+                    android:host="download"
+                    android:scheme="warpdrive" />
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
         </activity>
 

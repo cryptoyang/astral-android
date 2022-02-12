@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.ProgressBar
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -91,16 +93,31 @@ class ShareActivity : AppCompatActivity() {
         setUri(intent)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.share, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        var result = true
+        when (item.itemId) {
+            R.id.share -> selectUri.launch(MIME)
+            else -> result = super.onOptionsItemSelected(item)
+        }
+        return result
+    }
+
     private fun setUri(intent: Intent) {
         val uri = intent.clipData?.items()?.firstOrNull()?.uri
         if (uri != null) {
             model.uri.value = uri
         } else {
-            selectUri.launch("*/*")
+            selectUri.launch(MIME)
         }
     }
 
     companion object {
         fun intent(context: Context) = Intent(context, ShareActivity::class.java)
+        private const val MIME = "*/*"
     }
 }

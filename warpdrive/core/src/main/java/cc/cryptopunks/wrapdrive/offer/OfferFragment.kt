@@ -76,7 +76,7 @@ class OfferFragment : Fragment(), CoroutineScope by MainScope() {
             try {
                 network.accept(offerId)
             } catch (e: Throwable) {
-                model.error.value = OfferModel.Error("Cannot share files", e)
+                model.error.value = OfferModel.Error("Cannot download files", e)
             }
         }
     }

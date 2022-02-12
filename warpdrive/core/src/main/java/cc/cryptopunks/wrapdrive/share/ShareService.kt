@@ -11,6 +11,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
@@ -51,7 +52,8 @@ fun ShareModel.subscribePeers() {
     peersJob = launch {
         merge(
             refresh.debounce(500),
-            ticker()
+            trigger(),
+//            ticker()
         ).collect {
             try {
                 val list = network.peers()
@@ -68,11 +70,13 @@ fun ShareModel.subscribePeers() {
     }
 }
 
+private fun trigger() = flowOf(Unit)
+
 private fun ticker(
     delay: Long = 3000,
 ) = flow {
     while (true) {
-        emit(Unit)
         delay(delay)
+        emit(Unit)
     }
 }

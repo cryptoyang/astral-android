@@ -85,7 +85,7 @@ class OfferActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.offer, menu)
+        menuInflater.inflate(R.menu.share, menu)
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -99,13 +99,13 @@ class OfferActivity : AppCompatActivity() {
     }
 
     private fun setOfferId(intent: Intent) {
-        val id = intent.data?.host ?: return
+        val id = intent.data?.lastPathSegment ?: return
         model.setCurrent(id)
     }
 
     companion object {
         fun intent(offerId: String): Intent {
-            val uri = Uri.parse("warpdrive://$offerId")
+            val uri = Uri.parse("warpdrive://offer/$offerId")
             return Intent(Intent.ACTION_VIEW, uri)
         }
     }
