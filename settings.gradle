@@ -1,18 +1,17 @@
 rootProject.name = "astral-android"
 
-include ':client'
-include ':node:wrapper'
-include ':node:service'
-include ':node:app'
-include ':service:notification'
-include ':service:content'
+def include(String mod, String path) {
+    include(mod)
+    project(mod).projectDir = new File(settingsDir, path)
+}
 
-project(':client').projectDir = new File(settingsDir, '/astrald/mobile/android/client')
-project(':node:wrapper').projectDir = new File(settingsDir, '/astrald/mobile/android/node/wrapper')
-project(':node:service').projectDir = new File(settingsDir, '/astrald/mobile/android/node/service')
-project(':node:app').projectDir = new File(settingsDir, '/astrald/mobile/android/node/app')
-project(':service:notification').projectDir = new File(settingsDir, '/astrald/mobile/android/service/notification')
-project(':service:content').projectDir = new File(settingsDir, '/astrald/mobile/android/service/content')
+include(':astral:client', "astrald/mobile/android/client")
+include(':astral:app', "astrald/mobile/android/app")
+include(':astral:service', "astrald/mobile/android/service")
+include(':astral:node', "astrald/mobile/android/node")
+include(':astral:android', "astrald/mobile/android/node/android")
+include(':astral:android:notify', "astrald/mobile/android/node/notify")
+include(':astral:android:content', "astrald/mobile/android/node/content")
 
 include ':ui:app'
 include ':ui:demo'

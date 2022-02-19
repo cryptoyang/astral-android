@@ -37,14 +37,14 @@ configurations {
 
 repositories {
     flatDir {
-        dirs '../../astrald/mobile/android/libs'
+        dirs '../../astrald/mobile/android/build'
     }
 }
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation project(':warpdrive:core')
-    implementation project(':node:service')
+    implementation project(':astral:service')
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
