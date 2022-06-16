@@ -2,4 +2,5 @@
     <string name="warp_drive_app_name" tools:ignore="ExtraTranslation">Warp Drive</string>
     <string name="share_file_label" tools:ignore="ExtraTranslation">Warp Share</string>
     <string name="astral_package" tools:ignore="ExtraTranslation">cc.cryptopunks.astral</string>
+    <string name="write_permission_text">Warp Drive needs a permission to save downloaded files on your phone.</string>
 </resources>

@@ -15,7 +15,7 @@ class ShareModel : CoroutineViewModel() {
     val peers = MutableStateFlow(emptyList<Peer>())
     val refresh = MutableSharedFlow<Unit>()
     val isRefreshing = MutableStateFlow(false)
-    val share = MutableSharedFlow<String>(extraBufferCapacity = 1)
+    val share = MutableSharedFlow<Peer>(extraBufferCapacity = 1)
     var peersJob = Job() as Job
 
     init {

@@ -14,6 +14,8 @@ import cc.cryptopunks.wrapdrive.api.PeerOffer
 import cc.cryptopunks.wrapdrive.api.client.accept
 import cc.cryptopunks.wrapdrive.api.network
 import cc.cryptopunks.wrapdrive.databinding.OfferViewBinding
+import cc.cryptopunks.wrapdrive.util.hasWriteStoragePermissions
+import cc.cryptopunks.wrapdrive.util.requestWriteStoragePermission
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.filter
@@ -37,7 +39,7 @@ class OfferFragment : Fragment(), CoroutineScope by MainScope() {
         }
         download.setOnClickListener {
             if (model.hasWritePermission) download()
-            else requireContext().startWritePermissionActivity()
+            else requireContext().requestWriteStoragePermission()
         }
         val dateTime = SimpleDateFormat.getDateTimeInstance()
         model.current.filter {
@@ -67,7 +69,7 @@ class OfferFragment : Fragment(), CoroutineScope by MainScope() {
 
     override fun onResume() {
         super.onResume()
-        model.hasWritePermission = requireContext().hasWriteStoragePermissions()
+        model.hasWritePermission = requireContext().hasWriteStoragePermissions
     }
 
     private fun download() {

@@ -102,6 +102,9 @@ class ShareActivity : AppCompatActivity() {
         var result = true
         when (item.itemId) {
             R.id.share -> selectUri.launch(MIME)
+            R.id.bt -> startService(Intent("cc.cryptopunks.astral.service.BT_DISCOVERY").apply {
+                `package` = getString(R.string.astral_package)
+            })
             else -> result = super.onOptionsItemSelected(item)
         }
         return result

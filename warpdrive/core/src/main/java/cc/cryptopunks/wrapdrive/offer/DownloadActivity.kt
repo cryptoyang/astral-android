@@ -4,6 +4,8 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import cc.cryptopunks.wrapdrive.api.client.accept
 import cc.cryptopunks.wrapdrive.api.network
+import cc.cryptopunks.wrapdrive.util.hasWriteStoragePermissions
+import cc.cryptopunks.wrapdrive.util.requestWriteStoragePermission
 import cc.cryptopunks.wrapdrive.warpdrive
 import kotlinx.coroutines.launch
 
@@ -11,7 +13,7 @@ class DownloadActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (!hasWriteStoragePermissions()) startWritePermissionActivity()
+        if (!hasWriteStoragePermissions) requestWriteStoragePermission()
         else try {
             val offerId = intent
                 .data!!

@@ -34,6 +34,7 @@ data class Peer(
     val id: PeerId = "",
     val alias: String = "",
     val mod: String = "",
+    val network: String = "astral",
 )
 
 data class PeerOffer(

@@ -2,7 +2,10 @@ package cc.cryptopunks.wrapdrive.share
 
 import android.net.Uri
 import cc.cryptopunks.astral.err.AstralLocalConnectionException
+import cc.cryptopunks.astral.service.bluetooth.parseHex
 import cc.cryptopunks.wrapdrive.api.Peer
+import cc.cryptopunks.wrapdrive.api.client.bluetoothPeers
+import cc.cryptopunks.wrapdrive.api.client.dial
 import cc.cryptopunks.wrapdrive.api.client.peers
 import cc.cryptopunks.wrapdrive.api.client.send
 import cc.cryptopunks.wrapdrive.api.network
@@ -12,7 +15,10 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 
@@ -22,16 +28,22 @@ fun ShareModel.refresh() = launch {
 }
 
 fun ShareModel.subscribeShare() = launch {
-    share.collect { peerId ->
+    share.collect { peer ->
         val uri = uri.value
         warpdrive.launch {
-            share(peerId, uri)
+            share(peer, uri)
         }
     }
 }
 
-private suspend fun share(peerId: String, uri: Uri) {
+private suspend fun share(peer: Peer, uri: Uri) {
     try {
+        val peerId = when (peer.network) {
+            "astral" -> peer.id
+            "bt" -> network.dial(peer.network, peer.id.parseHex())
+            else -> throw IllegalArgumentException("Unsupported network type ${peer.network}")
+        }
+
         isSharing.value = true
         val result = withTimeout(5000) {
             network.send(
@@ -51,26 +63,37 @@ fun ShareModel.subscribePeers() {
     peersJob.cancel()
     peersJob = launch {
         merge(
-            refresh.debounce(500),
-            trigger(),
-//            ticker()
-        ).collect {
-            try {
-                val list = network.peers()
-                peers.value = list.sortedBy(Peer::id)
-                isRefreshing.emit(false)
-            } catch (e: Throwable) {
-                if (e is AstralLocalConnectionException) {
-                    throw e
-                } else {
-                    error.value = e
-                }
-            }
+            subscribeAstralPeers(),
+            bluetoothPeers().map(::listOf),
+        ).scan(emptyMap<String, Peer>()) { acc, peers ->
+            acc + peers.associateBy { it.id }
+        }.collect {
+            peers.value = it.values.toList()
         }
     }
 }
 
-private fun trigger() = flowOf(Unit)
+private fun ShareModel.subscribeAstralPeers() =
+    merge(
+        refresh.debounce(500),
+        trigger(),
+//            ticker()
+    ).mapNotNull {
+        try {
+            val list = network.peers()
+            isRefreshing.emit(false)
+            list.sortedBy(Peer::id)
+        } catch (e: Throwable) {
+            if (e is AstralLocalConnectionException) {
+                throw e
+            } else {
+                error.value = e
+                null
+            }
+        }
+    }
+
+fun trigger() = flowOf(Unit)
 
 private fun ticker(
     delay: Long = 3000,
