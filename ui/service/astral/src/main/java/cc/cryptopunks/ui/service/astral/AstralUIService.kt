@@ -1,7 +1,7 @@
 package cc.cryptopunks.ui.service.astral
 
-import cc.cryptopunks.astral.ext.bytesL32
-import cc.cryptopunks.astral.ext.stringL8
+import cc.cryptopunks.astral.ext.bytes32
+import cc.cryptopunks.astral.ext.string8
 import cc.cryptopunks.astral.net.Network
 import cc.cryptopunks.ui.mapper.Jackson
 import cc.cryptopunks.ui.model.Service
@@ -37,11 +37,11 @@ class AstralUIService(
     override fun execute(request: Service.Request): Job = launch {
         network.run {
             query(port, nodeId).run {
-                stringL8 = Method.Request
-                query(stringL8, nodeId)
+                string8 = Method.Request
+                query(string8, nodeId)
             }.run {
                 val (destPort, method) = request.method.split("/")
-                stringL8 = destPort
+                string8 = destPort
                 write(
                     Jackson.jsonMapper.writeValueAsBytes(
                         RpcJsonRequest(
@@ -58,15 +58,15 @@ class AstralUIService(
         val stream = withContext(Dispatchers.IO) {
             network.run {
                 query(port, nodeId).run {
-                    stringL8 = Method.Subscribe
-                    query(stringL8, nodeId)
+                    string8 = Method.Subscribe
+                    query(string8, nodeId)
                 }
             }
         }
         launch(Dispatchers.IO) {
             stream.run {
                 val (destPort, method) = request.method.split("/")
-                stringL8 = destPort
+                string8 = destPort
                 val rpcRequest = RpcJsonRequest(
                     method = method,
                     params = request.args.values.toList(),
@@ -99,12 +99,12 @@ class AstralUIService(
         withContext(Dispatchers.IO) {
             network.run {
                 query(port, nodeId).run {
-                    stringL8 = Method.Schemas
-                    query(stringL8, nodeId)
+                    string8 = Method.Schemas
+                    query(string8, nodeId)
                 }
             }.run {
                 while (true) {
-                    val bytes = bytesL32
+                    val bytes = bytes32
                     val doc = Jackson.jsonMapper.readValue<OpenRpc.Document>(bytes)
                     val schema = doc.toSchema()
                     send(schema)
