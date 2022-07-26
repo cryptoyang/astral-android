@@ -9,9 +9,9 @@ include(':astral:client', "astrald/mobile/android/client")
 include(':astral:app', "astrald/mobile/android/app")
 include(':astral:service', "astrald/mobile/android/service")
 include(':astral:node', "astrald/mobile/android/node")
-include(':astral:android', "astrald/mobile/android/node/android")
-include(':astral:android:notify', "astrald/mobile/android/node/notify")
-include(':astral:android:content', "astrald/mobile/android/node/content")
+include(':astral:android:api', "astrald/mobile/android/api")
+include(':astral:mod:notify', "astrald/mobile/android/mod/notify")
+include(':astral:mod:content', "astrald/mobile/android/mod/content")
 
 include ':ui:app'
 include ':ui:demo'
