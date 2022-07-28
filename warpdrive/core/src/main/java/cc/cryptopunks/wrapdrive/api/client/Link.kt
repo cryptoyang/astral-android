@@ -6,7 +6,7 @@ import cc.cryptopunks.wrapdrive.api.Astral
 import cc.cryptopunks.wrapdrive.api.Port
 import kotlinx.coroutines.flow.channelFlow
 
-fun Astral.link() = channelFlow {
+fun Astral.link() = channelFlow<Unit> {
     runCatching {
         query(Port) {
             send(Unit)
