@@ -17,7 +17,7 @@ val Offer.formattedDateTime: String
 val Offer.formattedSize: String
     get() = "${summaryProgress.formatSize()} / ${summarySize.formatSize()}"
 
-val Offer.formattedInfo: String?
+val Offer.formattedInfo: String
     get() = when (files.size) {
         0 -> ""
         1 -> files.first().uri
@@ -28,7 +28,7 @@ val Offer.formattedInfo: String?
                 else ""
             }
         }
-    }.formattedUriFileName
+    }.formattedUriFileName ?: ""
 
 val String.formattedUriFileName: String?
     get() = Uri.parse(this).run { lastPathSegment ?: host }
@@ -44,6 +44,7 @@ val PeerOffer.formattedName: String
 
 val Offer.formattedStatus: String
     get() = when (status) {
+        "" -> ""
         StatusAwaiting -> status.replaceFirstChar(Char::uppercase)
         else -> status.replaceFirstChar(Char::uppercase) + " at"
     }
@@ -59,8 +60,8 @@ val Offer.summarySize: Long
     get() = files.sumOf(Info::size)
 
 
-fun shortPeerId(id: PeerId): String =
-    "UID-" + id.substring(0, 8).chunked(4).joinToString("-")
+fun shortPeerId(id: PeerId): String = if (id.length < 8) ""
+    else "UID-" + id.substring(0, 8).chunked(4).joinToString("-")
 
-fun shortOfferId(id: OfferId): String =
-    "OID-" + id.replace("-", "").substring(0, 12).chunked(4).joinToString("-")
+fun shortOfferId(id: OfferId): String = if (id.length < 12) ""
+    else "OID-" + id.replace("-", "").substring(0, 12).chunked(4).joinToString("-")

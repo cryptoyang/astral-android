@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.runtime.snapshots.Snapshot.Companion.observe
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -17,14 +18,14 @@ import cc.cryptopunks.wrapdrive.api.FilterOut
 import cc.cryptopunks.wrapdrive.api.Offer
 import cc.cryptopunks.wrapdrive.api.OffersFilter
 import cc.cryptopunks.wrapdrive.databinding.OfferListBinding
-import cc.cryptopunks.wrapdrive.share.ShareActivity
+import cc.cryptopunks.wrapdrive.util.shareIntent
 
 class OfferListFragment : Fragment() {
 
     private val model by activityViewModels<OfferModel>()
     private val offersAdapter = OfferListAdapter()
     private val linearLayoutManager by lazy { LinearLayoutManager(context) }
-    private val filter get() = requireArguments().getString(FILTER)!!
+    private val filter: String get() = requireArguments().getString(FILTER)!!
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
@@ -33,7 +34,7 @@ class OfferListFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View = OfferListBinding.inflate(inflater, container, false).apply {
         noOffers.chooseAppButton.setOnClickListener {
-            startActivity(ShareActivity.intent(requireContext()))
+            requireContext().shareIntent()
         }
         when (filter) {
             FilterIn -> noOffers.noReceived.isVisible = true
@@ -44,7 +45,7 @@ class OfferListFragment : Fragment() {
             adapter = offersAdapter
             addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
         }
-        model.updates(filter).observe(viewLifecycleOwner) { change ->
+        model.updates(filter).asLiveData().observe(viewLifecycleOwner) { change ->
             val hasItems = change.offers.isNotEmpty()
             offers.isVisible = hasItems
             noOffers.root.isVisible = hasItems.not()
@@ -57,7 +58,7 @@ class OfferListFragment : Fragment() {
 
     @SuppressLint("NotifyDataSetChanged")
     private infix fun OfferListAdapter.update(change: OfferModel.Update) {
-        items = change.peersOffers()
+        items = change.peersOffers
         when (change.action) {
             OfferModel.Update.Action.Init,
             -> notifyDataSetChanged()

@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import cc.cryptopunks.wrapdrive.api.EmptyPeerOffer
 import cc.cryptopunks.wrapdrive.api.PeerOffer
 import cc.cryptopunks.wrapdrive.databinding.OfferItemBinding
+import cc.cryptopunks.wrapdrive.util.offerIntent
 import kotlin.properties.Delegates
 
 @SuppressLint("NotifyDataSetChanged")
@@ -29,9 +30,10 @@ class OfferListAdapter : RecyclerView.Adapter<OfferListAdapter.ViewHolder>() {
     ) : RecyclerView.ViewHolder(binding.root) {
 
         init {
-            binding.root.setOnClickListener {
-                val intent = OfferActivity.intent(item.offer.id)
-                binding.root.context.startActivity(intent)
+            binding.root.apply {
+                setOnClickListener {
+                    context.startActivity(offerIntent(item.offer.id))
+                }
             }
         }
 

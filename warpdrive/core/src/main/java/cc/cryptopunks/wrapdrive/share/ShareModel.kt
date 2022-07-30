@@ -10,17 +10,25 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class ShareModel : CoroutineViewModel() {
+
+    // state
     val error = MutableStateFlow(null as Throwable?)
-    val uri = MutableStateFlow(Uri.EMPTY)
+    val uri = MutableStateFlow(Uri.EMPTY to 0L)
     val peers = MutableStateFlow(emptyList<Peer>())
-    val refresh = MutableSharedFlow<Unit>()
     val isRefreshing = MutableStateFlow(false)
-    val share = MutableSharedFlow<String>(extraBufferCapacity = 1)
     var peersJob = Job() as Job
+
+    // actions
+    val refresh = MutableSharedFlow<Unit>()
+    val share = MutableSharedFlow<String>(extraBufferCapacity = 1)
 
     init {
         subscribeShare()
     }
+}
+
+fun ShareModel.setUri(uri: Uri) {
+    this.uri.value = uri to System.currentTimeMillis()
 }
 
 val isSharing = MutableStateFlow(false)

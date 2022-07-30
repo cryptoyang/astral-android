@@ -15,7 +15,7 @@
         android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="localhost" />
+        tools:text="OID-7fc4-44f4-62d3" />
 
 
     <TextView
@@ -57,7 +57,7 @@
         android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
         app:layout_constraintBottom_toBottomOf="@+id/offerId"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:text="OID-7fc4-44f4-62d3" />
+        tools:text="localhost" />
 
     <TextView
         android:id="@+id/datetime"

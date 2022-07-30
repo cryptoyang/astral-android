@@ -10,14 +10,12 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.asLiveData
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import cc.cryptopunks.wrapdrive.api.EmptyPeerOffer
 import cc.cryptopunks.wrapdrive.api.PeerOffer
-import cc.cryptopunks.wrapdrive.api.client.accept
-import cc.cryptopunks.wrapdrive.api.network
 import cc.cryptopunks.wrapdrive.databinding.OfferViewBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 
 class OfferFragment : Fragment(), CoroutineScope by MainScope() {
@@ -36,12 +34,12 @@ class OfferFragment : Fragment(), CoroutineScope by MainScope() {
             addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
         }
         download.setOnClickListener {
-            if (model.hasWritePermission) download()
+            if (model.hasWritePermission) model.download()
             else requireContext().startWritePermissionActivity()
         }
         val dateTime = SimpleDateFormat.getDateTimeInstance()
         model.current.filter {
-            it != OfferModel.EmptyCurrent
+            it != EmptyPeerOffer
         }.asLiveData().observe(viewLifecycleOwner) { data ->
             offerId.text = shortOfferId(data.offer.id)
             peer.text = PeerOffer(data.peer, data.offer).formattedName
@@ -68,16 +66,5 @@ class OfferFragment : Fragment(), CoroutineScope by MainScope() {
     override fun onResume() {
         super.onResume()
         model.hasWritePermission = requireContext().hasWriteStoragePermissions()
-    }
-
-    private fun download() {
-        val offerId = model.currentId.value ?: return
-        launch {
-            try {
-                network.accept(offerId)
-            } catch (e: Throwable) {
-                model.error.value = OfferModel.Error("Cannot download files", e)
-            }
-        }
     }
 }

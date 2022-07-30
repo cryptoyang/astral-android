@@ -1,14 +1,16 @@
 package cc.cryptopunks.wrapdrive.share
 
 import android.net.Uri
+import androidx.compose.material.SnackbarHostState
+import cc.cryptopunks.astral.contacts.ContactsModel
 import cc.cryptopunks.astral.err.AstralLocalConnectionException
 import cc.cryptopunks.wrapdrive.api.Peer
 import cc.cryptopunks.wrapdrive.api.client.peers
 import cc.cryptopunks.wrapdrive.api.client.send
 import cc.cryptopunks.wrapdrive.api.network
 import cc.cryptopunks.wrapdrive.warpdrive
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
@@ -23,14 +25,12 @@ fun ShareModel.refresh() = launch {
 
 fun ShareModel.subscribeShare() = launch {
     share.collect { peerId ->
-        val uri = uri.value
-        warpdrive.launch {
-            share(peerId, uri)
-        }
+        val (uri) = uri.value
+        share(peerId, uri)
     }
 }
 
-private suspend fun share(peerId: String, uri: Uri) {
+fun share(peerId: String, uri: Uri) = warpdrive.launch {
     try {
         isSharing.value = true
         val result = withTimeout(5000) {
@@ -52,7 +52,7 @@ fun ShareModel.subscribePeers() {
     peersJob = launch {
         merge(
             refresh.debounce(500),
-            trigger(),
+            flowOf(Unit),
 //            ticker()
         ).collect {
             try {
@@ -69,8 +69,6 @@ fun ShareModel.subscribePeers() {
         }
     }
 }
-
-private fun trigger() = flowOf(Unit)
 
 private fun ticker(
     delay: Long = 3000,

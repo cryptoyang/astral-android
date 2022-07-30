@@ -23,7 +23,7 @@ class ShareActivity : AppCompatActivity() {
     private val model by viewModels<ShareModel>()
     private val selectUri = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         if (uri == null) finish()
-        else model.uri.value = uri
+        else model.setUri(uri)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,7 +48,7 @@ class ShareActivity : AppCompatActivity() {
             "Cannot obtain file uri, please select file once again",
             Snackbar.LENGTH_INDEFINITE
         ).let { info ->
-            model.uri.asLiveData().observe(this) { uri ->
+            model.uri.asLiveData().observe(this) { (uri) ->
                 when (uri) {
                     Uri.EMPTY -> info.show()
                     else -> {
@@ -110,7 +110,7 @@ class ShareActivity : AppCompatActivity() {
     private fun setUri(intent: Intent) {
         val uri = intent.clipData?.items()?.firstOrNull()?.uri
         if (uri != null) {
-            model.uri.value = uri
+            model.setUri(uri)
         } else {
             selectUri.launch(MIME)
         }

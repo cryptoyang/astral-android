@@ -35,7 +35,7 @@ unpleasant part of life instead of doing it all over again, but automating could
 ## Goals
 
 * Writing application UI should be optional in any stage of development. This gives a great ability
-  for delivering solution without waisting time on solving repeatable UI problems.
+  for delivering solution without wasting time on solving repeatable UI problems.
 * Application UI can be automatically generated from single source of truth API definition.
 * User has a full freedom of choose how to render the data provided by service.
 

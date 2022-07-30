@@ -16,7 +16,9 @@ data class Offer(
     val update: Long = 0,
     val index: Int = -1,
     val progress: Long = 0,
-)
+) {
+    val isIncoming get() = `in`
+}
 
 data class Status(
     val id: OfferId = "",
@@ -25,7 +27,9 @@ data class Status(
     val update: Long = 0,
     val index: Int = -1,
     val progress: Long = 0,
-)
+) {
+    val isIncoming get() = `in`
+}
 
 typealias Peers = Map<PeerId, Peer>
 typealias PeerId = String

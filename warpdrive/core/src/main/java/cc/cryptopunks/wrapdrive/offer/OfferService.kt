@@ -6,6 +6,7 @@ import cc.cryptopunks.wrapdrive.api.FilterIn
 import cc.cryptopunks.wrapdrive.api.FilterOut
 import cc.cryptopunks.wrapdrive.api.Offer
 import cc.cryptopunks.wrapdrive.api.Peer
+import cc.cryptopunks.wrapdrive.api.PeerOffer
 import cc.cryptopunks.wrapdrive.api.Peers
 import cc.cryptopunks.wrapdrive.api.Status
 import cc.cryptopunks.wrapdrive.api.client.offers
@@ -72,7 +73,7 @@ fun OfferModel.subscribeChanges() {
                     if (index in indexes) {
                         val offer = change.offers[index]
                         val peer = change.peers[offer.peer] ?: EmptyPeer
-                        val current = OfferModel.Current(
+                        val current = PeerOffer(
                             offer = offer,
                             peer = peer
                         )
@@ -97,7 +98,6 @@ fun OfferModel.subscribeChanges() {
                 error.value = OfferModel.Error("Cannot subscribe for offers", cause)
             }
         }
-        println("Finish subscribe OfferModel")
     }
 }
 
