@@ -19,7 +19,7 @@ import cc.cryptopunks.wrapdrive.R
 import cc.cryptopunks.wrapdrive.offer.OfferModel
 import cc.cryptopunks.wrapdrive.theme.AppTheme
 import cc.cryptopunks.wrapdrive.conn.WarpdriveConnectionView
-import cc.cryptopunks.wrapdrive.util.shareIntent
+import cc.cryptopunks.wrapdrive.util.startShareActivity
 
 @Preview
 @Composable
@@ -38,7 +38,8 @@ fun MainView(
                     Text(text = "Warp Drive")
                 },
                 actions = {
-                    ShareButton()
+                    val context = LocalContext.current
+                    ShareButton { context.startShareActivity() }
                 }
             )
         },
@@ -59,12 +60,6 @@ fun MainView(
             }
         }
     }
-}
-
-@Composable
-fun ShareButton() {
-    val context = LocalContext.current
-    ShareButton { context.run { startActivity(shareIntent()) } }
 }
 
 @Composable

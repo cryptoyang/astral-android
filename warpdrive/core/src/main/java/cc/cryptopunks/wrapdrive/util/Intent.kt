@@ -12,7 +12,7 @@ fun astralIntent() = Intent(
     Uri.parse("astral://main")
 )
 
-fun Context.shareIntent() = Intent(this, ShareActivity::class.java)
+fun Context.startShareActivity() = startActivity(Intent(this, ShareActivity::class.java))
 
 fun offerIntent(offerId: OfferId) = Intent(
     Intent.ACTION_VIEW,

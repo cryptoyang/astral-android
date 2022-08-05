@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.runtime.snapshots.Snapshot.Companion.observe
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -18,7 +17,7 @@ import cc.cryptopunks.wrapdrive.api.FilterOut
 import cc.cryptopunks.wrapdrive.api.Offer
 import cc.cryptopunks.wrapdrive.api.OffersFilter
 import cc.cryptopunks.wrapdrive.databinding.OfferListBinding
-import cc.cryptopunks.wrapdrive.util.shareIntent
+import cc.cryptopunks.wrapdrive.util.startShareActivity
 
 class OfferListFragment : Fragment() {
 
@@ -34,7 +33,7 @@ class OfferListFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View = OfferListBinding.inflate(inflater, container, false).apply {
         noOffers.chooseAppButton.setOnClickListener {
-            requireContext().shareIntent()
+            requireContext().startShareActivity()
         }
         when (filter) {
             FilterIn -> noOffers.noReceived.isVisible = true

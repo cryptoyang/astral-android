@@ -27,7 +27,6 @@ import kotlinx.coroutines.launch
 
 class OfferModel : CoroutineViewModel() {
 
-    val dispatch = MutableSharedFlow<Action>(extraBufferCapacity = 1)
     var hasWritePermission: Boolean = false
     val currentId = MutableStateFlow(null as OfferId?)
     val current = MutableStateFlow(PeerOffer())
@@ -56,14 +55,6 @@ class OfferModel : CoroutineViewModel() {
     companion object {
         val EmptyUpdate = Update()
     }
-}
-
-sealed interface Action {
-    object Share : Action
-}
-
-infix fun OfferModel.dispatch(action: Action) {
-    dispatch.tryEmit(action)
 }
 
 fun OfferModel.updates(filter: String): Flow<OfferModel.Update> =

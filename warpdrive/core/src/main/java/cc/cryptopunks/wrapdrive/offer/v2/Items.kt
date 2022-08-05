@@ -48,25 +48,26 @@ fun OfferItems(
     val update by model.updates.getValue(filter).collectAsState()
     OfferItems(
         offers = update.peersOffers,
-        filter = filter
-    ) { peerOffer ->
-        model.setCurrent(peerOffer)
-        navController.navigate("details")
-    }
+        filter = filter,
+        details = { peerOffer ->
+            model.setCurrent(peerOffer)
+            navController.navigate("details")
+        },
+    )
 }
 
 @Composable
 fun OfferItems(
     offers: List<PeerOffer>,
     filter: String,
-    onClick: (PeerOffer) -> Unit = {},
+    details: (PeerOffer) -> Unit = {},
 ) {
     if (offers.isEmpty()) NoOffersView(filter)
     else LazyColumn(Modifier.fillMaxSize()) {
         items(offers) { item ->
             HorizontalDivider {
                 OfferItem(item) {
-                    onClick(item)
+                    details(item)
                 }
             }
         }
