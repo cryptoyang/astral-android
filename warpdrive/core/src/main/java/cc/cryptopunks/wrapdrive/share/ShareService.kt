@@ -33,7 +33,7 @@ fun ShareModel.subscribeShare() = launch {
 fun share(peerId: String, uri: Uri) = warpdrive.launch {
     try {
         isSharing.value = true
-        val result = withTimeout(5000) {
+        val result = withTimeout(10000) {
             network.send(
                 peerId = peerId,
                 uri = uri.toString()
