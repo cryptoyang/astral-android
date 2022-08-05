@@ -1,6 +1,5 @@
 package cc.cryptopunks.wrapdrive.conn
 
-import android.widget.Button
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -24,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import cc.cryptopunks.wrapdrive.offer.v2.PreviewBox
 import cc.cryptopunks.wrapdrive.util.astralIntent
 import cc.cryptopunks.wrapdrive.warpdrive
-import org.w3c.dom.Text
 
 @Composable
 fun WarpdriveConnectionView(

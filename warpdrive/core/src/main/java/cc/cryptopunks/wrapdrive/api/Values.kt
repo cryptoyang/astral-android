@@ -10,6 +10,7 @@ const val CmdUpdate: Byte = 4
 const val CmdSubscribe: Byte = 5
 const val CmdStatus: Byte = 6
 const val CmdOffers: Byte = 7
+const val CmdPing: Byte = 8
 
 const val FilterAll = "all"
 const val FilterIn = "in"

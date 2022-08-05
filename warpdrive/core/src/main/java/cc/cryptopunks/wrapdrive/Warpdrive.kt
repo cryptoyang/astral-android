@@ -1,7 +1,7 @@
 package cc.cryptopunks.wrapdrive
 
 import android.app.Application
-import cc.cryptopunks.wrapdrive.api.client.link
+import cc.cryptopunks.wrapdrive.api.client.ping
 import cc.cryptopunks.wrapdrive.api.network
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -35,7 +35,7 @@ val warpdrive get() = Warpdrive.instance
 
 private suspend fun MutableStateFlow<Boolean>.subscribeConnectionStatus() {
     while (true) {
-        network.link().collect {
+        network.ping().collect {
             emit(true)
         }
         emit(false)
