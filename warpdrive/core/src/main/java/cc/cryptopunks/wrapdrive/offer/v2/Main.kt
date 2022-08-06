@@ -12,13 +12,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import cc.cryptopunks.wrapdrive.R
-import cc.cryptopunks.wrapdrive.offer.OfferModel
-import cc.cryptopunks.wrapdrive.theme.AppTheme
 import cc.cryptopunks.wrapdrive.conn.WarpdriveConnectionView
+import cc.cryptopunks.wrapdrive.offer.OfferModel
+import cc.cryptopunks.wrapdrive.offer.subscribeChanges
+import cc.cryptopunks.wrapdrive.theme.AppTheme
 import cc.cryptopunks.wrapdrive.util.startShareActivity
 
 @Preview
@@ -45,19 +43,10 @@ fun MainView(
         },
     ) {
         WarpdriveConnectionView {
-            val navController = rememberNavController()
-            NavHost(navController, "offers") {
-                composable("offers") {
-                    DashboardView(model, navController)
-                }
-                composable("details") {
-                    OfferDetailsView(model)
-                }
-            }
+            DashboardView(model)
             val currentId by model.currentId.collectAsState()
-            if (currentId != null) LaunchedEffect(Unit) {
-                navController.navigate("details")
-            }
+            if (currentId != null) OfferDetailsView(model)
+            LaunchedEffect(Unit) { model.subscribeChanges() }
         }
     }
 }

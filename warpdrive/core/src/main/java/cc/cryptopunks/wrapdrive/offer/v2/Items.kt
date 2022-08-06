@@ -1,6 +1,8 @@
 package cc.cryptopunks.wrapdrive.offer.v2
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -43,7 +45,6 @@ fun OfferItemsPreview() = PreviewBox {
 fun OfferItems(
     model: OfferModel,
     filter: String,
-    navController: NavController = rememberNavController(),
 ) {
     val update by model.updates.getValue(filter).collectAsState()
     OfferItems(
@@ -51,7 +52,6 @@ fun OfferItems(
         filter = filter,
         details = { peerOffer ->
             model.setCurrent(peerOffer)
-            navController.navigate("details")
         },
     )
 }

@@ -1,6 +1,7 @@
 package cc.cryptopunks.wrapdrive.offer.v2
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -44,7 +45,9 @@ fun OfferDetailsView(
     model: OfferModel = viewModel(),
 ) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .background(MaterialTheme.colors.background)
+            .fillMaxSize(),
     ) {
         val data by model.current.collectAsState()
         OfferHeaderView(data)

@@ -1,8 +1,6 @@
 package cc.cryptopunks.wrapdrive.offer
 
 import android.content.Intent
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.asLiveData
 import cc.cryptopunks.wrapdrive.api.EmptyOffer
 import cc.cryptopunks.wrapdrive.api.EmptyPeer
 import cc.cryptopunks.wrapdrive.api.EmptyPeerOffer
@@ -18,7 +16,6 @@ import cc.cryptopunks.wrapdrive.api.network
 import cc.cryptopunks.wrapdrive.util.CoroutineViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNot
@@ -66,21 +63,25 @@ fun OfferModel.setOfferId(intent: Intent?) {
 }
 
 fun OfferModel.setCurrent(id: OfferId?) {
-    val current = if (id == null)
-        EmptyPeerOffer
+    if (id == null)
+        setCurrent(EmptyPeerOffer)
     else {
+        currentId.value = id
         val offer = updates
             .flatMap { (_, state) -> state.value.offers }
             .find { offer -> offer.id == id } ?: EmptyOffer
         val peer = updates.values
             .first().value.peers[offer.peer] ?: EmptyPeer
-        PeerOffer(peer, offer)
+        val peerOffer = PeerOffer(peer, offer)
+        println(peerOffer)
+        if (peerOffer != EmptyPeerOffer) {
+            setCurrent(peerOffer)
+        }
     }
-    setCurrent(current)
 }
 
 fun OfferModel.setCurrent(peerOffer: PeerOffer) {
-    currentId.value = peerOffer.offer.id
+    currentId.value = peerOffer.offer.id.takeIf(OfferId::isNotBlank)
     current.value = peerOffer
 }
 

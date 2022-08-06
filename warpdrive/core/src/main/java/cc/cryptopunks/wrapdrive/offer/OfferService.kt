@@ -15,6 +15,7 @@ import cc.cryptopunks.wrapdrive.api.client.status
 import cc.cryptopunks.wrapdrive.api.client.subscribe
 import cc.cryptopunks.wrapdrive.api.network
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asFlow
@@ -84,7 +85,7 @@ fun OfferModel.subscribeChanges() {
         }.asFlow().flattenMerge()
     }
 
-    job = launch {
+    job = launch(Dispatchers.IO) {
         try {
             refresh()
             subscribe().collect()

@@ -16,11 +16,12 @@ import androidx.navigation.compose.rememberNavController
 import cc.cryptopunks.wrapdrive.api.FilterIn
 import cc.cryptopunks.wrapdrive.api.FilterOut
 import cc.cryptopunks.wrapdrive.offer.OfferModel
-import cc.cryptopunks.wrapdrive.offer.subscribeChanges
+import cc.cryptopunks.wrapdrive.offer.setCurrent
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.google.accompanist.pager.rememberPagerState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Preview
@@ -35,13 +36,7 @@ private val filters = listOf(FilterIn, FilterOut)
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun DashboardView(
-    model: OfferModel,
-    navController: NavController = rememberNavController(),
-) {
-    LaunchedEffect(Unit) {
-        model.subscribeChanges()
-    }
+fun DashboardView(model: OfferModel) {
     Column {
         val pagerState = rememberPagerState()
         val currentPage = pagerState.currentPage
@@ -76,7 +71,6 @@ fun DashboardView(
             OfferItems(
                 model = model,
                 filter = filter,
-                navController = navController
             )
         }
     }
