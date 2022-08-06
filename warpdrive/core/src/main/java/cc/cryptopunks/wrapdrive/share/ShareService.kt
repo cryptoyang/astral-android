@@ -1,15 +1,12 @@
 package cc.cryptopunks.wrapdrive.share
 
 import android.net.Uri
-import androidx.compose.material.SnackbarHostState
-import cc.cryptopunks.astral.contacts.ContactsModel
 import cc.cryptopunks.astral.err.AstralLocalConnectionException
 import cc.cryptopunks.wrapdrive.api.Peer
 import cc.cryptopunks.wrapdrive.api.client.peers
 import cc.cryptopunks.wrapdrive.api.client.send
 import cc.cryptopunks.wrapdrive.api.network
-import cc.cryptopunks.wrapdrive.warpdrive
-import kotlinx.coroutines.coroutineScope
+import cc.cryptopunks.wrapdrive.app
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flow
@@ -30,7 +27,7 @@ fun ShareModel.subscribeShare() = launch {
     }
 }
 
-fun share(peerId: String, uri: Uri) = warpdrive.launch {
+fun share(peerId: String, uri: Uri) = app.launch {
     try {
         isSharing.value = true
         val result = withTimeout(10000) {

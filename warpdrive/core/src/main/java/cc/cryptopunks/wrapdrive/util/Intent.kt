@@ -7,11 +7,6 @@ import androidx.activity.result.ActivityResultLauncher
 import cc.cryptopunks.wrapdrive.api.OfferId
 import cc.cryptopunks.wrapdrive.share.v2.ShareActivity
 
-fun astralIntent() = Intent(
-    Intent.ACTION_VIEW,
-    Uri.parse("astral://main")
-)
-
 fun Context.startShareActivity() = startActivity(Intent(this, ShareActivity::class.java))
 
 fun offerIntent(offerId: OfferId) = Intent(

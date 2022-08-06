@@ -6,7 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import cc.cryptopunks.wrapdrive.offer.OfferModel
-import cc.cryptopunks.wrapdrive.offer.hasWriteStoragePermissions
+import cc.cryptopunks.astral.ext.hasWriteStoragePermissions
 import cc.cryptopunks.wrapdrive.offer.setCurrent
 import cc.cryptopunks.wrapdrive.offer.setOfferId
 import cc.cryptopunks.wrapdrive.theme.AppTheme

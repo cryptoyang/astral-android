@@ -20,9 +20,10 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import cc.cryptopunks.astral.ext.startAstralActivity
+import cc.cryptopunks.astral.ext.startAstralService
 import cc.cryptopunks.wrapdrive.offer.v2.PreviewBox
-import cc.cryptopunks.wrapdrive.util.astralIntent
-import cc.cryptopunks.wrapdrive.warpdrive
+import cc.cryptopunks.wrapdrive.app
 
 @Composable
 fun WarpdriveConnectionView(
@@ -30,7 +31,7 @@ fun WarpdriveConnectionView(
 ) {
     val isConnected by if (LocalInspectionMode.current)
         remember { mutableStateOf(true) } else
-        warpdrive.isConnected.collectAsState()
+        app.isConnected.collectAsState()
     if (isConnected) content()
     else DisconnectionView()
 }
@@ -62,11 +63,15 @@ private fun DisconnectionView() {
         Spacer(Modifier.height(32.dp))
         val context = LocalContext.current
         Button(
-            onClick = {
-                context.startActivity(astralIntent())
-            }
+            onClick = { context.startAstralService() }
         ) {
             Text(text = "start astral service".uppercase())
+        }
+        Text(text = "or")
+        Button(
+            onClick = { context.startAstralActivity() }
+        ) {
+            Text(text = "start astral activity".uppercase())
         }
     }
 }

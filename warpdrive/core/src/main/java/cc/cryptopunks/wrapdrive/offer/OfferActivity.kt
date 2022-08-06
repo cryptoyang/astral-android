@@ -13,7 +13,7 @@ import cc.cryptopunks.astral.err.AstralLocalConnectionException
 import cc.cryptopunks.wrapdrive.R
 import cc.cryptopunks.wrapdrive.share.ShareActivity
 import cc.cryptopunks.wrapdrive.util.DisconnectionFragment
-import cc.cryptopunks.wrapdrive.warpdrive
+import cc.cryptopunks.wrapdrive.app
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNot
@@ -28,7 +28,7 @@ class OfferActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.offer_activity)
         setOfferId(intent)
-        warpdrive.isConnected.onEach { isConnected ->
+        app.isConnected.onEach { isConnected ->
             if (isConnected) model.subscribeChanges()
             else model.job.cancel()
         }.combine(model.currentId) { isConnected, currentId ->

@@ -10,6 +10,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.asLiveData
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import cc.cryptopunks.astral.ext.hasWriteStoragePermissions
+import cc.cryptopunks.astral.ext.startWritePermissionActivity
 import cc.cryptopunks.wrapdrive.api.EmptyPeerOffer
 import cc.cryptopunks.wrapdrive.api.PeerOffer
 import cc.cryptopunks.wrapdrive.databinding.OfferViewBinding

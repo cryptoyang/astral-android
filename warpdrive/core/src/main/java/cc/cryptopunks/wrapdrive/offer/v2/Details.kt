@@ -1,6 +1,5 @@
 package cc.cryptopunks.wrapdrive.offer.v2
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,7 +29,7 @@ import cc.cryptopunks.wrapdrive.offer.download
 import cc.cryptopunks.wrapdrive.offer.formattedName
 import cc.cryptopunks.wrapdrive.offer.formattedStatus
 import cc.cryptopunks.wrapdrive.offer.shortOfferId
-import cc.cryptopunks.wrapdrive.offer.startWritePermissionActivity
+import cc.cryptopunks.astral.ext.startWritePermissionActivity
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 

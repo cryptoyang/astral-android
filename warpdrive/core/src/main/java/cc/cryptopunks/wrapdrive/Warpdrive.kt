@@ -31,7 +31,7 @@ class Warpdrive :
     }
 }
 
-val warpdrive get() = Warpdrive.instance
+val app get() = Warpdrive.instance
 
 private suspend fun MutableStateFlow<Boolean>.subscribeConnectionStatus() {
     while (true) {

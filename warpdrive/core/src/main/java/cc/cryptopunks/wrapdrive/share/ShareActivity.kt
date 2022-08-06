@@ -15,7 +15,7 @@ import androidx.lifecycle.asLiveData
 import cc.cryptopunks.wrapdrive.R
 import cc.cryptopunks.wrapdrive.util.DisconnectionFragment
 import cc.cryptopunks.wrapdrive.util.items
-import cc.cryptopunks.wrapdrive.warpdrive
+import cc.cryptopunks.wrapdrive.app
 import com.google.android.material.snackbar.Snackbar
 
 class ShareActivity : AppCompatActivity() {
@@ -31,7 +31,7 @@ class ShareActivity : AppCompatActivity() {
         setContentView(R.layout.share_activity)
         setSupportActionBar(findViewById(R.id.toolbar))
         setUri(intent)
-        warpdrive.isConnected.asLiveData().observe(this) { isConnected ->
+        app.isConnected.asLiveData().observe(this) { isConnected ->
             val fragment = if (isConnected) {
                 model.subscribePeers()
                 PeerListFragment()

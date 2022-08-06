@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import cc.cryptopunks.astral.ext.astralActivityIntent
 import cc.cryptopunks.wrapdrive.databinding.DisconnectionBinding
 
 class DisconnectionFragment : Fragment() {
@@ -15,7 +16,7 @@ class DisconnectionFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View = DisconnectionBinding.inflate(inflater, container, false).apply {
         startAstralButton.setOnClickListener {
-            startActivity(astralIntent())
+            startActivity(astralActivityIntent)
         }
     }.root
 }

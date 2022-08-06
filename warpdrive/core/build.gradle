@@ -38,6 +38,7 @@ android {
 
 dependencies {
     implementation project(':astral:client')
+    implementation project(':astral:ext')
     implementation project(':astral:mod:contacts')
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1"
