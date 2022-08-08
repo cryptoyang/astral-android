@@ -51,6 +51,7 @@ data class Info(
     val isDir: Boolean = false,
     val perm: Int = 0x755,
     val mime: String = "",
+    val name: String = "",
 )
 
 typealias OffersFilter = String

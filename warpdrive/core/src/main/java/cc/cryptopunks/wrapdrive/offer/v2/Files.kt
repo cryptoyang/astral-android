@@ -34,10 +34,11 @@ fun FileItemsView(
     LazyColumn(
         modifier = modifier
     ) {
+        item { HorizontalDivider() }
         itemsIndexed(offer.files) { index, item: Info ->
             HorizontalDivider {
                 FileItem(
-                    uri = Uri.decode(item.uri),
+                    name = item.name,
                     size = item.size,
                     progress = when {
                         index > offer.index -> 0
@@ -52,7 +53,7 @@ fun FileItemsView(
 
 @Composable
 private fun FileItem(
-    uri: String,
+    name: String,
     progress: Long,
     size: Long,
 ) {
@@ -60,7 +61,7 @@ private fun FileItem(
         modifier = Modifier.padding(16.dp)
     ) {
         Text(
-            text = uri,
+            text = name,
             style = MaterialTheme.typography.subtitle2
         )
         Text(

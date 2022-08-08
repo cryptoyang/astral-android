@@ -20,13 +20,10 @@ val Offer.formattedSize: String
 val Offer.formattedInfo: String
     get() = when (files.size) {
         0 -> ""
-        1 -> files.first().uri
+        1 -> files.first().name
         else -> when {
             !files.first().isDir -> ""
-            else -> files.fold(files.first().uri) { dir, info ->
-                if (info.uri.startsWith(dir)) dir
-                else ""
-            }
+            else -> files.first().name
         }
     }.formattedUriFileName ?: ""
 
