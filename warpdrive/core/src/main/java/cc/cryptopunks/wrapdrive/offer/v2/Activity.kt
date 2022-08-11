@@ -1,12 +1,13 @@
 package cc.cryptopunks.wrapdrive.offer.v2
 
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import cc.cryptopunks.astral.ext.hasPermissions
 import cc.cryptopunks.wrapdrive.offer.OfferModel
-import cc.cryptopunks.astral.ext.hasWriteStoragePermissions
 import cc.cryptopunks.wrapdrive.offer.setCurrent
 import cc.cryptopunks.wrapdrive.offer.setOfferId
 import cc.cryptopunks.wrapdrive.theme.AppTheme
@@ -27,7 +28,7 @@ class OfferActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        model.hasWritePermission = hasWriteStoragePermissions()
+        model.hasWritePermission = hasPermissions(WRITE_EXTERNAL_STORAGE)
     }
 
     override fun onNewIntent(intent: Intent) {

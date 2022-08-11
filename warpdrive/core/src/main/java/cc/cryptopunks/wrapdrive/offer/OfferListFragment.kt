@@ -17,7 +17,7 @@ import cc.cryptopunks.wrapdrive.api.FilterOut
 import cc.cryptopunks.wrapdrive.api.Offer
 import cc.cryptopunks.wrapdrive.api.OffersFilter
 import cc.cryptopunks.wrapdrive.databinding.OfferListBinding
-import cc.cryptopunks.wrapdrive.util.startShareActivity
+import cc.cryptopunks.wrapdrive.startShareActivity
 
 class OfferListFragment : Fragment() {
 

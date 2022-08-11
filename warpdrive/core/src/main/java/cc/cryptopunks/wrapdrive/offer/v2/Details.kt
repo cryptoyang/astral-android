@@ -29,7 +29,7 @@ import cc.cryptopunks.wrapdrive.offer.download
 import cc.cryptopunks.wrapdrive.offer.formattedName
 import cc.cryptopunks.wrapdrive.offer.formattedStatus
 import cc.cryptopunks.wrapdrive.offer.shortOfferId
-import cc.cryptopunks.astral.ext.startWritePermissionActivity
+import cc.cryptopunks.wrapdrive.startWritePermissionActivity
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 

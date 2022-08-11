@@ -10,7 +10,7 @@ import cc.cryptopunks.wrapdrive.share.ShareModel
 import cc.cryptopunks.wrapdrive.share.setUri
 import cc.cryptopunks.wrapdrive.theme.AppTheme
 import cc.cryptopunks.wrapdrive.util.items
-import cc.cryptopunks.wrapdrive.util.startFileChooser
+import cc.cryptopunks.wrapdrive.startFileChooser
 
 class ShareActivity : ComponentActivity() {
 

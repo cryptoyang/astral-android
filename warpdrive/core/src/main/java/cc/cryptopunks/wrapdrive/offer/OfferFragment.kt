@@ -1,5 +1,6 @@
 package cc.cryptopunks.wrapdrive.offer
 
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,11 +11,11 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.asLiveData
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import cc.cryptopunks.astral.ext.hasWriteStoragePermissions
-import cc.cryptopunks.astral.ext.startWritePermissionActivity
+import cc.cryptopunks.astral.ext.hasPermissions
 import cc.cryptopunks.wrapdrive.api.EmptyPeerOffer
 import cc.cryptopunks.wrapdrive.api.PeerOffer
 import cc.cryptopunks.wrapdrive.databinding.OfferViewBinding
+import cc.cryptopunks.wrapdrive.startWritePermissionActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.filter
@@ -67,6 +68,6 @@ class OfferFragment : Fragment(), CoroutineScope by MainScope() {
 
     override fun onResume() {
         super.onResume()
-        model.hasWritePermission = requireContext().hasWriteStoragePermissions()
+        model.hasWritePermission = requireContext().hasPermissions(WRITE_EXTERNAL_STORAGE)
     }
 }

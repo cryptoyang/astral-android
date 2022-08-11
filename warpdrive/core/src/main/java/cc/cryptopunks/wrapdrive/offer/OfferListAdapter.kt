@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import cc.cryptopunks.wrapdrive.api.EmptyPeerOffer
 import cc.cryptopunks.wrapdrive.api.PeerOffer
 import cc.cryptopunks.wrapdrive.databinding.OfferItemBinding
-import cc.cryptopunks.wrapdrive.util.offerIntent
+import cc.cryptopunks.wrapdrive.offerIntent
 import kotlin.properties.Delegates
 
 @SuppressLint("NotifyDataSetChanged")

@@ -17,7 +17,7 @@ import cc.cryptopunks.wrapdrive.conn.WarpdriveConnectionView
 import cc.cryptopunks.wrapdrive.offer.OfferModel
 import cc.cryptopunks.wrapdrive.offer.subscribeChanges
 import cc.cryptopunks.wrapdrive.theme.AppTheme
-import cc.cryptopunks.wrapdrive.util.startShareActivity
+import cc.cryptopunks.wrapdrive.startShareActivity
 
 @Preview
 @Composable

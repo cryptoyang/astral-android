@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import cc.cryptopunks.wrapdrive.R
 import cc.cryptopunks.wrapdrive.api.FilterIn
 import cc.cryptopunks.wrapdrive.api.FilterOut
-import cc.cryptopunks.wrapdrive.util.startShareActivity
+import cc.cryptopunks.wrapdrive.startShareActivity
 
 @Composable
 fun NoOffersView(
