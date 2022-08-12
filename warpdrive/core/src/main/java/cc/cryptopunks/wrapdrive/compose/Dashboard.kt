@@ -1,4 +1,4 @@
-package cc.cryptopunks.wrapdrive.offer.v2
+package cc.cryptopunks.wrapdrive.compose
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.MaterialTheme
@@ -11,17 +11,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import cc.cryptopunks.wrapdrive.api.FilterIn
-import cc.cryptopunks.wrapdrive.api.FilterOut
-import cc.cryptopunks.wrapdrive.offer.OfferModel
-import cc.cryptopunks.wrapdrive.offer.setCurrent
+import cc.cryptopunks.wrapdrive.model.OfferModel
+import cc.cryptopunks.wrapdrive.proto.FilterIn
+import cc.cryptopunks.wrapdrive.proto.FilterOut
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.google.accompanist.pager.rememberPagerState
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Preview

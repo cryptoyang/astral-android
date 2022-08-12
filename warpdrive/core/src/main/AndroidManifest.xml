@@ -13,7 +13,7 @@
         android:theme="@style/Theme.Warpdrive">
 
         <activity
-            android:name=".offer.v2.OfferActivity"
+            android:name=".activity.OfferActivity"
             android:exported="true"
             android:label="Warp Drive"
             android:launchMode="singleTask">
@@ -33,7 +33,7 @@
         </activity>
 
         <activity
-            android:name=".share.v2.ShareActivity"
+            android:name=".activity.ShareActivity"
             android:exported="true"
             android:label="@string/share_file_label"
             android:launchMode="singleTask"
@@ -46,7 +46,7 @@
         </activity>
 
         <activity
-            android:name=".offer.DownloadActivity"
+            android:name=".activity.DownloadActivity"
             android:theme="@style/Theme.Warpdrive.Translucent"
             android:launchMode="singleTask"
             android:exported="true">

@@ -1,4 +1,4 @@
-package cc.cryptopunks.wrapdrive.share.v2
+package cc.cryptopunks.wrapdrive.compose
 
 import android.content.Intent
 import android.net.Uri
@@ -31,14 +31,11 @@ import cc.cryptopunks.astral.contacts.ContactsModel
 import cc.cryptopunks.astral.contacts.ContactsView
 import cc.cryptopunks.astral.contacts.rememberContactsPreviewModel
 import cc.cryptopunks.wrapdrive.R
-import cc.cryptopunks.wrapdrive.offer.v2.PreviewBox
-import cc.cryptopunks.wrapdrive.offer.v2.ShareButton
-import cc.cryptopunks.wrapdrive.share.ShareModel
-import cc.cryptopunks.wrapdrive.share.isSharing
-import cc.cryptopunks.wrapdrive.share.setUri
-import cc.cryptopunks.wrapdrive.share.share
-import cc.cryptopunks.wrapdrive.share.sharingStatus
-import cc.cryptopunks.wrapdrive.conn.WarpdriveConnectionView
+import cc.cryptopunks.wrapdrive.model.ShareModel
+import cc.cryptopunks.wrapdrive.model.isSharing
+import cc.cryptopunks.wrapdrive.model.setUri
+import cc.cryptopunks.wrapdrive.model.share
+import cc.cryptopunks.wrapdrive.model.sharingStatus
 
 
 @Preview

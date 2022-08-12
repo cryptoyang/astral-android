@@ -1,4 +1,4 @@
-package cc.cryptopunks.wrapdrive.offer.v2
+package cc.cryptopunks.wrapdrive.compose
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -23,12 +23,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import cc.cryptopunks.wrapdrive.api.PeerOffer
-import cc.cryptopunks.wrapdrive.offer.OfferModel
-import cc.cryptopunks.wrapdrive.offer.download
-import cc.cryptopunks.wrapdrive.offer.formattedName
-import cc.cryptopunks.wrapdrive.offer.formattedStatus
-import cc.cryptopunks.wrapdrive.offer.shortOfferId
+import cc.cryptopunks.wrapdrive.model.OfferModel
+import cc.cryptopunks.wrapdrive.model.download
+import cc.cryptopunks.wrapdrive.proto.PeerOffer
 import cc.cryptopunks.wrapdrive.startWritePermissionActivity
 import java.text.DateFormat
 import java.text.SimpleDateFormat

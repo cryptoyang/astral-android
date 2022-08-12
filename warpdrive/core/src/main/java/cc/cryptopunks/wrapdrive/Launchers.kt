@@ -6,8 +6,8 @@ import android.content.Intent
 import android.net.Uri
 import androidx.activity.result.ActivityResultLauncher
 import cc.cryptopunks.astral.ext.permissionsActivityIntent
-import cc.cryptopunks.wrapdrive.api.OfferId
-import cc.cryptopunks.wrapdrive.share.v2.ShareActivity
+import cc.cryptopunks.wrapdrive.activity.ShareActivity
+import cc.cryptopunks.wrapdrive.proto.OfferId
 
 fun Context.startShareActivity() = startActivity(Intent(this, ShareActivity::class.java))
 

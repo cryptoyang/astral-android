@@ -12,9 +12,14 @@ import androidx.lifecycle.asLiveData
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import cc.cryptopunks.astral.ext.hasPermissions
-import cc.cryptopunks.wrapdrive.api.EmptyPeerOffer
-import cc.cryptopunks.wrapdrive.api.PeerOffer
+import cc.cryptopunks.wrapdrive.compose.formattedName
+import cc.cryptopunks.wrapdrive.compose.formattedStatus
+import cc.cryptopunks.wrapdrive.compose.shortOfferId
 import cc.cryptopunks.wrapdrive.databinding.OfferViewBinding
+import cc.cryptopunks.wrapdrive.model.OfferModel
+import cc.cryptopunks.wrapdrive.model.download
+import cc.cryptopunks.wrapdrive.proto.EmptyPeerOffer
+import cc.cryptopunks.wrapdrive.proto.PeerOffer
 import cc.cryptopunks.wrapdrive.startWritePermissionActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope

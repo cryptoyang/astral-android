@@ -1,4 +1,4 @@
-package cc.cryptopunks.wrapdrive.offer.v2
+package cc.cryptopunks.wrapdrive.compose
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -19,21 +19,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cc.cryptopunks.astral.contacts.HorizontalDivider
-import cc.cryptopunks.wrapdrive.api.FilterIn
-import cc.cryptopunks.wrapdrive.api.PeerOffer
-import cc.cryptopunks.wrapdrive.offer.OfferModel
-import cc.cryptopunks.wrapdrive.offer.formattedAmount
-import cc.cryptopunks.wrapdrive.offer.formattedDateTime
-import cc.cryptopunks.wrapdrive.offer.formattedInfo
-import cc.cryptopunks.wrapdrive.offer.formattedName
-import cc.cryptopunks.wrapdrive.offer.formattedSize
-import cc.cryptopunks.wrapdrive.offer.peersOffers
-import cc.cryptopunks.wrapdrive.offer.setCurrent
-import cc.cryptopunks.wrapdrive.offer.shortOfferId
+import cc.cryptopunks.wrapdrive.model.OfferModel
+import cc.cryptopunks.wrapdrive.model.peersOffers
+import cc.cryptopunks.wrapdrive.model.setCurrent
+import cc.cryptopunks.wrapdrive.proto.FilterIn
+import cc.cryptopunks.wrapdrive.proto.PeerOffer
 
 @Preview
 @Composable
-fun OfferItemsPreview() = PreviewBox {
+private fun OfferItemsPreview() = PreviewBox {
     OfferItems(PreviewModel.instance, FilterIn)
 }
 
@@ -46,24 +40,24 @@ fun OfferItems(
     OfferItems(
         offers = update.peersOffers,
         filter = filter,
-        details = { peerOffer ->
+        navigateDetails = { peerOffer ->
             model.setCurrent(peerOffer)
         },
     )
 }
 
 @Composable
-fun OfferItems(
+private fun OfferItems(
     offers: List<PeerOffer>,
     filter: String,
-    details: (PeerOffer) -> Unit = {},
+    navigateDetails: (PeerOffer) -> Unit = {},
 ) {
     if (offers.isEmpty()) NoOffersView(filter)
     else LazyColumn(Modifier.fillMaxSize()) {
         items(offers) { item ->
             HorizontalDivider {
                 OfferItem(item) {
-                    details(item)
+                    navigateDetails(item)
                 }
             }
         }
@@ -71,7 +65,7 @@ fun OfferItems(
 }
 
 @Composable
-fun OfferItem(
+private fun OfferItem(
     item: PeerOffer,
     onClick: () -> Unit,
 ) {

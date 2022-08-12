@@ -1,4 +1,4 @@
-package cc.cryptopunks.wrapdrive.offer.v2
+package cc.cryptopunks.wrapdrive.compose
 
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -13,10 +13,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import cc.cryptopunks.wrapdrive.R
-import cc.cryptopunks.wrapdrive.conn.WarpdriveConnectionView
-import cc.cryptopunks.wrapdrive.offer.OfferModel
-import cc.cryptopunks.wrapdrive.offer.subscribeChanges
-import cc.cryptopunks.wrapdrive.theme.AppTheme
+import cc.cryptopunks.wrapdrive.model.OfferModel
+import cc.cryptopunks.wrapdrive.model.subscribeChanges
 import cc.cryptopunks.wrapdrive.startShareActivity
 
 @Preview

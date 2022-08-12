@@ -1,4 +1,4 @@
-package cc.cryptopunks.wrapdrive.api
+package cc.cryptopunks.wrapdrive.proto
 
 const val Port = "warpdrive"
 

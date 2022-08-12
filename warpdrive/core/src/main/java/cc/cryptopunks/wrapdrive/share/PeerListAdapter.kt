@@ -3,8 +3,8 @@ package cc.cryptopunks.wrapdrive.share
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import cc.cryptopunks.wrapdrive.api.EmptyPeer
-import cc.cryptopunks.wrapdrive.api.Peer
+import cc.cryptopunks.wrapdrive.proto.EmptyPeer
+import cc.cryptopunks.wrapdrive.proto.Peer
 import cc.cryptopunks.wrapdrive.databinding.PeerItemBinding
 import kotlin.properties.Delegates
 

@@ -14,6 +14,9 @@ import cc.cryptopunks.wrapdrive.R
 import cc.cryptopunks.wrapdrive.share.ShareActivity
 import cc.cryptopunks.wrapdrive.util.DisconnectionFragment
 import cc.cryptopunks.wrapdrive.app
+import cc.cryptopunks.wrapdrive.model.OfferModel
+import cc.cryptopunks.wrapdrive.model.setCurrent
+import cc.cryptopunks.wrapdrive.model.subscribeChanges
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNot

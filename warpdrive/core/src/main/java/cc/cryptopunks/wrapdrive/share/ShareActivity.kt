@@ -16,6 +16,11 @@ import cc.cryptopunks.wrapdrive.R
 import cc.cryptopunks.wrapdrive.util.DisconnectionFragment
 import cc.cryptopunks.wrapdrive.util.items
 import cc.cryptopunks.wrapdrive.app
+import cc.cryptopunks.wrapdrive.model.ShareModel
+import cc.cryptopunks.wrapdrive.model.isSharing
+import cc.cryptopunks.wrapdrive.model.setUri
+import cc.cryptopunks.wrapdrive.model.sharingStatus
+import cc.cryptopunks.wrapdrive.model.subscribePeers
 import com.google.android.material.snackbar.Snackbar
 
 class ShareActivity : AppCompatActivity() {

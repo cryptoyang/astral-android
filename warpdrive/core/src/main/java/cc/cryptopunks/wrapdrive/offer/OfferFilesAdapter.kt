@@ -5,9 +5,9 @@ import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import cc.cryptopunks.wrapdrive.api.EmptyInfo
-import cc.cryptopunks.wrapdrive.api.Info
 import cc.cryptopunks.wrapdrive.databinding.FileItemBinding
+import cc.cryptopunks.wrapdrive.proto.EmptyInfo
+import cc.cryptopunks.wrapdrive.proto.Info
 import cc.cryptopunks.wrapdrive.util.formatSize
 import kotlin.properties.Delegates
 

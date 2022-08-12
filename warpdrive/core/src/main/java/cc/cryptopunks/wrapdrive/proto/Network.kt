@@ -1,4 +1,4 @@
-package cc.cryptopunks.wrapdrive.api
+package cc.cryptopunks.wrapdrive.proto
 
 import cc.cryptopunks.astral.enc.NetworkEncoder
 import cc.cryptopunks.astral.enc.encoder

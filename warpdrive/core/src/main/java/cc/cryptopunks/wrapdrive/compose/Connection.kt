@@ -1,4 +1,4 @@
-package cc.cryptopunks.wrapdrive.conn
+package cc.cryptopunks.wrapdrive.compose
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,7 +22,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cc.cryptopunks.astral.ext.startAstralActivity
 import cc.cryptopunks.astral.ext.startAstralService
-import cc.cryptopunks.wrapdrive.offer.v2.PreviewBox
 import cc.cryptopunks.wrapdrive.app
 
 @Composable

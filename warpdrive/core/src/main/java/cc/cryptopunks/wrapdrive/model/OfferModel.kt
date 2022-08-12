@@ -1,18 +1,18 @@
-package cc.cryptopunks.wrapdrive.offer
+package cc.cryptopunks.wrapdrive.model
 
 import android.content.Intent
-import cc.cryptopunks.wrapdrive.api.EmptyOffer
-import cc.cryptopunks.wrapdrive.api.EmptyPeer
-import cc.cryptopunks.wrapdrive.api.EmptyPeerOffer
-import cc.cryptopunks.wrapdrive.api.FilterIn
-import cc.cryptopunks.wrapdrive.api.FilterOut
-import cc.cryptopunks.wrapdrive.api.Offer
-import cc.cryptopunks.wrapdrive.api.OfferId
-import cc.cryptopunks.wrapdrive.api.Peer
-import cc.cryptopunks.wrapdrive.api.PeerId
-import cc.cryptopunks.wrapdrive.api.PeerOffer
-import cc.cryptopunks.wrapdrive.api.client.accept
-import cc.cryptopunks.wrapdrive.api.network
+import cc.cryptopunks.wrapdrive.proto.EmptyOffer
+import cc.cryptopunks.wrapdrive.proto.EmptyPeer
+import cc.cryptopunks.wrapdrive.proto.EmptyPeerOffer
+import cc.cryptopunks.wrapdrive.proto.FilterIn
+import cc.cryptopunks.wrapdrive.proto.FilterOut
+import cc.cryptopunks.wrapdrive.proto.Offer
+import cc.cryptopunks.wrapdrive.proto.OfferId
+import cc.cryptopunks.wrapdrive.proto.Peer
+import cc.cryptopunks.wrapdrive.proto.PeerId
+import cc.cryptopunks.wrapdrive.proto.PeerOffer
+import cc.cryptopunks.wrapdrive.proto.accept
+import cc.cryptopunks.wrapdrive.proto.network
 import cc.cryptopunks.wrapdrive.util.CoroutineViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -98,8 +98,11 @@ fun OfferModel.download() {
 
 val OfferModel.Update.peersOffers: List<PeerOffer>
     get() = offers.map { offer ->
-        val peer = peers[offer.peer] ?: EmptyPeer
-        PeerOffer(peer, offer)
+        PeerOffer(
+            offer = offer,
+            peer = peers[offer.peer]
+                ?: EmptyPeer,
+        )
     }
 
 val OfferModel.currentOffer

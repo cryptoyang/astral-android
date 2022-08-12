@@ -1,13 +1,13 @@
-package cc.cryptopunks.wrapdrive.offer
+package cc.cryptopunks.wrapdrive.compose
 
 import android.net.Uri
-import cc.cryptopunks.wrapdrive.api.EmptyPeer
-import cc.cryptopunks.wrapdrive.api.Info
-import cc.cryptopunks.wrapdrive.api.Offer
-import cc.cryptopunks.wrapdrive.api.OfferId
-import cc.cryptopunks.wrapdrive.api.PeerId
-import cc.cryptopunks.wrapdrive.api.PeerOffer
-import cc.cryptopunks.wrapdrive.api.StatusAwaiting
+import cc.cryptopunks.wrapdrive.proto.EmptyPeer
+import cc.cryptopunks.wrapdrive.proto.Info
+import cc.cryptopunks.wrapdrive.proto.Offer
+import cc.cryptopunks.wrapdrive.proto.OfferId
+import cc.cryptopunks.wrapdrive.proto.PeerId
+import cc.cryptopunks.wrapdrive.proto.PeerOffer
+import cc.cryptopunks.wrapdrive.proto.StatusAwaiting
 import cc.cryptopunks.wrapdrive.util.formatSize
 import java.text.SimpleDateFormat
 

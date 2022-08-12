@@ -12,11 +12,15 @@ import androidx.lifecycle.asLiveData
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import cc.cryptopunks.wrapdrive.api.FilterIn
-import cc.cryptopunks.wrapdrive.api.FilterOut
-import cc.cryptopunks.wrapdrive.api.Offer
-import cc.cryptopunks.wrapdrive.api.OffersFilter
 import cc.cryptopunks.wrapdrive.databinding.OfferListBinding
+import cc.cryptopunks.wrapdrive.model.OfferModel
+import cc.cryptopunks.wrapdrive.model.currentOffer
+import cc.cryptopunks.wrapdrive.model.peersOffers
+import cc.cryptopunks.wrapdrive.model.updates
+import cc.cryptopunks.wrapdrive.proto.FilterIn
+import cc.cryptopunks.wrapdrive.proto.FilterOut
+import cc.cryptopunks.wrapdrive.proto.Offer
+import cc.cryptopunks.wrapdrive.proto.OffersFilter
 import cc.cryptopunks.wrapdrive.startShareActivity
 
 class OfferListFragment : Fragment() {

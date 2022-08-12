@@ -9,6 +9,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.asLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import cc.cryptopunks.wrapdrive.databinding.PeerListBinding
+import cc.cryptopunks.wrapdrive.model.ShareModel
+import cc.cryptopunks.wrapdrive.model.refresh
 
 class PeerListFragment : Fragment() {
 

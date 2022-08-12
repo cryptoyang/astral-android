@@ -4,10 +4,16 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import cc.cryptopunks.wrapdrive.api.EmptyPeerOffer
-import cc.cryptopunks.wrapdrive.api.PeerOffer
+import cc.cryptopunks.wrapdrive.compose.formattedAmount
+import cc.cryptopunks.wrapdrive.compose.formattedDateTime
+import cc.cryptopunks.wrapdrive.compose.formattedInfo
+import cc.cryptopunks.wrapdrive.compose.formattedName
+import cc.cryptopunks.wrapdrive.compose.formattedSize
+import cc.cryptopunks.wrapdrive.compose.shortOfferId
 import cc.cryptopunks.wrapdrive.databinding.OfferItemBinding
 import cc.cryptopunks.wrapdrive.offerIntent
+import cc.cryptopunks.wrapdrive.proto.EmptyPeerOffer
+import cc.cryptopunks.wrapdrive.proto.PeerOffer
 import kotlin.properties.Delegates
 
 @SuppressLint("NotifyDataSetChanged")

@@ -1,4 +1,4 @@
-package cc.cryptopunks.wrapdrive.offer.v2
+package cc.cryptopunks.wrapdrive.compose
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,8 +19,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cc.cryptopunks.wrapdrive.R
-import cc.cryptopunks.wrapdrive.api.FilterIn
-import cc.cryptopunks.wrapdrive.api.FilterOut
+import cc.cryptopunks.wrapdrive.proto.FilterIn
+import cc.cryptopunks.wrapdrive.proto.FilterOut
 import cc.cryptopunks.wrapdrive.startShareActivity
 
 @Composable
@@ -100,6 +100,7 @@ fun NoSentOffers() {
             text = "You can choose app that allows to share a file by yourself or click the button down below",
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(bottom = 16.dp),
+            style = MaterialTheme.typography.caption,
         )
         val context = LocalContext.current
         Button(

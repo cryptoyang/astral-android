@@ -1,4 +1,4 @@
-package cc.cryptopunks.wrapdrive.share.v2
+package cc.cryptopunks.wrapdrive.activity
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,11 +6,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import cc.cryptopunks.wrapdrive.share.ShareModel
-import cc.cryptopunks.wrapdrive.share.setUri
-import cc.cryptopunks.wrapdrive.theme.AppTheme
-import cc.cryptopunks.wrapdrive.util.items
+import cc.cryptopunks.wrapdrive.compose.AppTheme
+import cc.cryptopunks.wrapdrive.compose.ShareView
+import cc.cryptopunks.wrapdrive.model.ShareModel
+import cc.cryptopunks.wrapdrive.model.setUri
 import cc.cryptopunks.wrapdrive.startFileChooser
+import cc.cryptopunks.wrapdrive.util.items
 
 class ShareActivity : ComponentActivity() {
 

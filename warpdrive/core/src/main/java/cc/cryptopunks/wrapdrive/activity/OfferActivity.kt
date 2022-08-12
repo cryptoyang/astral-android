@@ -1,4 +1,4 @@
-package cc.cryptopunks.wrapdrive.offer.v2
+package cc.cryptopunks.wrapdrive.activity
 
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.content.Intent
@@ -7,10 +7,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import cc.cryptopunks.astral.ext.hasPermissions
-import cc.cryptopunks.wrapdrive.offer.OfferModel
-import cc.cryptopunks.wrapdrive.offer.setCurrent
-import cc.cryptopunks.wrapdrive.offer.setOfferId
-import cc.cryptopunks.wrapdrive.theme.AppTheme
+import cc.cryptopunks.wrapdrive.compose.AppTheme
+import cc.cryptopunks.wrapdrive.compose.MainView
+import cc.cryptopunks.wrapdrive.model.OfferModel
+import cc.cryptopunks.wrapdrive.model.setCurrent
+import cc.cryptopunks.wrapdrive.model.setOfferId
 
 class OfferActivity : ComponentActivity() {
 

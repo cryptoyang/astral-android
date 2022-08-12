@@ -1,19 +1,18 @@
-package cc.cryptopunks.wrapdrive.offer.v2
+package cc.cryptopunks.wrapdrive.compose
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import cc.cryptopunks.wrapdrive.api.FilterIn
-import cc.cryptopunks.wrapdrive.api.FilterOut
-import cc.cryptopunks.wrapdrive.api.Info
-import cc.cryptopunks.wrapdrive.api.Offer
-import cc.cryptopunks.wrapdrive.api.Peer
-import cc.cryptopunks.wrapdrive.api.PeerOffer
-import cc.cryptopunks.wrapdrive.api.StatusFailed
-import cc.cryptopunks.wrapdrive.offer.OfferModel
-import cc.cryptopunks.wrapdrive.theme.AppTheme
+import cc.cryptopunks.wrapdrive.model.OfferModel
+import cc.cryptopunks.wrapdrive.proto.FilterIn
+import cc.cryptopunks.wrapdrive.proto.FilterOut
+import cc.cryptopunks.wrapdrive.proto.Info
+import cc.cryptopunks.wrapdrive.proto.Offer
+import cc.cryptopunks.wrapdrive.proto.Peer
+import cc.cryptopunks.wrapdrive.proto.PeerOffer
+import cc.cryptopunks.wrapdrive.proto.StatusFailed
 import kotlin.random.Random
 
 object PreviewModel {

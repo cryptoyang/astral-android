@@ -1,4 +1,4 @@
-package cc.cryptopunks.wrapdrive.theme
+package cc.cryptopunks.wrapdrive.compose
 
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.lightColors

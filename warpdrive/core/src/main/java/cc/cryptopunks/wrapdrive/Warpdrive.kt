@@ -1,8 +1,8 @@
 package cc.cryptopunks.wrapdrive
 
 import android.app.Application
-import cc.cryptopunks.wrapdrive.api.client.ping
-import cc.cryptopunks.wrapdrive.api.network
+import cc.cryptopunks.wrapdrive.proto.network
+import cc.cryptopunks.wrapdrive.proto.ping
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asCoroutineDispatcher

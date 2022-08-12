@@ -1,19 +1,52 @@
-package cc.cryptopunks.wrapdrive.share
+package cc.cryptopunks.wrapdrive.model
 
 import android.net.Uri
 import cc.cryptopunks.astral.err.AstralLocalConnectionException
-import cc.cryptopunks.wrapdrive.api.Peer
-import cc.cryptopunks.wrapdrive.api.client.peers
-import cc.cryptopunks.wrapdrive.api.client.send
-import cc.cryptopunks.wrapdrive.api.network
 import cc.cryptopunks.wrapdrive.app
+import cc.cryptopunks.wrapdrive.proto.OfferId
+import cc.cryptopunks.wrapdrive.proto.Peer
+import cc.cryptopunks.wrapdrive.proto.ResultCode
+import cc.cryptopunks.wrapdrive.proto.network
+import cc.cryptopunks.wrapdrive.proto.peers
+import cc.cryptopunks.wrapdrive.proto.send
+import cc.cryptopunks.wrapdrive.util.CoroutineViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
+
+class ShareModel : CoroutineViewModel() {
+
+    // state
+    val error = MutableStateFlow(null as Throwable?)
+    val uri = MutableStateFlow(Uri.EMPTY to 0L)
+    val peers = MutableStateFlow(emptyList<Peer>())
+    val isRefreshing = MutableStateFlow(false)
+    var peersJob = Job() as Job
+
+    // actions
+    val refresh = MutableSharedFlow<Unit>()
+    val share = MutableSharedFlow<String>(extraBufferCapacity = 1)
+
+    init {
+        subscribeShare()
+    }
+}
+
+fun ShareModel.setUri(uri: Uri) {
+    this.uri.value = uri to System.currentTimeMillis()
+}
+
+val isSharing = MutableStateFlow(false)
+val sharingStatus = MutableSharedFlow<Result<Pair<OfferId, ResultCode>>>(
+    extraBufferCapacity = Byte.MAX_VALUE.toInt()
+)
 
 fun ShareModel.refresh() = launch {
     isRefreshing.emit(true)
