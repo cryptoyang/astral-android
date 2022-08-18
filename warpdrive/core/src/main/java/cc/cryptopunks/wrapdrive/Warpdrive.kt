@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.util.concurrent.Executors
 
-class Warpdrive :
+open class Warpdrive :
     Application(),
     CoroutineScope {
 
