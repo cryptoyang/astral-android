@@ -8,6 +8,7 @@ def include(String mod, String path) {
 include(':astral:client', "astrald/mobile/android/client")
 include(':astral:app', "astrald/mobile/android/app")
 include(':astral:ui', "astrald/mobile/android/ui")
+include(':astral:theme', "astrald/mobile/android/theme")
 include(':astral:service', "astrald/mobile/android/service")
 include(':astral:node', "astrald/mobile/android/node")
 include(':astral:ext', "astrald/mobile/android/ext")

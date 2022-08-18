@@ -35,8 +35,12 @@ val app get() = Warpdrive.instance
 
 private suspend fun MutableStateFlow<Boolean>.subscribeConnectionStatus() {
     while (true) {
-        network.ping().collect {
-            emit(true)
+        network.runCatching {
+            ping().collect {
+                emit(true)
+            }
+        }.onFailure { e ->
+            println("Cannot connect warpdrive cause: ${e.message}")
         }
         emit(false)
         delay(1500)

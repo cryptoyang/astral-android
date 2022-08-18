@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="cc.cryptopunks.wrapdrive">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -11,6 +12,10 @@
         android:label="@string/warp_drive_app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.Warpdrive">
+
+        <activity
+            android:name="cc.cryptopunks.astral.contacts.ContactsActivity"
+            tools:node="remove" />
 
         <activity
             android:name=".activity.OfferActivity"
@@ -47,9 +52,9 @@
 
         <activity
             android:name=".activity.DownloadActivity"
-            android:theme="@style/Theme.Warpdrive.Translucent"
+            android:exported="true"
             android:launchMode="singleTask"
-            android:exported="true">
+            android:theme="@style/Theme.Warpdrive.Translucent">
             <intent-filter>
                 <data
                     android:host="download"

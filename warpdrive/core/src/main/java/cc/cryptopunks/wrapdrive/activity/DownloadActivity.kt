@@ -4,10 +4,11 @@ import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import cc.cryptopunks.astral.ext.hasPermissions
-import cc.cryptopunks.wrapdrive.app
 import cc.cryptopunks.wrapdrive.proto.accept
 import cc.cryptopunks.wrapdrive.proto.network
 import cc.cryptopunks.wrapdrive.startWritePermissionActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
 class DownloadActivity : AppCompatActivity() {
@@ -19,7 +20,7 @@ class DownloadActivity : AppCompatActivity() {
             val offerId = intent
                 .data!!
                 .lastPathSegment!!
-            app.launch {
+            launch {
                 network.accept(offerId)
             }
         } catch (e: Throwable) {
@@ -28,4 +29,6 @@ class DownloadActivity : AppCompatActivity() {
         }
         finishAndRemoveTask()
     }
+
+    private companion object : CoroutineScope by CoroutineScope(SupervisorJob())
 }
