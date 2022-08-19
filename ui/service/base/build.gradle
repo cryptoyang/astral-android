@@ -7,7 +7,6 @@ dependencies {
     implementation project(':ui:mapper')
     implementation project(':ui:model')
     implementation project(':ui:service:schema')
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'com.github.victools:jsonschema-generator:4.20.0'
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1"
 

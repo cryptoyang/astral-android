@@ -16,7 +16,7 @@ include(':astral:ui:log', "astrald/mobile/android/ui/log")
 include(':astral:service', "astrald/mobile/android/service")
 include(':astral:node', "astrald/mobile/android/node")
 include(':astral:ext', "astrald/mobile/android/ext")
-include(':astral:android:api', "astrald/mobile/android/api")
+include(':astral:mod', "astrald/mobile/android/mod")
 include(':astral:mod:notify', "astrald/mobile/android/mod/notify")
 include(':astral:mod:content', "astrald/mobile/android/mod/content")
 

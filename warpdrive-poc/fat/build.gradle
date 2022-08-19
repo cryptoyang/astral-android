@@ -42,7 +42,6 @@ repositories {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation project(':warpdrive-poc:core')
     implementation project(':node:service')
     testImplementation 'junit:junit:4.13.2'
