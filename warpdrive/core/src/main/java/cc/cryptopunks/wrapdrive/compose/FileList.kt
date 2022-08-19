@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import cc.cryptopunks.astral.contacts.HorizontalDivider
+import cc.cryptopunks.astral.ui.contacts.HorizontalDivider
 import cc.cryptopunks.wrapdrive.proto.Info
 import cc.cryptopunks.wrapdrive.proto.Offer
 import cc.cryptopunks.wrapdrive.util.formatSize

@@ -39,8 +39,8 @@ android {
 dependencies {
     implementation project(':astral:client')
     implementation project(':astral:ext')
-    implementation project(':astral:theme')
-    implementation project(':astral:mod:contacts')
+    implementation project(':astral:ui:theme')
+    implementation project(':astral:ui:contacts')
 
     api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1"
     implementation 'androidx.core:core-ktx:1.8.0'

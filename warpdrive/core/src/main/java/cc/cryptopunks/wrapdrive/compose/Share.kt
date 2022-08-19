@@ -27,9 +27,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import cc.cryptopunks.astral.contacts.ContactsModel
-import cc.cryptopunks.astral.contacts.ContactsView
-import cc.cryptopunks.astral.contacts.rememberContactsPreviewModel
+import cc.cryptopunks.astral.ui.contacts.ContactsModel
+import cc.cryptopunks.astral.ui.contacts.ContactsView
+import cc.cryptopunks.astral.ui.contacts.rememberContactsPreviewModel
 import cc.cryptopunks.wrapdrive.R
 import cc.cryptopunks.wrapdrive.model.ShareModel
 import cc.cryptopunks.wrapdrive.model.isSharing
@@ -131,5 +131,3 @@ fun ShareView(
         }
     }
 }
-
-private const val cannotObtainFileUri = "Cannot obtain file uri, please select file once again"

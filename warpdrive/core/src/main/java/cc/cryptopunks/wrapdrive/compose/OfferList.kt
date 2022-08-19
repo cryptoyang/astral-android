@@ -18,7 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import cc.cryptopunks.astral.contacts.HorizontalDivider
+import cc.cryptopunks.astral.ui.contacts.HorizontalDivider
 import cc.cryptopunks.wrapdrive.model.OfferModel
 import cc.cryptopunks.wrapdrive.model.peersOffers
 import cc.cryptopunks.wrapdrive.model.setCurrent
