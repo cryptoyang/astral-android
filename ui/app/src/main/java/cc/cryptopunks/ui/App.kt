@@ -1,7 +1,7 @@
 package cc.cryptopunks.ui
 
 import cc.cryptopunks.astral.client.enc.encoder
-import cc.cryptopunks.astral.client.gson.GsonCoder
+import cc.cryptopunks.astral.client.enc.gson.GsonCoder
 import cc.cryptopunks.astral.client.tcp.astralTcpNetwork
 import cc.cryptopunks.ui.android.UIApplication
 import cc.cryptopunks.ui.service.astral.AstralUIService
