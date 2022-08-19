@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.result.ActivityResultLauncher
-import cc.cryptopunks.astral.ext.permissionsActivityIntent
+import cc.cryptopunks.astral.intent.permissionsActivityIntent
 import cc.cryptopunks.wrapdrive.activity.ShareActivity
 import cc.cryptopunks.wrapdrive.proto.OfferId
 

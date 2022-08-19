@@ -6,7 +6,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import cc.cryptopunks.astral.ext.hasPermissions
+import cc.cryptopunks.astral.intent.hasPermissions
 import cc.cryptopunks.wrapdrive.compose.AppTheme
 import cc.cryptopunks.wrapdrive.compose.MainView
 import cc.cryptopunks.wrapdrive.model.OfferModel

@@ -20,8 +20,8 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import cc.cryptopunks.astral.ext.startAstralActivity
-import cc.cryptopunks.astral.ext.startAstralService
+import cc.cryptopunks.astral.intent.startAstralActivity
+import cc.cryptopunks.astral.intent.startAstralService
 import cc.cryptopunks.wrapdrive.app
 
 @Composable

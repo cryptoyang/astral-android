@@ -38,7 +38,7 @@ android {
 
 dependencies {
     implementation project(':astral:client')
-    implementation project(':astral:ext')
+    implementation project(':astral:intent')
     implementation project(':astral:ui:theme')
     implementation project(':astral:ui:contacts')
 
