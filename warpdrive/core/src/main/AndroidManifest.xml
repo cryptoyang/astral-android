@@ -14,7 +14,7 @@
         android:theme="@style/Theme.Warpdrive">
 
         <activity
-            android:name="cc.cryptopunks.astral.contacts.ContactsActivity"
+            android:name="cc.cryptopunks.astral.ui.contacts.ContactsActivity"
             tools:node="remove" />
 
         <activity
