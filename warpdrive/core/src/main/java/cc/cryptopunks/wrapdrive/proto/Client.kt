@@ -1,10 +1,10 @@
 package cc.cryptopunks.wrapdrive.proto
 
-import cc.cryptopunks.astral.ext.byte
-import cc.cryptopunks.astral.ext.decodeList
-import cc.cryptopunks.astral.ext.query
-import cc.cryptopunks.astral.ext.queryResult
-import cc.cryptopunks.astral.ext.string8
+import cc.cryptopunks.astral.client.ext.byte
+import cc.cryptopunks.astral.client.ext.decodeList
+import cc.cryptopunks.astral.client.ext.query
+import cc.cryptopunks.astral.client.ext.queryResult
+import cc.cryptopunks.astral.client.ext.string8
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose

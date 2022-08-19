@@ -1,7 +1,7 @@
 package cc.cryptopunks.wrapdrive.model
 
 import android.net.Uri
-import cc.cryptopunks.astral.err.AstralLocalConnectionException
+import cc.cryptopunks.astral.client.err.AstralLocalConnectionException
 import cc.cryptopunks.wrapdrive.app
 import cc.cryptopunks.wrapdrive.proto.OfferId
 import cc.cryptopunks.wrapdrive.proto.Peer

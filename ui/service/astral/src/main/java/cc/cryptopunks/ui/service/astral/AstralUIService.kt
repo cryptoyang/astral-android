@@ -1,8 +1,8 @@
 package cc.cryptopunks.ui.service.astral
 
-import cc.cryptopunks.astral.ext.bytes32
-import cc.cryptopunks.astral.ext.string8
-import cc.cryptopunks.astral.net.Network
+import cc.cryptopunks.astral.client.ext.bytes32
+import cc.cryptopunks.astral.client.ext.string8
+import cc.cryptopunks.astral.client.net.Network
 import cc.cryptopunks.ui.mapper.Jackson
 import cc.cryptopunks.ui.model.Service
 import cc.cryptopunks.ui.service.schema.OpenRpc

@@ -1,8 +1,8 @@
 package cc.cryptopunks.wrapdrive.proto
 
-import cc.cryptopunks.astral.enc.NetworkEncoder
-import cc.cryptopunks.astral.enc.encoder
-import cc.cryptopunks.astral.tcp.astralTcpNetwork
+import cc.cryptopunks.astral.client.enc.NetworkEncoder
+import cc.cryptopunks.astral.client.enc.encoder
+import cc.cryptopunks.astral.client.tcp.astralTcpNetwork
 
 typealias Astral = NetworkEncoder
 

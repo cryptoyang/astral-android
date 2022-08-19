@@ -1,6 +1,6 @@
 package cc.cryptopunks.wrapdrive.model
 
-import cc.cryptopunks.astral.err.AstralLocalConnectionException
+import cc.cryptopunks.astral.client.err.AstralLocalConnectionException
 import cc.cryptopunks.wrapdrive.proto.EmptyPeer
 import cc.cryptopunks.wrapdrive.proto.FilterIn
 import cc.cryptopunks.wrapdrive.proto.FilterOut
