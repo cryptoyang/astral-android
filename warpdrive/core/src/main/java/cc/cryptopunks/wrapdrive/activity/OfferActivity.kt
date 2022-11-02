@@ -7,7 +7,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import cc.cryptopunks.astral.intent.hasPermissions
-import cc.cryptopunks.wrapdrive.compose.AppTheme
 import cc.cryptopunks.wrapdrive.compose.MainView
 import cc.cryptopunks.wrapdrive.model.OfferModel
 import cc.cryptopunks.wrapdrive.model.setCurrent
@@ -20,11 +19,7 @@ class OfferActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         model.setOfferId(intent)
-        setContent {
-            AppTheme {
-                MainView(model)
-            }
-        }
+        setContent { MainView(model) }
     }
 
     override fun onResume() {

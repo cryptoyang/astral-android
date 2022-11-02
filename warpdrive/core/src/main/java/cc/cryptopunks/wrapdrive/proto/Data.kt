@@ -1,7 +1,5 @@
 package cc.cryptopunks.wrapdrive.proto
 
-
-typealias Offers = Map<OfferId, Offer>
 typealias OfferId = String
 typealias ResultCode = Byte
 
@@ -53,8 +51,6 @@ data class Info(
     val mime: String = "",
     val name: String = "",
 )
-
-typealias OffersFilter = String
 
 const val StatusAwaiting = "awaiting"
 const val StatusAccepted = "accepted"

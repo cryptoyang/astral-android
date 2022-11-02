@@ -1,8 +1,8 @@
 package cc.cryptopunks.wrapdrive.activity
 
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+import android.app.Activity
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import cc.cryptopunks.astral.intent.hasPermissions
 import cc.cryptopunks.wrapdrive.proto.accept
 import cc.cryptopunks.wrapdrive.proto.network
@@ -11,7 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
-class DownloadActivity : AppCompatActivity() {
+class DownloadActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

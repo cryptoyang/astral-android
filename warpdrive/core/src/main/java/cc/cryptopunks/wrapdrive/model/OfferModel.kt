@@ -15,11 +15,7 @@ import cc.cryptopunks.wrapdrive.proto.accept
 import cc.cryptopunks.wrapdrive.proto.network
 import cc.cryptopunks.wrapdrive.util.CoroutineViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.filterNot
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class OfferModel : CoroutineViewModel() {
@@ -53,9 +49,6 @@ class OfferModel : CoroutineViewModel() {
         val EmptyUpdate = Update()
     }
 }
-
-fun OfferModel.updates(filter: String): Flow<OfferModel.Update> =
-    updates.getValue(filter).filterNot { it == OfferModel.EmptyUpdate }
 
 fun OfferModel.setOfferId(intent: Intent?) {
     val id = intent?.data?.lastPathSegment
@@ -103,11 +96,4 @@ val OfferModel.Update.peersOffers: List<PeerOffer>
             peer = peers[offer.peer]
                 ?: EmptyPeer,
         )
-    }
-
-val OfferModel.currentOffer
-    get() = current.filter { current ->
-        current != EmptyPeerOffer
-    }.map {
-        it.offer
     }

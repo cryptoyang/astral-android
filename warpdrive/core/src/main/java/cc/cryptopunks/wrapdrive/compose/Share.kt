@@ -32,11 +32,8 @@ import cc.cryptopunks.astral.ui.contacts.ContactsView
 import cc.cryptopunks.astral.ui.contacts.rememberContactsPreviewModel
 import cc.cryptopunks.wrapdrive.R
 import cc.cryptopunks.wrapdrive.model.ShareModel
-import cc.cryptopunks.wrapdrive.model.isSharing
 import cc.cryptopunks.wrapdrive.model.setUri
 import cc.cryptopunks.wrapdrive.model.share
-import cc.cryptopunks.wrapdrive.model.sharingStatus
-
 
 @Preview
 @Composable
@@ -63,8 +60,8 @@ fun ShareView(
             TopAppBar(
                 title = { Text("Warp Share") },
                 actions = {
-                    val progress by isSharing.collectAsState()
-                    if (progress) {
+                    val isSharing by shareModel.isSharing.collectAsState()
+                    if (isSharing) {
                         CircularProgressIndicator(
                             color = LocalContentColor.current.copy(LocalContentAlpha.current),
                             modifier = Modifier
@@ -91,7 +88,7 @@ fun ShareView(
     }
     val context = LocalContext.current
     val astralPackage = stringResource(id = R.string.astral_package)
-    LaunchedEffect(Unit) {
+    LaunchedEffect(shareModel) {
         shareModel.uri.collect { (uri) ->
             when (uri) {
                 Uri.EMPTY -> snackbarHostState.showSnackbar(
@@ -107,16 +104,16 @@ fun ShareView(
             }
         }
     }
-    LaunchedEffect(Unit) {
+    LaunchedEffect(contactsModel) {
         contactsModel.selected.collect { contact ->
             val peerId = contact.id
             val (uri) = shareModel.uri.value
             if (uri != Uri.EMPTY)
-                share(peerId, uri)
+                shareModel.share(peerId, uri)
         }
     }
-    LaunchedEffect(Unit) {
-        sharingStatus.collect { result ->
+    LaunchedEffect(shareModel) {
+        shareModel.results.collect { result ->
             var message = ""
             result.onSuccess { (_, code) ->
                 message = when (code.toInt()) {

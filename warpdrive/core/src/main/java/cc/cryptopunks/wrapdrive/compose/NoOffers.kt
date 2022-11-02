@@ -19,13 +19,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cc.cryptopunks.wrapdrive.R
+import cc.cryptopunks.wrapdrive.proto.Filter
 import cc.cryptopunks.wrapdrive.proto.FilterIn
 import cc.cryptopunks.wrapdrive.proto.FilterOut
 import cc.cryptopunks.wrapdrive.startShareActivity
 
 @Composable
 fun NoOffersView(
-    filter: String,
+    filter: Filter,
 ) {
     when (filter) {
         FilterIn -> NoReceivedOffers()

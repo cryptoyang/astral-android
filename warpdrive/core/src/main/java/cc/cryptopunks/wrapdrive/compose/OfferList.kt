@@ -22,6 +22,7 @@ import cc.cryptopunks.astral.ui.contacts.HorizontalDivider
 import cc.cryptopunks.wrapdrive.model.OfferModel
 import cc.cryptopunks.wrapdrive.model.peersOffers
 import cc.cryptopunks.wrapdrive.model.setCurrent
+import cc.cryptopunks.wrapdrive.proto.Filter
 import cc.cryptopunks.wrapdrive.proto.FilterIn
 import cc.cryptopunks.wrapdrive.proto.PeerOffer
 
@@ -34,7 +35,7 @@ private fun OfferItemsPreview() = PreviewBox {
 @Composable
 fun OfferItems(
     model: OfferModel,
-    filter: String,
+    filter: Filter,
 ) {
     val update by model.updates.getValue(filter).collectAsState()
     OfferItems(
@@ -49,7 +50,7 @@ fun OfferItems(
 @Composable
 private fun OfferItems(
     offers: List<PeerOffer>,
-    filter: String,
+    filter: Filter,
     navigateDetails: (PeerOffer) -> Unit = {},
 ) {
     if (offers.isEmpty()) NoOffersView(filter)
