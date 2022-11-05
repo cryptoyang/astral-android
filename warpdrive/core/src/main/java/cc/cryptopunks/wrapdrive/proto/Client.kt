@@ -32,10 +32,10 @@ suspend fun Astral.offers(
 
 suspend fun Astral.accept(
     offerId: OfferId,
-): Unit = queryResult(PortLocal) {
+): Byte = queryResult(PortLocal) {
     byte = CmdAcceptOffer
     string8 = offerId
-    byte
+    result = byte
     end()
 }
 
