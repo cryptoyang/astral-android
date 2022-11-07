@@ -12,7 +12,7 @@ import cc.cryptopunks.wrapdrive.proto.Peer
 import cc.cryptopunks.wrapdrive.proto.PeerId
 import cc.cryptopunks.wrapdrive.proto.PeerOffer
 import cc.cryptopunks.wrapdrive.proto.accept
-import cc.cryptopunks.wrapdrive.proto.network
+import cc.cryptopunks.wrapdrive.proto.warpdrive
 import cc.cryptopunks.wrapdrive.util.CoroutineViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,6 +43,10 @@ class OfferModel : CoroutineViewModel() {
         val value: Int = 0,
     ) {
         enum class Action { Init, Inserted, Changed }
+    }
+
+    init {
+        subscribeChanges()
     }
 
     companion object {
@@ -82,7 +86,7 @@ fun OfferModel.download() {
     val offerId = currentId.value ?: return
     launch {
         try {
-            network.accept(offerId)
+            warpdrive { accept(offerId) }
         } catch (e: Throwable) {
             error.value = OfferModel.Error("Cannot download files", e)
         }

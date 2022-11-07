@@ -6,7 +6,6 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
@@ -14,7 +13,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import cc.cryptopunks.wrapdrive.R
 import cc.cryptopunks.wrapdrive.model.OfferModel
-import cc.cryptopunks.wrapdrive.model.subscribeChanges
 import cc.cryptopunks.wrapdrive.startShareActivity
 
 @Preview
@@ -44,7 +42,6 @@ fun MainView(
             DashboardView(model)
             val currentId by model.currentId.collectAsState()
             if (currentId != null) OfferDetailsView(model)
-            LaunchedEffect(Unit) { model.subscribeChanges() }
         }
     }
 }

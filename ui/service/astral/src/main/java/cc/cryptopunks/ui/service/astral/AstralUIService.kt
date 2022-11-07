@@ -36,9 +36,9 @@ class AstralUIService(
 
     override fun execute(request: Service.Request): Job = launch {
         network.run {
-            query(port, nodeId).run {
+            connect(port, nodeId).run {
                 string8 = Method.Request
-                query(string8, nodeId)
+                connect(string8, nodeId)
             }.run {
                 val (destPort, method) = request.method.split("/")
                 string8 = destPort
@@ -57,9 +57,9 @@ class AstralUIService(
     override fun subscribe(request: Service.Request): Flow<Any> = channelFlow {
         val stream = withContext(Dispatchers.IO) {
             network.run {
-                query(port, nodeId).run {
+                connect(port, nodeId).run {
                     string8 = Method.Subscribe
-                    query(string8, nodeId)
+                    connect(string8, nodeId)
                 }
             }
         }
@@ -98,9 +98,9 @@ class AstralUIService(
     ): Flow<Service.Schema> = channelFlow {
         withContext(Dispatchers.IO) {
             network.run {
-                query(port, nodeId).run {
+                connect(port, nodeId).run {
                     string8 = Method.Schemas
-                    query(string8, nodeId)
+                    connect(string8, nodeId)
                 }
             }.run {
                 while (true) {

@@ -11,9 +11,10 @@ import cc.cryptopunks.wrapdrive.proto.Peers
 import cc.cryptopunks.wrapdrive.proto.Status
 import cc.cryptopunks.wrapdrive.proto.offers
 import cc.cryptopunks.wrapdrive.proto.peers
-import cc.cryptopunks.wrapdrive.proto.status
-import cc.cryptopunks.wrapdrive.proto.subscribe
-import cc.cryptopunks.wrapdrive.proto.network
+import cc.cryptopunks.wrapdrive.proto.subscribeOffers
+import cc.cryptopunks.wrapdrive.proto.subscribeStatus
+import cc.cryptopunks.wrapdrive.proto.warpdrive
+import cc.cryptopunks.wrapdrive.proto.warpdriveFlow
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -34,13 +35,13 @@ fun OfferModel.subscribeChanges() {
         FilterOut to MutableStateFlow(OfferModel.Update()),
     )
     val contacts = suspend {
-        network.peers().associateBy(Peer::id)
+        warpdrive { peers() }
+            .associateBy(Peer::id)
     }
     val refresh = suspend {
         val peers = contacts()
         init.forEach { (filter, channel) ->
-            val offers = network
-                .offers(filter)
+            val offers = warpdrive { offers(filter) }
                 .sortedByDescending(Offer::create)
 
             val change = OfferModel.Update(
@@ -57,8 +58,8 @@ fun OfferModel.subscribeChanges() {
             val items = updates.getValue(filter)
             offerChanges(
                 channel,
-                network.subscribe(filter),
-                network.status(filter),
+                warpdriveFlow { subscribeOffers(filter) },
+                warpdriveFlow { subscribeStatus(filter) },
                 contacts,
             ).onCompletion {
                 println("Completed")

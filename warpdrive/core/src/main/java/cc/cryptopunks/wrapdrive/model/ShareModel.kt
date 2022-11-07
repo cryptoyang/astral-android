@@ -4,8 +4,8 @@ import android.net.Uri
 import cc.cryptopunks.wrapdrive.app
 import cc.cryptopunks.wrapdrive.proto.OfferId
 import cc.cryptopunks.wrapdrive.proto.ResultCode
-import cc.cryptopunks.wrapdrive.proto.network
 import cc.cryptopunks.wrapdrive.proto.send
+import cc.cryptopunks.wrapdrive.proto.warpdrive
 import cc.cryptopunks.wrapdrive.util.CoroutineViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +19,7 @@ class ShareModel : CoroutineViewModel() {
         extraBufferCapacity = 255
     )
 }
+
 fun ShareModel.setUri(uri: Uri) {
     this.uri.value = uri to System.currentTimeMillis()
 }
@@ -27,10 +28,7 @@ fun ShareModel.share(peerId: String, uri: Uri) = app.launch {
     try {
         isSharing.value = true
         val result = withTimeout(10000) {
-            network.send(
-                peerId = peerId,
-                uri = uri.toString()
-            )
+            warpdrive { send(peerId, uri.toString()) }
         }
         results.emit(Result.success(result))
     } catch (e: Throwable) {

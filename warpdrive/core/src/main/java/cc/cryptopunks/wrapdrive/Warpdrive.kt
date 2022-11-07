@@ -1,48 +1,25 @@
 package cc.cryptopunks.wrapdrive
 
 import android.app.Application
-import cc.cryptopunks.wrapdrive.proto.network
-import cc.cryptopunks.wrapdrive.proto.ping
+import cc.cryptopunks.wrapdrive.proto.warpdriveStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
-import java.util.concurrent.Executors
+import kotlinx.coroutines.flow.StateFlow
 
 open class Warpdrive :
     Application(),
     CoroutineScope {
 
-    override val coroutineContext =
-        SupervisorJob() + Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+    override val coroutineContext = SupervisorJob()
 
-    val isConnected = MutableStateFlow(false)
+    val isConnected: StateFlow<Boolean> = warpdriveStatus()
 
     override fun onCreate() {
         super.onCreate()
         instance = this
-        launch { isConnected.subscribeConnectionStatus() }
-    }
-
-    companion object {
-        lateinit var instance: Warpdrive private set
     }
 }
 
-val app get() = Warpdrive.instance
+private lateinit var instance: Warpdrive
 
-private suspend fun MutableStateFlow<Boolean>.subscribeConnectionStatus() {
-    while (true) {
-        network.runCatching {
-            ping().collect {
-                emit(true)
-            }
-        }.onFailure { e ->
-            println("Cannot connect warpdrive cause: ${e.message}")
-        }
-        emit(false)
-        delay(1500)
-    }
-}
+val app get() = instance

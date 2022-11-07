@@ -1,145 +1,73 @@
 package cc.cryptopunks.wrapdrive.proto
 
+import cc.cryptopunks.astral.client.Stream
 import cc.cryptopunks.astral.client.enc.StreamEncoder
 import cc.cryptopunks.astral.client.ext.byte
 import cc.cryptopunks.astral.client.ext.decodeList
-import cc.cryptopunks.astral.client.ext.queryResult
 import cc.cryptopunks.astral.client.ext.string8
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeout
-import kotlinx.coroutines.withTimeoutOrNull
-import java.net.SocketException
 import kotlin.system.measureNanoTime
-import kotlin.time.Duration.Companion.seconds
 
-suspend fun Astral.offers(
+fun StreamEncoder.offers(
     filter: Filter,
-): List<Offer> = queryResult(PortLocal) {
+): List<Offer> {
     byte = CmdListOffers
     byte = filter
-    result = decodeList()
-    end()
+    return decodeList()
 }
 
-suspend fun Astral.accept(
+fun Stream.accept(
     offerId: OfferId,
-): Byte = queryResult(PortLocal) {
+): Byte {
     byte = CmdAcceptOffer
     string8 = offerId
-    result = byte
-    end()
+    return byte
 }
 
-suspend fun Astral.send(
+fun Stream.send(
     peerId: String,
     uri: String,
-): Pair<OfferId, ResultCode> = queryResult(PortLocal) {
+): Pair<OfferId, ResultCode> {
     byte = CmdCreateOffer
     string8 = peerId
     string8 = uri
-    result = string8 to byte
-    end()
+    return string8 to byte
 }
 
-suspend fun Astral.peers(
-): List<Peer> = queryResult(PortLocal) {
+fun StreamEncoder.peers(): List<Peer> {
     byte = CmdListPeers
-    result = decodeList()
-    end()
+    return decodeList()
 }
 
+fun StreamEncoder.subscribeOffers(filter: Filter) =
+    subscribe<Offer>(CmdListenOffers, filter)
 
-fun Astral.ping(
-): Flow<Long> = channelFlow {
-    val conn = withContext(Dispatchers.IO) {
-        query(PortInfo)
-    }
-    conn.runCatching {
-        byte = CmdPing
-        var code: Byte = 1
-        while (isActive) {
-            val time = measureNanoTime {
-                withTimeout(3.seconds) {
-                    byte = code
-                    code = byte
-                }
-            }
-            send(time)
-            delay(1.seconds)
-        }
-    }
-    awaitClose {
-        closeSubscriptionScope.launch {
-            runCatching {
-                withTimeoutOrNull(5000) {
-                    conn.byte = 0
-                    conn.end()
-                }
-            }
-            runCatching {
-                conn.close()
-            }
-        }
-    }
-}
+fun StreamEncoder.subscribeStatus(filter: Filter) =
+    subscribe<Status>(CmdListenStatus, filter)
 
-fun Astral.status(filter: Filter): Flow<Status> = filteredFlow(CmdListenStatus, filter)
-
-fun Astral.subscribe(filter: Filter): Flow<Offer> = filteredFlow(CmdListenOffers, filter)
-
-private inline fun <reified T> Astral.filteredFlow(
+inline fun <reified T> StreamEncoder.subscribe(
     cmd: Byte,
     filter: Filter,
-): Flow<T> = channelFlow {
-    val conn = withContext(Dispatchers.IO) {
-        query(PortLocal)
-    }
-    launch(Dispatchers.IO) {
-        conn.apply {
-            byte = cmd
-            byte = filter
-        }
-        val reader = conn.input.bufferedReader()
-        val type = T::class.java
-        runCatching {
-            while (isActive) {
-                val line = reader.readLine() ?: break
-                val item = encoder.decode(line, type)
-                trySend(item)
-            }
-        }.onFailure {
-            if (it !is SocketException)
-                it.printStackTrace()
-        }
-    }
-    awaitClose {
-        closeSubscriptionScope.launch {
-            runCatching {
-                withTimeoutOrNull(5000) {
-                    conn.byte = 0
-                    conn.end()
-                }
-            }
-            runCatching {
-                conn.close()
-            }
-        }
+): () -> T {
+    byte = cmd
+    byte = filter
+    val reader = input.bufferedReader()
+    val type = T::class.java
+    return {
+        val line = reader.readLine()
+        encoder.decode(line, type)
     }
 }
 
-fun StreamEncoder.end() {
+fun Stream.unsubscribe() {
     byte = CmdClose
 }
 
-private val closeSubscriptionScope = CoroutineScope(
-    SupervisorJob() + Dispatchers.IO.limitedParallelism(8)
-)
+fun Stream.ping(): (Byte) -> Long {
+    byte = CmdPing
+    return { code ->
+        measureNanoTime {
+            byte = code
+            byte
+        }
+    }
+}

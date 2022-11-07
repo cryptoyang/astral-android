@@ -1,7 +1,6 @@
 package cc.cryptopunks.wrapdrive.proto
 
-const val PortLocal = "warpdrive-local"
-const val PortInfo = "warpdrive-info"
+const val WarpdrivePort = "warpdrive"
 
 const val CmdClose: Byte = 0xff.toByte()
 const val CmdListPeers: Byte = 1
@@ -11,8 +10,7 @@ const val CmdListOffers: Byte = 4
 const val CmdListenOffers: Byte = 5
 const val CmdListenStatus: Byte = 6
 const val CmdUpdate: Byte = 7
-
-const val CmdPing: Byte = 1
+const val CmdPing: Byte = 200.toByte()
 
 typealias Filter = Byte
 
